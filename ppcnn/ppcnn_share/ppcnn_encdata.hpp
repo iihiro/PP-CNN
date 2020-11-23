@@ -50,6 +50,14 @@ struct EncData : public ppcnn_share::BasicData<seal::Ciphertext>
      * @param[in] ctxts ciphertexts
      */
     EncData(const seal::EncryptionParameters& params, const std::vector<seal::Ciphertext>& ctxts);
+
+    /**
+     * Constructor
+     * @param[in] params encryption parameters
+     * @param[in] ctxts pointer of ciphertexts
+     * @param[in] n number of ciphertexts
+     */
+    EncData(const seal::EncryptionParameters& params, const seal::Ciphertext* ctxts, const size_t n);
     
     virtual ~EncData(void) = default;
 

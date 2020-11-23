@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_srv2cliparam.hpp>
+#ifndef PPCNN_CLIENT_RESULT_CBFUNC_HPP
+#define PPCNN_CLIENT_RESULT_CBFUNC_HPP
 
-namespace ppcnn_share
+#include <functional>
+#include <seal/seal.h>
+
+namespace ppcnn_client
 {
 
-std::ostream& operator<<(std::ostream& os, const Srv2CliParam& param)
-{
-    auto i32_result = static_cast<int32_t>(param.result);
-    os << i32_result << std::endl;
-    return os;
-}
-
-std::istream& operator>>(std::istream& is, Srv2CliParam& param)
-{
-    int32_t i32_result;
-    is >> i32_result;
-    param.result = static_cast<ServerCalcResult_t>(i32_result);
-    return is;
-}
+using cbfunc_t = std::function<void(const int32_t query_id, const bool status, const seal::Ciphertext*, void*)>;
     
-} /* namespace ppcnn_share */
+} /* namespace ppcnn_client */
+
+#endif /* PPCNN_CLIENT_RESULT_CBFUNC_HPP */

@@ -27,10 +27,10 @@ if(OpenMP_FOUND)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-include_directories(${PROJECT_SOURCE_DIR}/ppcnn ${PROJECT_SOURCE_DIR}/stdsc)
+include_directories(${PROJECT_SOURCE_DIR}/ppcnn ${PROJECT_SOURCE_DIR}/stdsc /usr/local/include/SEAL-3.4)
 
 set(COMMON_LIBS stdsc ppcnn_share SEAL::seal)
 
 add_subdirectory(stdsc)
-#add_subdirectory(ppcnn)
-#add_subdirectory(demo)
+add_subdirectory(ppcnn)
+add_subdirectory(demo)

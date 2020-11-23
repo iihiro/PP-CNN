@@ -15,24 +15,9 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_srv2cliparam.hpp>
+#ifndef DEFINE_HPP
+#define DEFINE_HPP
 
-namespace ppcnn_share
-{
+#define PORT_SRV  "10001"
 
-std::ostream& operator<<(std::ostream& os, const Srv2CliParam& param)
-{
-    auto i32_result = static_cast<int32_t>(param.result);
-    os << i32_result << std::endl;
-    return os;
-}
-
-std::istream& operator>>(std::istream& is, Srv2CliParam& param)
-{
-    int32_t i32_result;
-    is >> i32_result;
-    param.result = static_cast<ServerCalcResult_t>(i32_result);
-    return is;
-}
-    
-} /* namespace ppcnn_share */
+#endif /* DEFINE_HPP */

@@ -4,6 +4,9 @@ RUN yum install -y gcc-c++ wget make openssl-devel git bzip2 which mlocate
 RUN yum install -y centos-release-scl
 RUN yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
 
+# for Devel (to be removed)
+RUN yum install -y emacs
+
 SHELL ["/usr/bin/scl", "enable", "devtoolset-8"]
 
 RUN cd tmp \

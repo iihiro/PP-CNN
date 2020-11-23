@@ -1,2 +1,13 @@
 set(module_name ppcnn_share)
-include(${PROJECT_SOURCE_DIR}/ppcnn/module.cmake)
+#include(${PROJECT_SOURCE_DIR}/ppcnn/module.cmake)
+
+option(BUILD_SHARED_LIBS "build as a shared library" ON)
+
+file(GLOB sources *.cpp utils/*.cpp)
+
+if (BUILD_SHARED_LIBS)
+  add_library(${module_name} SHARED ${sources})
+else()
+  add_library(${module_name} STATIC ${sources})
+endif()
+

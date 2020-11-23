@@ -68,7 +68,8 @@ namespace seal_utility
                                                    const seal::EncryptionParameters& params)
     {
         std::ofstream ofs(filepath, std::ios::binary);
-        seal::EncryptionParameters::Save(params, ofs);
+        //seal::EncryptionParameters::Save(params, ofs);
+        params.save(ofs);
         ofs.close();
     }
 
@@ -84,7 +85,8 @@ namespace seal_utility
     size_t stream_size<seal::EncryptionParameters>(const seal::EncryptionParameters& params)
     {
         std::ostringstream oss;
-        seal::EncryptionParameters::Save(params, oss);
+        //seal::EncryptionParameters::Save(params, oss);
+        params.save(oss);
         return oss.str().size();
     }
 

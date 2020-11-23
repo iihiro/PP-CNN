@@ -308,7 +308,7 @@ int main(int argc, char** argv) {
 
         for (size_t n = 0; n < number_prediction_trials; ++n) { // クライアント側でまわす
             /* Encrypt images in step */
-            Ciphertext3D encrypted_packed_images(boost::extents[rows][cols][channels]);  // Keras default setting is channels_last ([N,H,W,C])
+            Ciphertext3D encrypted_packed_images(boost::extents[rows][cols][channels]);  // Keras default setting is channels_last ([N,H,W,C]) 
             cout << "\t<Trial " << n + 1 << ">\n"
                  << "\tEncrypting " << image_count_in_step << " images..." << endl;
 #ifdef __LOG__

@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-#include <fts_share/fts_cli2srvparam.hpp>
+#include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 
-namespace fts_share
+namespace ppcnn_share
 {
 
 std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param)
 {
-    auto i32_func_no = static_cast<int32_t>(param.func_no);
-    os << param.hoge  << std::endl;
+    os << param.key_id << std::endl;
     return os;
 }
 
 std::istream& operator>>(std::istream& is, Cli2SrvParam& param)
 {
-    int32_t i32_func_no;
-    is >> param.hoge;
+    is >> param.key_id;
     return is;
 }
     
-} /* namespace fts_share */
+} /* namespace ppcnn_share */

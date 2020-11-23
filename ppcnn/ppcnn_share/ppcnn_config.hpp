@@ -15,24 +15,35 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_srv2cliparam.hpp>
+#ifndef PPCNN_CONFIG_HPP
+#define PPCNN_CONFIG_HPP
+
+#include <string>
+#include <memory>
 
 namespace ppcnn_share
 {
 
-std::ostream& operator<<(std::ostream& os, const Srv2CliParam& param)
+/**
+ * @brief This class is used to hold the configuration data.
+ */
+struct Config
 {
-    auto i32_result = static_cast<int32_t>(param.result);
-    os << i32_result << std::endl;
-    return os;
-}
+    Config(void);
+    ~Config(void) = default;
 
-std::istream& operator>>(std::istream& is, Srv2CliParam& param)
-{
-    int32_t i32_result;
-    is >> i32_result;
-    param.result = static_cast<ServerCalcResult_t>(i32_result);
-    return is;
-}
+    std::string get_value(const std::string& key) const;
+    bool is_exist_key(const std::string& key) const;
+    void load_from_file(const std::string& filename);
     
+private:
+    struct Impl;
+    std::shared_ptr<Impl> pimpl_;
+};
+
+template <class T>
+T config_get_value(const Config& config, const std::string& key);
+
 } /* namespace ppcnn_share */
+
+#endif /* PPCNN_CONFIG_HPP */

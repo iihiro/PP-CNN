@@ -52,6 +52,16 @@ EncData::EncData(const seal::EncryptionParameters& params, const std::vector<sea
     std::copy(ctxts.begin(), ctxts.end(), vec_.begin());
 }
 
+EncData::EncData(const seal::EncryptionParameters& params, const seal::Ciphertext* ctxts, const size_t n)
+    : pimpl_(new Impl(params))
+{
+    vec_.resize(n);
+    for (size_t i=0; i<n; ++i) {
+        vec_[i] = ctxts[i];
+    }
+}
+
+
 void EncData::encrypt(const int64_t input_value,
                       const seal::PublicKey& pubkey,
                       const seal::GaloisKeys& galoiskey)
