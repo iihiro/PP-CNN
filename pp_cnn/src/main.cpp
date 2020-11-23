@@ -412,6 +412,24 @@ int main(int argc, char** argv) {
     if (predicted_label == static_cast<size_t>(test_labels[image_idx])) {
       correct_prediction_count++;
     }
+
+    // debug by iiz
+    if (image_idx % 1000 == 0) {
+        double max_res = -99999.0;
+        size_t max_lbl = 0;
+
+        cout << "[" << image_idx << "] : ";
+        for (size_t label = 0; label < labels; ++label) {
+          double res = results[image_idx][label];
+          if (max_res < res) {
+              max_res = res;
+              max_lbl = label;
+          }
+          cout << "[" << label << "]: " << res << ", ";
+        }
+        cout << " : Max = " << max_lbl << endl;
+    }
+    
 #ifdef __DEBUG__
     debug_file << "image[" << image_idx << "]:" << endl;
     debug_file << "\t";
