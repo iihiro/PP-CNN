@@ -26,10 +26,21 @@ if(OpenMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
+find_package(HDF5 REQUIRED)
 
-include_directories(${PROJECT_SOURCE_DIR}/ppcnn ${PROJECT_SOURCE_DIR}/stdsc /usr/local/include/SEAL-3.4)
+include_directories(
+  ${PROJECT_SOURCE_DIR}/ppcnn
+  ${PROJECT_SOURCE_DIR}/stdsc
+  /usr/local/include/SEAL-3.4
+  PRIVATE ${HDF5_INCLUDE_DIRS})
 
-set(COMMON_LIBS stdsc ppcnn_share SEAL::seal)
+set(COMMON_LIBS
+  stdsc
+  ppcnn_share
+  SEAL::seal
+  ${HDF5_LIBRARIES}
+  hdf5
+  hdf5_cpp)
 
 add_subdirectory(stdsc)
 add_subdirectory(ppcnn)
