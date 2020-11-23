@@ -40,7 +40,7 @@ public:
         server_->start(enable_async_mode);
 
         const uint32_t thread_num = 2;
-        calc_manager_->start_threads(thread_num, dec_host_, dec_port_);
+        calc_manager_->start_threads(thread_num);
     }
 
     void stop(void)

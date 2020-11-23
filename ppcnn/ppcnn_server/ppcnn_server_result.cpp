@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-#include <ppcnn_cs/ppcnn_cs_result.hpp>
+#include <ppcnn_server/ppcnn_server_result.hpp>
 #include <seal/seal.h>
 
-namespace ppcnn_cs
+namespace ppcnn_server
 {
 
 // Result
@@ -36,4 +36,4 @@ double Result::elapsed_time() const
     return std::chrono::duration_cast<std::chrono::seconds>(now - created_time_).count();
 }
     
-} /* namespace ppcnn_cs */
+} /* namespace ppcnn_server */

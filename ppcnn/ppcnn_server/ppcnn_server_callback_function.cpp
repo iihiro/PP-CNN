@@ -27,7 +27,7 @@
 #include <ppcnn_share/ppcnn_encdata.hpp>
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 //#include <ppcnn_share/ppcnn_seal_utility.hpp>
-#include <ppcnn_share/ppcnn_server2userparam.hpp>
+#include <ppcnn_share/ppcnn_srv2cliparam.hpp>
 #include <ppcnn_server/ppcnn_server_callback_function.hpp>
 #include <ppcnn_server/ppcnn_server_callback_param.hpp>
 #include <ppcnn_server/ppcnn_server_query.hpp>
@@ -59,7 +59,8 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
 
     // load encryption parameters
     seal::EncryptionParameters params(seal::scheme_type::BFV);
-    params = seal::EncryptionParameters::Load(rstream);
+    //params = seal::EncryptionParameters::Load(rstream);
+    params.load(rstream);
 
     // load encryption inputs
     ppcnn_share::EncData enc_inputs(params);
@@ -68,7 +69,7 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     ppcnn_share::seal_utility::write_to_file("query.txt", enc_inputs.data());
 #endif
 
-    Query query(cli2srvparam.key_id, cli2srvparam.func_no, enc_inputs.vdata());
+    Query query(enc_inputs.vdata());
     int32_t query_id = calc_manager.push_query(query);
 
     ppcnn_share::PlainData<int32_t> splaindata;
@@ -106,15 +107,16 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
 
     // load encryption parameters
     seal::EncryptionParameters params(seal::scheme_type::BFV);
-    params = seal::EncryptionParameters::Load(rstream);
+    //params = seal::EncryptionParameters::Load(rstream);
+    params.load(rstream);
 
     Result result;
     calc_manager.pop_result(query_id, result);
 
-    ppcnn_share::PlainData<ppcnn_share::Cs2UserParam> splaindata;
-    ppcnn_share::Cs2UserParam cs2userparam;
-    cs2userparam.result = result.status_ ? ppcnn_share::kCsCalcResultSuccess : ppcnn_share::kCsCalcResultFailed;
-    splaindata.push(cs2userparam);
+    ppcnn_share::PlainData<ppcnn_share::Srv2CliParam> splaindata;
+    ppcnn_share::Srv2CliParam srv2cliparam;
+    srv2cliparam.result = result.status_ ? ppcnn_share::kServerCalcResultSuccess : ppcnn_share::kServerCalcResultFailed;
+    splaindata.push(srv2cliparam);
     
     ppcnn_share::EncData enc_outputs(params, result.ctxt_);
 #if defined ENABLE_LOCAL_DEBUG

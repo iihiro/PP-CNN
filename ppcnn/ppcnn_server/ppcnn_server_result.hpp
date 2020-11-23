@@ -53,9 +53,9 @@ struct Result
 /**
  * @brief This class is used to hold the queue of results.
  */
-struct ResultQueue : public fts_share::ConcurrentMapQueue<int32_t, Result>
+struct ResultQueue : public ppcnn_share::ConcurrentMapQueue<int32_t, Result>
 {
-    using super = fts_share::ConcurrentMapQueue<int32_t, Result>;
+    using super = ppcnn_share::ConcurrentMapQueue<int32_t, Result>;
     
     ResultQueue() = default;
     virtual ~ResultQueue() = default;

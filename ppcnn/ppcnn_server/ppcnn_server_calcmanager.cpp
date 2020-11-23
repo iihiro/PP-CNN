@@ -33,7 +33,7 @@ namespace ppcnn_server
     
     struct CalcManager::Impl
     {
-             const uint32_t max_concurrent_queries,
+        Impl(const uint32_t max_concurrent_queries,
              const uint32_t max_results,
              const uint32_t result_lifetime_sec)
             : max_concurrent_queries_(max_concurrent_queries),

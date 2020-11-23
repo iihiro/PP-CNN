@@ -211,6 +211,8 @@ void compute(const int32_t key_id,
                           begin_idx, end_idx, scale_param, *encryptor, *encoder);
             
             ppcnn_share::EncData enc_inputs(params, encrypted_packed_images.data(), rows*cols*channels);
+
+            ppcnn_client::Client client(host.c_str(), port.c_str(), params);
             
         }
 

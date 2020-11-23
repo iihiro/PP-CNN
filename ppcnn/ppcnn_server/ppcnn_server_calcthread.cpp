@@ -141,8 +141,8 @@ struct CalcThread::Impl
     {
     }
 
-//    void exec(CalcThreadParam& args, std::shared_ptr<stdsc::ThreadException> te)
-//    {
+    void exec(CalcThreadParam& args, std::shared_ptr<stdsc::ThreadException> te)
+    {
 //        auto th_id = syscall(SYS_gettid);
 //        STDSC_LOG_INFO("Launched calcuration thread. (thread ID: %d)", th_id);
 //        
@@ -220,7 +220,7 @@ struct CalcThread::Impl
 //
 //            STDSC_LOG_INFO("[th:%d] Set result of query #%d.", th_id, query_id);
 //        }
-//    }
+    }
 //
 //    void preprocess(const int32_t key_id,
 //                    seal::PublicKey& pubkey,
