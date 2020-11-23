@@ -15,23 +15,35 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_server/ppcnn_server_query.hpp>
-#include <seal/seal.h>
+#ifndef PPCNN_SRV2CLIPARAM_HPP
+#define PPCNN_SRV2CLIPARAM_HPP
 
-namespace ppcnn_server
-{
-Query::Query(const std::vector<seal::Ciphertext>& ctxts)
-{
-    ctxts_.resize(ctxts.size());
-    std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());
-}
+#include <iostream>
 
-int32_t QueryQueue::push(const Query& data)
+namespace ppcnn_share
 {
-    auto id = ppcnn_share::utility::gen_uuid();
-    super::push(id, data);
-    return id;
-}
 
-} /* namespace ppcnn_server */
+/**
+ * @brief Enumeration for results of computation on Cs.
+ */
+enum ServerCalcResult_t : int32_t
+{
+    kServerCalcResultNil     = -1,
+    kServerCalcResultSuccess = 0,
+    kServerCalcResultFailed  = 1,
+};
+
+/**
+ * @brief This class is used to hold the parameters to transfer from cs to user.
+ */
+struct Srv2CliParam
+{
+    ServerCalcResult_t result = kServerCalcResultNil;
+};
+
+std::ostream& operator<<(std::ostream& os, const Srv2CliParam& param);
+std::istream& operator>>(std::istream& is, Srv2CliParam& param);
+
+} /* namespace ppcnn_share */
+
+#endif /* PPCNN_SRV2CLIPARAM_HPP */

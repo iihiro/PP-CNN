@@ -33,13 +33,11 @@ class CalcManager
 public:
     /**
      * Constructor
-     * @param[in] LUT_dir                LUT directory
      * @param[in] max_concurrent_queries max number of concurrent queries
      * @param[in] max_results max        result number to hold
      * @param[in] result_lifetime_sec    lifetime to hold (sec)
      */
-    CalcManager(const std::string& LUT_dir,
-                const uint32_t max_concurrent_queries,
+    CalcManager(const uint32_t max_concurrent_queries,
                 const uint32_t max_results,
                 const uint32_t result_lifetime_sec);
     virtual ~CalcManager() = default;
@@ -47,12 +45,8 @@ public:
     /**
      * Start calculation threads
      * @param[in] thread_num number of threads
-     * @param[in] dec_host hostname of decryptor
-     * @param[in] dec_port port number of decryptor
      */
-    void start_threads(const uint32_t thread_num,
-                       const std::string& dec_host,
-                       const std::string& dec_port);
+    void start_threads(const uint32_t thread_num);
 
     /**
      * Stop calculation threads

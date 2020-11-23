@@ -4,9 +4,9 @@
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_callback_function_container.hpp>
 //#include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_cs/ppcnn_server_callback_param.hpp>
-#include <ppcnn_cs/ppcnn_server_calcmanager.hpp>
-#include <ppcnn_cs/ppcnn_server.hpp>
+#include <ppcnn_server/ppcnn_server_callback_param.hpp>
+#include <ppcnn_server/ppcnn_server_calcmanager.hpp>
+#include <ppcnn_server/ppcnn_server.hpp>
 
 namespace ppcnn_server
 {

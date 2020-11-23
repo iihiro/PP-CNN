@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_server/ppcnn_server_query.hpp>
-#include <seal/seal.h>
+#ifndef PPCNN_CLI2SRVPARAM_HPP
+#define PPCNN_CLI2SRVPARAM_HPP
 
-namespace ppcnn_server
-{
-Query::Query(const std::vector<seal::Ciphertext>& ctxts)
-{
-    ctxts_.resize(ctxts.size());
-    std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());
-}
+#include <iostream>
+#include <ppcnn_share/ppcnn_funcno.hpp>
 
-int32_t QueryQueue::push(const Query& data)
+namespace ppcnn_share
 {
-    auto id = ppcnn_share::utility::gen_uuid();
-    super::push(id, data);
-    return id;
-}
+    
+/**
+ * @brief This class is used to hold the parameters to compute on encryptor.
+ */
+struct Cli2SrvParam
+{
+    int32_t  hoge;
+};
 
-} /* namespace ppcnn_server */
+std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param);
+std::istream& operator>>(std::istream& is, Cli2SrvParam& param);
+
+} /* namespace ppcnn_share */
+
+#endif /* PPCNN_CLI2SRVPARAM_HPP */

@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_server/ppcnn_server_query.hpp>
-#include <seal/seal.h>
+#include <fts_share/fts_cs2userparam.hpp>
 
-namespace ppcnn_server
+namespace fts_share
 {
-Query::Query(const std::vector<seal::Ciphertext>& ctxts)
+
+std::ostream& operator<<(std::ostream& os, const Cs2UserParam& param)
 {
-    ctxts_.resize(ctxts.size());
-    std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());
+    auto i32_result = static_cast<int32_t>(param.result);
+    os << i32_result << std::endl;
+    return os;
 }
 
-int32_t QueryQueue::push(const Query& data)
+std::istream& operator>>(std::istream& is, Cs2UserParam& param)
 {
-    auto id = ppcnn_share::utility::gen_uuid();
-    super::push(id, data);
-    return id;
+    int32_t i32_result;
+    is >> i32_result;
+    param.result = static_cast<CsCalcResult_t>(i32_result);
+    return is;
 }
-
-} /* namespace ppcnn_server */
+    
+} /* namespace fts_share */

@@ -15,23 +15,33 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_server/ppcnn_server_query.hpp>
-#include <seal/seal.h>
+#ifndef PPCNN_PACKET_HPP
+#define PPCNN_PACKET_HPP
 
-namespace ppcnn_server
-{
-Query::Query(const std::vector<seal::Ciphertext>& ctxts)
-{
-    ctxts_.resize(ctxts.size());
-    std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());
-}
+#include <cstdint>
 
-int32_t QueryQueue::push(const Query& data)
+namespace ppcnn_share
 {
-    auto id = ppcnn_share::utility::gen_uuid();
-    super::push(id, data);
-    return id;
-}
 
-} /* namespace ppcnn_server */
+/**
+ * @brief Enumeration for control code of packet.
+ */
+enum ControlCode_t : uint64_t
+{
+    /* Code for Request packet: 0x201-0x2FF */
+
+    /* Code for Data packet: 0x401-0x4FF */
+    kControlCodeDataParam       = 0x401,
+    kControlCodeDataQueryID     = 0x402,
+    kControlCodeDataResult      = 0x403,
+
+    /* Code for Download packet: 0x801-0x8FF */
+
+    /* Code for UpDownload packet: 0x1000-0x10FF */
+    kControlCodeUpDownloadQuery       = 0x1001,
+    kControlCodeUpDownloadResult      = 0x1002,
+};
+
+} /* namespace ppcnn_share */
+
+#endif /* PPCNN_PACKET_HPP */

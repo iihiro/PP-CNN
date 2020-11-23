@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-#ifndef FTS_CS_QUERY_HPP
-#define FTS_CS_QUERY_HPP
+#ifndef PPCNN_SERVER_QUERY_HPP
+#define PPCNN_SERVER_QUERY_HPP
 
 #include <cstdint>
 #include <vector>
-#include <fts_share/fts_concurrent_mapqueue.hpp>
-#include <fts_share/fts_funcno.hpp>
+#include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
+//#include <ppcnn_share/ppcnn_funcno.hpp>
 
 #include <seal/seal.h>
 
-namespace fts_cs
+namespace ppcnn_server
 {
 
 /**
@@ -40,8 +40,7 @@ struct Query
      * @param[in] func_no function NO
      * @param[in] ctxts cipher texts
      */
-    Query(const int32_t key_id, const fts_share::FuncNo_t func_no,
-          const std::vector<seal::Ciphertext>& ctxts);
+    Query(const std::vector<seal::Ciphertext>& ctxts);
     virtual ~Query() = default;
 
     /**
@@ -50,23 +49,19 @@ struct Query
      */
     Query(const Query& q)
     {
-        key_id_ = q.key_id_;
-        func_no_ = q.func_no_;
         ctxts_.resize(q.ctxts_.size());
         std::copy(q.ctxts_.begin(), q.ctxts_.end(), ctxts_.begin());
     }
 
-    int32_t key_id_;
-    fts_share::FuncNo_t func_no_;
     std::vector<seal::Ciphertext> ctxts_;
 };
 
 /**
  * @brief This class is used to hold the queue of queries.
  */
-struct QueryQueue : public fts_share::ConcurrentMapQueue<int32_t, fts_cs::Query>
+struct QueryQueue : public ppcnn_share::ConcurrentMapQueue<int32_t, ppcnn_server::Query>
 {
-    using super = fts_share::ConcurrentMapQueue<int32_t, fts_cs::Query>;
+    using super = ppcnn_share::ConcurrentMapQueue<int32_t, ppcnn_server::Query>;
     
     QueryQueue() = default;
     virtual ~QueryQueue() = default;
@@ -78,6 +73,6 @@ struct QueryQueue : public fts_share::ConcurrentMapQueue<int32_t, fts_cs::Query>
     virtual int32_t push(const Query& data);
 };
 
-} /* namespace fts_cs */
+} /* namespace ppcnn_server */
 
-#endif /* FTS_CS_QUERY_HPP */
+#endif /* PPCNN_SERVER_QUERY_HPP */
