@@ -34,7 +34,7 @@
 
 struct Option
 {
-    std::string port     = PORT_SERVER;
+    std::string port     = PORT_SRV;
     uint32_t max_queries = PPCNN_DEFAULT_MAX_CONCURRENT_QUERIES;
     uint32_t max_results = PPCNN_DEFAULT_MAX_RESULTS;
     uint32_t max_result_lifetime_sec = PPCNN_DEFAULT_MAX_RESULT_LIFETIME_SEC;
@@ -85,13 +85,13 @@ void exec(Option& option)
 
     const char* host = "localhost";
 
-    std::shared_ptr<ppcnn_server::CSServer> cs_server
-        (new ppcnn_server::CSServer(option.port.c_str(), callback, state,
-                                    option.max_queries, option.max_results, 
-                                    option.max_result_lifetime_sec));
+    std::shared_ptr<ppcnn_server::Server> server
+        (new ppcnn_server::Server(option.port.c_str(), callback, state,
+                                  option.max_queries, option.max_results, 
+                                  option.max_result_lifetime_sec));
 
-    cs_server->start();
-    cs_server->wait();
+    server->start();
+    server->wait();
 }
 
 int main(int argc, char* argv[])

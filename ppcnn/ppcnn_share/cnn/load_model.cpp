@@ -54,7 +54,7 @@ size_t next_layer_in_units;
 /**
  * Round target encode value when smaller than threshold (EPSILON)
  */
-float roundValue(float& value) {
+void roundValue(float& value) {
   int sign = 1;
   if (value != 0.0) {
     sign = value / fabs(value);
