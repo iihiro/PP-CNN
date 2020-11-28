@@ -54,7 +54,16 @@ struct Client::Impl
         client_.close();
     }
 
-    int32_t send_query(const ppcnn_share::ImageInfo& img_info,
+    void regist_enckeys(const int32_t key_id,
+                    const seal::PublicKey& pubkey,
+                    const seal::RelinKeys& relinkey) const
+    {
+        // 次回, key_idと一緒にparamsとpubkeyとrelinkeyをサーバへ送って、
+        // サーバでcalcmanager::regist_enckeys()で登録するところから
+    }
+
+    int32_t send_query(const int32_t key_id,
+                       const ppcnn_share::ImageInfo& img_info,
                        const ppcnn_share::EncData& enc_inputs)
     {
         ppcnn_share::PlainData<ppcnn_share::Cli2SrvParam> splaindata;
@@ -107,7 +116,7 @@ struct Client::Impl
         return rplaindata.data();
     }
 
-    void recv_results(const int32_t query_id, bool& status, ppcnn_share::EncData& enc_result)
+    void recv_results(const int32_t query_id, bool& status, ppcnn_share::EncData& enc_results)
     {
         int32_t enc_params_stream_sz = ppcnn_share::seal_utility::stream_size(enc_params_);
 
@@ -146,12 +155,20 @@ struct Client::Impl
         status = s2c_param.result == ppcnn_share::kServerCalcResultSuccess;
         printf("C_4: %d\n", status);
 
-//        if (status) {
-//            enc_result.load_from_stream(rstream);
+        if (status) {
+//            auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+//            std::string s(p, p + s2c_param.enc_results_stream_sz);
+//            std::istringstream iss(s, std::istringstream::binary);
+//            enc_results.load_from_stream(iss);
+//
+//            // update stream position
+//            rstream.seekg(s2c_param.enc_results_stream_sz, std::ios_base::cur);
+//            
+//            //enc_result.load_from_stream(rstream);
 //#if defined ENABLE_LOCAL_DEBUG
-//            ppcnn_share::seal_utility::write_to_file("result.txt", enc_result.data());
+//            ppcnn_share::seal_utility::write_to_file("result.txt", enc_results.data());
 //#endif
-//        }
+        }
     }
 
     void wait(const int32_t query_id) const
@@ -188,30 +205,40 @@ void Client::disconnect(void)
     pimpl_->disconnect();
 }
 
-int32_t Client::send_query(const ppcnn_share::ImageInfo& img_info, 
+void Client::regist_enckeys(const int32_t key_id,
+                        const seal::PublicKey& pubkey,
+                        const seal::RelinKeys& relinkey) const
+{
+    STDSC_LOG_INFO("Regist_Enckeys.");
+    pimpl_->regist_enckeys(key_id, pubkey, relinkey);
+}
+
+int32_t Client::send_query(const int32_t key_id,
+                           const ppcnn_share::ImageInfo& img_info, 
                            const ppcnn_share::EncData& enc_inputs) const
 {
     STDSC_LOG_INFO("Send query: sending query to computation server.");
-    auto query_id = pimpl_->send_query(img_info, enc_inputs);
+    auto query_id = pimpl_->send_query(key_id, img_info, enc_inputs);
     STDSC_LOG_INFO("Send query: received query ID (#%d)", query_id);
     return query_id;
 }
 
-int32_t Client::send_query(const ppcnn_share::ImageInfo& img_info,
+int32_t Client::send_query(const int32_t key_id,
+                           const ppcnn_share::ImageInfo& img_info,
                            const ppcnn_share::EncData& enc_inputs,
                            cbfunc_t cbfunc,
                            void* cbfunc_args) const
 {
-    int32_t query_id = pimpl_->send_query(img_info, enc_inputs);
+    int32_t query_id = pimpl_->send_query(key_id, img_info, enc_inputs);
     STDSC_LOG_INFO("Set callback function for query #%d", query_id);
     set_callback(query_id, cbfunc, cbfunc_args);
     return query_id;
 }
 
-void Client::recv_results(const int32_t query_id, bool& status, ppcnn_share::EncData& enc_result) const
+void Client::recv_results(const int32_t query_id, bool& status, ppcnn_share::EncData& enc_results) const
 {
     STDSC_LOG_INFO("Waiting for query #%d results ...", query_id);
-    pimpl_->recv_results(query_id, status, enc_result);
+    pimpl_->recv_results(query_id, status, enc_results);
 }
 
 void Client::set_callback(const int32_t query_id, cbfunc_t func, void* args) const

@@ -39,6 +39,7 @@ enum ServerCalcResult_t : int32_t
 struct Srv2CliParam
 {
     ServerCalcResult_t result = kServerCalcResultNil;
+    size_t enc_results_stream_sz;
 };
 
 std::ostream& operator<<(std::ostream& os, const Srv2CliParam& param);

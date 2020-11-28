@@ -74,6 +74,10 @@ void exec(Option& option)
     
     stdsc::CallbackFunctionContainer callback;
     {
+        std::shared_ptr<stdsc::CallbackFunction> cb_enckeys(
+            new ppcnn_server::CallbackFunctionEncryptionKeys());
+        callback.set(ppcnn_share::kControlCodeDataEncKeys, cb_enckeys);
+        
         std::shared_ptr<stdsc::CallbackFunction> cb_query(
             new ppcnn_server::CallbackFunctionQuery());
         callback.set(ppcnn_share::kControlCodeUpDownloadQuery, cb_query);

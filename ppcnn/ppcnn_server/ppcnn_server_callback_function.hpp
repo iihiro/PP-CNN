@@ -24,6 +24,11 @@ namespace ppcnn_server
 {
 
 /**
+ * @brief Provides callback function in receiving encryption keys.
+ */
+DECLARE_DATA_CLASS(CallbackFunctionEncryptionKeys);
+    
+/**
  * @brief Provides callback function in receiving query.
  */
 DECLARE_UPDOWNLOAD_CLASS(CallbackFunctionQuery);

@@ -20,7 +20,6 @@
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
 #include <ppcnn_share/ppcnn_utility.hpp>
-//#include <ppcnn_share/ppcnn_commonparam.hpp>
 #include <ppcnn_share/ppcnn_encdata.hpp>
 
 namespace ppcnn_share
@@ -55,9 +54,11 @@ EncData::EncData(const seal::EncryptionParameters& params, const std::vector<sea
 EncData::EncData(const seal::EncryptionParameters& params, const seal::Ciphertext* ctxts, const size_t n)
     : pimpl_(new Impl(params))
 {
-    vec_.resize(n);
-    for (size_t i=0; i<n; ++i) {
-        vec_[i] = ctxts[i];
+    if (n > 0) {
+        vec_.resize(n);
+        for (size_t i=0; i<n; ++i) {
+            vec_[i] = ctxts[i];
+        }
     }
 }
 

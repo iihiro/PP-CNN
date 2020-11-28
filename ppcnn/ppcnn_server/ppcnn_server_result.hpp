@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <cstdbool>
 #include <chrono>
+#include <vector>
 #include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
 #include <seal/seal.h>
 
@@ -37,16 +38,17 @@ struct Result
      * Constructor
      * @param[in] query_id query ID
      * @param[in] status   calcuration status
-     * @param[in] ctxt     cipher text
+     * @param[in] ctxts     cipher texts
      */
-    Result(const int32_t query_id, const bool status, const seal::Ciphertext& ctxt);
+    Result(const int32_t query_id, const bool status, 
+           const std::vector<seal::Ciphertext>& ctxts);
     virtual ~Result() = default;
 
     double elapsed_time() const;
 
     int32_t query_id_;
     bool status_;
-    seal::Ciphertext ctxt_;
+    std::vector<seal::Ciphertext> ctxts_;
     std::chrono::system_clock::time_point created_time_;
 };
 

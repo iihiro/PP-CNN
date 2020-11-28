@@ -22,6 +22,13 @@
 #include <cstdbool>
 #include <string>
 
+namespace seal
+{
+    class EncryptionParameters;
+    class PublicKey;
+    class RelinKeys;
+}
+
 namespace ppcnn_server
 {
 
@@ -52,6 +59,17 @@ public:
      * Stop calculation threads
      */
     void stop_threads();
+
+    /**
+     * Regist encryption keys
+     * @param[in] key_id key ID
+     * @param[in] pubkey public key
+     * @param[in] relinkey relin key
+     */
+    void regist_enckeys(const int32_t key_id,
+                        const seal::EncryptionParameters& params,
+                        const seal::PublicKey& pubkey,
+                        const seal::RelinKeys& relinkey);
 
     /**
      * Set queries

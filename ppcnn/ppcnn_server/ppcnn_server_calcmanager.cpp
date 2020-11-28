@@ -30,6 +30,20 @@
 
 namespace ppcnn_server
 {
+    struct EncryptionKeys
+    {
+        EncryptionKeys(const seal::EncryptionParameters& params,
+                       const seal::PublicKey& pubkey,
+                       const seal::RelinKeys& relinkey)
+            : params_(new seal::EncryptionParameters(params)),
+              pubkey_(new seal::PublicKey(pubkey)),
+              relinkey_(new seal::RelinKeys(relinkey))
+        {}
+
+        std::shared_ptr<seal::EncryptionParameters> params_;
+        std::shared_ptr<seal::PublicKey> pubkey_;
+        std::shared_ptr<seal::RelinKeys> relinkey_;
+    };
     
     struct CalcManager::Impl
     {
@@ -48,6 +62,7 @@ namespace ppcnn_server
         QueryQueue qque_;
         ResultQueue rque_;
         std::vector<std::shared_ptr<CalcThread>> threads_;
+        std::unordered_map<int32_t, EncryptionKeys> keymap_;
     };
 
     CalcManager::CalcManager(const uint32_t max_concurrent_queries,
@@ -76,6 +91,15 @@ namespace ppcnn_server
     void CalcManager::stop_threads()
     {
         STDSC_LOG_INFO("Stop calculation threads.");
+    }
+
+    void CalcManager::regist_enckeys(const int32_t key_id,
+                                     const seal::EncryptionParameters& params,
+                                     const seal::PublicKey& pubkey,
+                                     const seal::RelinKeys& relinkey)
+    {
+        EncryptionKeys enckeys(params, pubkey, relinkey);
+        pimpl_->keymap_.emplace(key_id, enckeys);
     }
     
     int32_t CalcManager::push_query(const Query& query)

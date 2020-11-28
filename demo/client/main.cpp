@@ -136,7 +136,8 @@ int32_t init_keys(const std::string& config_filepath,
     return key_id;
 }
 
-void compute(const std::vector<std::vector<float>> test_imgs,
+void compute(const int32_t key_id,
+             const std::vector<std::vector<float>> test_imgs,
              const ppcnn_share::ImageInfo& img_info,
              const std::string& host,
              const std::string& port,
@@ -182,20 +183,20 @@ void compute(const std::vector<std::vector<float>> test_imgs,
         const size_t end_idx   = begin_idx + img_count_in_step;
 
         for (size_t n = 0; n < number_prediction_trials; ++n) {
-            Ciphertext3D encrypted_packed_imgs(boost::extents[rows][cols][channels]);
+            Ciphertext3D enc_packed_imgs(boost::extents[rows][cols][channels]);
 
             std::cout << "\t<Trial " << n + 1 << ">\n"
                       << "\tEncrypting " << img_count_in_step << " imgs..." << std::endl;
-            encryptImages(test_imgs, encrypted_packed_imgs, 
+            encryptImages(test_imgs, enc_packed_imgs, 
                           begin_idx, end_idx, scale_param, *encryptor, *encoder);
 
-            auto packed_img_sz = rows * cols * channels;
-            ppcnn_share::EncData enc_inputs(params, encrypted_packed_imgs.data(), packed_img_sz);
+            auto elem_num = rows * cols * channels;
+            ppcnn_share::EncData enc_inputs(params, enc_packed_imgs.data(), elem_num);
 
 #if defined ENABLE_LOCAL_DEBUG
             ppcnn_share::seal_utility::write_to_file("enc_inputs.txt", enc_inputs.data());
 #endif
-            client.send_query(img_info, enc_inputs, callback_func, &callback_param);
+            client.send_query(key_id, img_info, enc_inputs, callback_func, &callback_param);
         }
     }
 
@@ -232,7 +233,8 @@ void exec(Option& option)
                                        MNIST_LABELS};
     
     CallbackParam callback_param = {&seckey, &params};
-    compute(test_imgs,
+    compute(key_id,
+            test_imgs,
             img_info,
             host, PORT_SRV,
             test_img_limit, number_prediction_trials,

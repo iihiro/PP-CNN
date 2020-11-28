@@ -22,11 +22,12 @@ namespace ppcnn_server
 {
 
 // Result
-Result::Result(const int32_t query_id, const bool status, const seal::Ciphertext& ctxt)
+Result::Result(const int32_t query_id, const bool status, 
+               const std::vector<seal::Ciphertext>& ctxts)
     : query_id_(query_id),
-      status_(status),
-      ctxt_(ctxt)
+      status_(status)
 {
+    std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());
     created_time_ = std::chrono::system_clock::now();
 }
 

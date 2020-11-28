@@ -24,6 +24,7 @@ std::ostream& operator<<(std::ostream& os, const Srv2CliParam& param)
 {
     auto i32_result = static_cast<int32_t>(param.result);
     os << i32_result << std::endl;
+    os << param.enc_results_stream_sz;
     return os;
 }
 
@@ -31,6 +32,7 @@ std::istream& operator>>(std::istream& is, Srv2CliParam& param)
 {
     int32_t i32_result;
     is >> i32_result;
+    is >> param.enc_results_stream_sz;
     param.result = static_cast<ServerCalcResult_t>(i32_result);
     return is;
 }

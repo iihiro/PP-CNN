@@ -61,34 +61,48 @@ public:
     void disconnect();
     
     /**
+     * Regist encryption keys
+     * @param[in] key_id key ID
+     * @param[in] pubkey public key
+     * @param[in] relinkey relin key
+     */
+    void regist_enckeys(const int32_t key_id,
+                        const seal::PublicKey& pubkey,
+                        const seal::RelinKeys& relinkey) const;
+
+    /**
      * Send query
+     * @param[in] key_id key ID
      * @param[in] info image info
      * @param[in] enc_input encrypted input values
      * @return queryID
      */
-    int32_t send_query(const ppcnn_share::ImageInfo& img_info, 
+    int32_t send_query(const int32_t key_id,
+                       const ppcnn_share::ImageInfo& img_info, 
                        const ppcnn_share::EncData& enc_inputs) const;
 
     /**
      * Send query
+     * @param[in] key_id key ID
      * @param[in] info image info
      * @param[in] enc_input encrypted input values (1 or 2)
      * @param[in] cbfunc callback function
      * @param[in] cbfunc_args arguments for callback function
      * @return queryID
      */
-    int32_t send_query(const ppcnn_share::ImageInfo& img_info, 
+    int32_t send_query(const int32_t key_id,
+                       const ppcnn_share::ImageInfo& img_info, 
                        const ppcnn_share::EncData& enc_inputs,
                        cbfunc_t cbfunc,
                        void* cbfunc_args) const;
     
     /**
      * Receive results
-     * @param[in] query_id    query ID
-     * @param[out] status     calcuration status
-     * @param[out] enc_result encrypted result
+     * @param[in] query_id     query ID
+     * @param[out] status      calcuration status
+     * @param[out] enc_results encrypted results
      */
-    void recv_results(const int32_t query_id, bool& status, ppcnn_share::EncData& enc_result) const;
+    void recv_results(const int32_t query_id, bool& status, ppcnn_share::EncData& enc_results) const;
 
     /**
      * Set callback functions

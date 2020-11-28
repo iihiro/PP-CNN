@@ -31,9 +31,10 @@ enum ControlCode_t : uint64_t
     /* Code for Request packet: 0x201-0x2FF */
 
     /* Code for Data packet: 0x401-0x4FF */
-    kControlCodeDataParam       = 0x401,
-    kControlCodeDataQueryID     = 0x402,
-    kControlCodeDataResult      = 0x403,
+    kControlCodeDataEncKeys     = 0x401,
+    kControlCodeDataParam       = 0x402,
+    kControlCodeDataQueryID     = 0x403,
+    kControlCodeDataResult      = 0x404,
 
     /* Code for Download packet: 0x801-0x8FF */
 

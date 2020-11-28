@@ -46,11 +46,13 @@ namespace seal_utility
     template <class T>
     void write_to_file(const std::string& filepath, const std::vector<T>& vdata)
     {
-        std::ofstream ofs(filepath, std::ios::binary);
-        for (const auto& data : vdata) {
-            data.save(ofs);
+        if (vdata.size() > 0) {
+            std::ofstream ofs(filepath, std::ios::binary);
+            for (const auto& data : vdata) {
+                data.save(ofs);
+            }
+            ofs.close();
         }
-        ofs.close();
     }
 #define TEMPLATE_INSTANTIATE(type) \
     template void write_to_file(const std::string& filepath, const std::vector<type>& vdata)
@@ -68,7 +70,6 @@ namespace seal_utility
                                                    const seal::EncryptionParameters& params)
     {
         std::ofstream ofs(filepath, std::ios::binary);
-        //seal::EncryptionParameters::Save(params, ofs);
         params.save(ofs);
         ofs.close();
     }
@@ -85,7 +86,6 @@ namespace seal_utility
     size_t stream_size<seal::EncryptionParameters>(const seal::EncryptionParameters& params)
     {
         std::ostringstream oss;
-        //seal::EncryptionParameters::Save(params, oss);
         params.save(oss);
         return oss.str().size();
     }
