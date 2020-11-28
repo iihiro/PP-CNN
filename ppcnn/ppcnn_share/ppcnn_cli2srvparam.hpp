@@ -19,6 +19,7 @@
 #define PPCNN_CLI2SRVPARAM_HPP
 
 #include <iostream>
+#include <ppcnn_share/ppcnn_imageinfo.hpp>
 
 namespace ppcnn_share
 {
@@ -28,7 +29,7 @@ namespace ppcnn_share
  */
 struct Cli2SrvParam
 {
-    int32_t  key_id;
+    ImageInfo img_info;
 };
 
 std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param);

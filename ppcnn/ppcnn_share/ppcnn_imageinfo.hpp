@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_share/ppcnn_imageinfo.hpp>
-#include <ppcnn_server/ppcnn_server_query.hpp>
-#include <seal/seal.h>
+#ifndef PPCNN_IMAGEINFO_HPP
+#define PPCNN_IMAGEINFO_HPP
 
-namespace ppcnn_server
-{
-Query::Query(const ppcnn_share::ImageInfo& img_info,
-             const std::vector<seal::Ciphertext>& ctxts)
-    : img_info_(img_info)
-{
-    ctxts_.resize(ctxts.size());
-    std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());
-}
+#include <string>
+#include <memory>
 
-int32_t QueryQueue::push(const Query& data)
+namespace ppcnn_share
 {
-    auto id = ppcnn_share::utility::gen_uuid();
-    super::push(id, data);
-    return id;
-}
 
-} /* namespace ppcnn_server */
+/**
+ * @brief This class is used to hold the image info.
+ */
+struct ImageInfo
+{
+    size_t width;
+    size_t height;
+    size_t channels;
+    size_t labels;
+};
+
+} /* namespace ppcnn_share */
+
+#endif /* PPCNN_IMAGEINFO_HPP */

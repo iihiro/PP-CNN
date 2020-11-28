@@ -20,10 +20,12 @@
 
 #include <cstdint>
 #include <vector>
-#include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
-//#include <ppcnn_share/ppcnn_funcno.hpp>
 
 #include <seal/seal.h>
+
+#include <ppcnn_share/imageinfo.hpp>
+#include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
+
 
 namespace ppcnn_server
 {
@@ -36,11 +38,11 @@ struct Query
     Query() = default;
     /**
      * Constructor
-     * @param[in] key_id key ID
-     * @param[in] func_no function NO
+     * @param[in] img_info image info
      * @param[in] ctxts cipher texts
      */
-    Query(const std::vector<seal::Ciphertext>& ctxts);
+    Query(const ppcnn_share::ImageInfo& img_info,
+          const std::vector<seal::Ciphertext>& ctxts);
     virtual ~Query() = default;
 
     /**
@@ -53,6 +55,7 @@ struct Query
         std::copy(q.ctxts_.begin(), q.ctxts_.end(), ctxts_.begin());
     }
 
+    const ppcnn_share::ImageInfo img_info_;
     std::vector<seal::Ciphertext> ctxts_;
 };
 

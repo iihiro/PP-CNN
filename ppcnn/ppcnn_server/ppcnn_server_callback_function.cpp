@@ -26,7 +26,6 @@
 #include <ppcnn_share/ppcnn_plaindata.hpp>
 #include <ppcnn_share/ppcnn_encdata.hpp>
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
-//#include <ppcnn_share/ppcnn_seal_utility.hpp>
 #include <ppcnn_share/ppcnn_srv2cliparam.hpp>
 #include <ppcnn_server/ppcnn_server_callback_function.hpp>
 #include <ppcnn_server/ppcnn_server_callback_param.hpp>
@@ -36,6 +35,8 @@
 #include <ppcnn_server/ppcnn_server_state.hpp>
 
 #include <seal/seal.h>
+
+#define ENABLE_LOCAL_DEBUG
 
 namespace ppcnn_server
 {
@@ -56,10 +57,10 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     ppcnn_share::PlainData<ppcnn_share::Cli2SrvParam> rplaindata;
     rplaindata.load_from_stream(rstream);
     const auto& cli2srvparam = rplaindata.data();
+    STDSC_LOG_DBG("cli2srvparam: %d", cli2srvparam.dummy);
 
     // load encryption parameters
-    seal::EncryptionParameters params(seal::scheme_type::BFV);
-    //params = seal::EncryptionParameters::Load(rstream);
+    seal::EncryptionParameters params(seal::scheme_type::CKKS);
     params.load(rstream);
 
     // load encryption inputs
@@ -69,7 +70,7 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     ppcnn_share::seal_utility::write_to_file("query.txt", enc_inputs.data());
 #endif
 
-    Query query(enc_inputs.vdata());
+    Query query(cli2srvparam.img_info, enc_inputs.vdata());
     int32_t query_id = calc_manager.push_query(query);
 
     ppcnn_share::PlainData<int32_t> splaindata;
