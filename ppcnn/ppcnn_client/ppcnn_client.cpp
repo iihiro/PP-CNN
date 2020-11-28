@@ -109,17 +109,29 @@ struct Client::Impl
 
     void recv_results(const int32_t query_id, bool& status, ppcnn_share::EncData& enc_result)
     {
+        int32_t enc_params_stream_sz = ppcnn_share::seal_utility::stream_size(enc_params_);
+
         ppcnn_share::PlainData<int32_t> splaindata;
         splaindata.push(query_id);
+        splaindata.push(enc_params_stream_sz);
 
-        auto sz = (splaindata.stream_size()
-                   + ppcnn_share::seal_utility::stream_size(enc_params_));
+        auto sz = (splaindata.stream_size() + enc_params_stream_sz);
         stdsc::BufferStream sbuffstream(sz);
         std::iostream stream(&sbuffstream);
 
         splaindata.save_to_stream(stream);
-        //seal::EncryptionParameters::Save(enc_params_, stream);
-        enc_params_.save(stream);
+
+        // Save encryption parameter using dummy binary stream.
+        // ** seal::EncryptionParameters::save() requires a binary stream. **
+        {
+            std::ostringstream oss(std::istringstream::binary);
+            auto saved_sz = enc_params_.save(oss);
+            STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
+
+            auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
+            std::memcpy(p, oss.str().data(), enc_params_stream_sz);
+            stream.seekp(saved_sz, std::ios_base::cur);
+        }
 
         stdsc::Buffer* sbuffer = &sbuffstream;
         stdsc::Buffer rbuffer;
@@ -130,15 +142,16 @@ struct Client::Impl
 
         ppcnn_share::PlainData<ppcnn_share::Srv2CliParam> rplaindata;
         rplaindata.load_from_stream(rstream);
-        auto& srv2cliparam = rplaindata.data();
-        status = srv2cliparam.result == ppcnn_share::kServerCalcResultSuccess;
+        auto& s2c_param = rplaindata.data();
+        status = s2c_param.result == ppcnn_share::kServerCalcResultSuccess;
+        printf("C_4: %d\n", status);
 
-        if (status) {
-            enc_result.load_from_stream(rstream);
-#if defined ENABLE_LOCAL_DEBUG
-            ppcnn_share::seal_utility::write_to_file("result.txt", enc_result.data());
-#endif
-        }
+//        if (status) {
+//            enc_result.load_from_stream(rstream);
+//#if defined ENABLE_LOCAL_DEBUG
+//            ppcnn_share::seal_utility::write_to_file("result.txt", enc_result.data());
+//#endif
+//        }
     }
 
     void wait(const int32_t query_id) const

@@ -132,32 +132,44 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
     // load plaindata (param)
     ppcnn_share::PlainData<int32_t> rplaindata;
     rplaindata.load_from_stream(rstream);
-    const auto query_id = rplaindata.data();
+    const auto query_id = rplaindata.vdata()[0];
+    const auto enc_params_stream_sz = rplaindata.vdata()[1];
 
-    // load encryption parameters
-    seal::EncryptionParameters params(seal::scheme_type::BFV);
-    //params = seal::EncryptionParameters::Load(rstream);
-    params.load(rstream);
+    // Load encryption parameter using dummy binary stream.
+    // ** seal::EncryptionParameters::load() requires a binary stream. **
+    seal::EncryptionParameters params(seal::scheme_type::CKKS);
+    {
+        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+        std::string s(p, p + enc_params_stream_sz);
+
+        std::istringstream iss(s, std::istringstream::binary);
+        auto loaded_sz = params.load(iss);
+        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
+
+        // update stream position
+        rstream.seekg(loaded_sz, std::ios_base::cur);
+    }
 
     Result result;
     calc_manager.pop_result(query_id, result);
 
     ppcnn_share::PlainData<ppcnn_share::Srv2CliParam> splaindata;
-    ppcnn_share::Srv2CliParam srv2cliparam;
-    srv2cliparam.result = result.status_ ? ppcnn_share::kServerCalcResultSuccess : ppcnn_share::kServerCalcResultFailed;
-    splaindata.push(srv2cliparam);
+    ppcnn_share::Srv2CliParam s2c_param;
+    s2c_param.result = result.status_ ? ppcnn_share::kServerCalcResultSuccess : ppcnn_share::kServerCalcResultFailed;
+    splaindata.push(s2c_param);
     
-    ppcnn_share::EncData enc_outputs(params, result.ctxt_);
-#if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("result.txt", enc_outputs.data());
-#endif
+//    ppcnn_share::EncData enc_outputs(params, result.ctxt_);
+//#if defined ENABLE_LOCAL_DEBUG
+//    ppcnn_share::seal_utility::write_to_file("result.txt", enc_outputs.data());
+//#endif
     
-    auto sz = splaindata.stream_size() + enc_outputs.stream_size();
+    //auto sz = splaindata.stream_size() + enc_outputs.stream_size();
+    auto sz = splaindata.stream_size();
     stdsc::BufferStream sbuffstream(sz);
     std::iostream sstream(&sbuffstream);
 
     splaindata.save_to_stream(sstream);
-    enc_outputs.save_to_stream(sstream);
+    //enc_outputs.save_to_stream(sstream);
 
     STDSC_LOG_INFO("Sending result. (query ID: %d)", query_id);
     stdsc::Buffer* bsbuff = &sbuffstream;

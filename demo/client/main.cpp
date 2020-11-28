@@ -166,6 +166,9 @@ void compute(const std::vector<std::vector<float>> test_imgs,
     const double scale_param = std::pow(2.0, INTERMEDIATE_PRIMES_BIT_SIZE);
     std::shared_ptr<seal::Encryptor> encryptor(new seal::Encryptor(context, pubkey));
 
+    ppcnn_client::Client client(host.c_str(), port.c_str(), params);
+    client.connect();
+
     for (size_t step = 0, img_count_in_step; step < step_count; ++step) {
         std::cout << "Step " << step + 1 << ":\n"
                   << "\t--------------------------------------------------" << std::endl;
@@ -192,14 +195,12 @@ void compute(const std::vector<std::vector<float>> test_imgs,
 #if defined ENABLE_LOCAL_DEBUG
             ppcnn_share::seal_utility::write_to_file("enc_inputs.txt", enc_inputs.data());
 #endif
-            ppcnn_client::Client client(host.c_str(), port.c_str(), params);
-            client.connect();
             client.send_query(img_info, enc_inputs, callback_func, &callback_param);
         }
     }
 
     // wait for finish
-    usleep(5*1000*1000);
+    usleep(600*1000*1000);
 }
 
 
