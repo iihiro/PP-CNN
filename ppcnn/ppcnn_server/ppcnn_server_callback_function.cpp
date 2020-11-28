@@ -57,22 +57,48 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     // load plaindata (param)
     ppcnn_share::PlainData<ppcnn_share::Cli2SrvParam> rplaindata;
     rplaindata.load_from_stream(rstream);
-    const auto& cli2srvparam = rplaindata.data();
-    STDSC_LOG_DEBUG("cli2srvparam: img_info: {%s}", 
-                    cli2srvparam.img_info.to_string().c_str());
+    const auto& c2s_param = rplaindata.data();
+    STDSC_LOG_DEBUG("c2s_param: img_info: {%s}, "
+                    "enc_params_stream_sz: %lu, "
+                    "enc_inputs_stream_sz: %lu\n",
+                    c2s_param.img_info.to_string().c_str(),
+                    c2s_param.enc_params_stream_sz,
+                    c2s_param.enc_inputs_stream_sz);
 
-    // load encryption parameters
+
+    // Load encryption parameter using dummy binary stream.
+    // ** seal::EncryptionParameters::load() requires a binary stream. **
     seal::EncryptionParameters params(seal::scheme_type::CKKS);
-    params.load(rstream);
+    {
+        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+        std::string s(p, p + c2s_param.enc_params_stream_sz);
 
-    // load encryption inputs
+        std::istringstream iss(s, std::istringstream::binary);
+        auto loaded_sz = params.load(iss);
+        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
+
+        // update stream position
+        rstream.seekg(loaded_sz, std::ios_base::cur);
+    }
+
+    // Load encryption parameter using dummy binary stream.
+    // ** seal::Ciphertext::load() requires a binary stream. **
     ppcnn_share::EncData enc_inputs(params);
-    enc_inputs.load_from_stream(rstream);
+    {
+        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+        std::string s(p, p + c2s_param.enc_inputs_stream_sz);
+        std::istringstream iss(s, std::istringstream::binary);
+        enc_inputs.load_from_stream(iss);
+
+        // update stream position
+        rstream.seekg(c2s_param.enc_inputs_stream_sz, std::ios_base::cur);
+    }
+
 #if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("query.txt", enc_inputs.data());
+    ppcnn_share::seal_utility::write_to_file("enc_inputs.txt", enc_inputs.data());
 #endif
 
-    Query query(cli2srvparam.img_info, enc_inputs.vdata());
+    Query query(c2s_param.img_info, enc_inputs.vdata());
     int32_t query_id = calc_manager.push_query(query);
 
     ppcnn_share::PlainData<int32_t> splaindata;

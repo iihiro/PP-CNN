@@ -30,6 +30,8 @@ namespace ppcnn_share
 struct Cli2SrvParam
 {
     ImageInfo img_info;
+    size_t enc_params_stream_sz;
+    size_t enc_inputs_stream_sz;
 };
 
 std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param);

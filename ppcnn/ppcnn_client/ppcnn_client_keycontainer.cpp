@@ -140,7 +140,6 @@ struct KeyContainer::Impl
         }
         std::ifstream ifs(filename);
         param.load(ifs);
-        //param = seal::EncryptionParameters::Load(ifs);
         ifs.close();
     }
 
@@ -207,7 +206,6 @@ private:
         skFile.close();
 
         std::ofstream paramsFile(filenames.filename(KeyKind_t::kKindParam), std::ios::binary);
-        //seal::EncryptionParameters::Save(params, paramsFile);
         params.save(paramsFile);
         paramsFile.close();
 

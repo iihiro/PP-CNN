@@ -99,7 +99,7 @@ struct BasicData
     {
         STDSC_THROW_FAILURE_IF_CHECK(vec_.size() > 0, "Data is empty.");
         return vec_;
-    }        
+    }
 
     virtual size_t stream_size(void) const
     {

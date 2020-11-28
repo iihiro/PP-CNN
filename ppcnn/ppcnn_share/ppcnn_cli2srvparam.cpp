@@ -22,10 +22,12 @@ namespace ppcnn_share
 
 std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param)
 {
-    os << param.img_info.width    << std::endl;
-    os << param.img_info.height   << std::endl;
-    os << param.img_info.channels << std::endl;
-    os << param.img_info.labels   << std::endl;
+    os << param.img_info.width       << std::endl;
+    os << param.img_info.height      << std::endl;
+    os << param.img_info.channels    << std::endl;
+    os << param.img_info.labels      << std::endl;
+    os << param.enc_params_stream_sz << std::endl;
+    os << param.enc_inputs_stream_sz << std::endl;
     return os;
 }
 
@@ -35,6 +37,8 @@ std::istream& operator>>(std::istream& is, Cli2SrvParam& param)
     is >> param.img_info.height;
     is >> param.img_info.channels;
     is >> param.img_info.labels;
+    is >> param.enc_params_stream_sz;
+    is >> param.enc_inputs_stream_sz;
     return is;
 }
     

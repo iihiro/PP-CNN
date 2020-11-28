@@ -180,6 +180,7 @@ void compute(const std::vector<std::vector<float>> test_imgs,
 
         for (size_t n = 0; n < number_prediction_trials; ++n) {
             Ciphertext3D encrypted_packed_imgs(boost::extents[rows][cols][channels]);
+
             std::cout << "\t<Trial " << n + 1 << ">\n"
                       << "\tEncrypting " << img_count_in_step << " imgs..." << std::endl;
             encryptImages(test_imgs, encrypted_packed_imgs, 
@@ -189,10 +190,10 @@ void compute(const std::vector<std::vector<float>> test_imgs,
             ppcnn_share::EncData enc_inputs(params, encrypted_packed_imgs.data(), packed_img_sz);
 
 #if defined ENABLE_LOCAL_DEBUG
-            ppcnn_share::seal_utility::write_to_file("query.txt", enc_inputs.data());
+            ppcnn_share::seal_utility::write_to_file("enc_inputs.txt", enc_inputs.data());
 #endif
-
             ppcnn_client::Client client(host.c_str(), port.c_str(), params);
+            client.connect();
             client.send_query(img_info, enc_inputs, callback_func, &callback_param);
         }
     }
