@@ -54,20 +54,70 @@ struct Client::Impl
         client_.close();
     }
 
-    void regist_enckeys(const int32_t key_id,
-                    const seal::PublicKey& pubkey,
-                    const seal::RelinKeys& relinkey) const
+    void register_enckeys(const int32_t key_id,
+                          const seal::PublicKey& pubkey,
+                          const seal::RelinKeys& relinkey)
     {
-        // 次回, key_idと一緒にparamsとpubkeyとrelinkeyをサーバへ送って、
-        // サーバでcalcmanager::regist_enckeys()で登録するところから
+        ppcnn_share::PlainData<ppcnn_share::C2SEnckeyParam> splaindata;
+        ppcnn_share::C2SEnckeyParam c2s_param;
+        c2s_param.key_id               = key_id;
+        c2s_param.enc_params_stream_sz = ppcnn_share::seal_utility::stream_size(enc_params_);
+        c2s_param.pubkey_stream_sz     = ppcnn_share::seal_utility::stream_size(pubkey);
+        c2s_param.relinkey_stream_sz   = ppcnn_share::seal_utility::stream_size(relinkey);
+        splaindata.push(c2s_param);
+        
+        auto sz = (splaindata.stream_size() 
+                   + c2s_param.enc_params_stream_sz
+                   + c2s_param.pubkey_stream_sz
+                   + c2s_param.relinkey_stream_sz);
+        stdsc::BufferStream sbuffstream(sz);
+        std::iostream stream(&sbuffstream);
+
+        splaindata.save(stream);
+
+#if 1
+        ppcnn_share::seal_utility::write_to_binary_stream(stream, sbuffstream.data(), enc_params_);
+#else
+        // Save encryption parameter using dummy binary stream.
+        // ** seal::EncryptionParameters::save() requires a binary stream. **
+        {
+            std::ostringstream oss(std::istringstream::binary);
+            auto saved_sz = enc_params_.save(oss);
+            STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
+
+            auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
+            std::memcpy(p, oss.str().data(), c2s_param.enc_params_stream_sz);
+            stream.seekp(saved_sz, std::ios_base::cur);
+        }
+#endif
+
+#if 1
+        ppcnn_share::seal_utility::write_to_binary_stream(stream, sbuffstream.data(), pubkey);
+#else
+        {
+            std::ostringstream oss(std::istringstream::binary);
+            auto saved_sz = pubkey.save(oss);
+            STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
+
+            auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
+            //std::memcpy(p, oss.str().data(), c2s_param.pubkey_stream_sz);
+            std::memcpy(p, oss.str().data(), saved_sz);
+            stream.seekp(saved_sz, std::ios_base::cur);
+        }
+#endif
+
+        ppcnn_share::seal_utility::write_to_binary_stream(stream, sbuffstream.data(), relinkey);
+
+        stdsc::Buffer* sbuffer = &sbuffstream;
+        client_.send_data_blocking(ppcnn_share::kControlCodeDataEncKeys, *sbuffer);
     }
 
     int32_t send_query(const int32_t key_id,
                        const ppcnn_share::ImageInfo& img_info,
                        const ppcnn_share::EncData& enc_inputs)
     {
-        ppcnn_share::PlainData<ppcnn_share::Cli2SrvParam> splaindata;
-        ppcnn_share::Cli2SrvParam c2s_param;
+        ppcnn_share::PlainData<ppcnn_share::C2SQueryParam> splaindata;
+        ppcnn_share::C2SQueryParam c2s_param;
         c2s_param.img_info = img_info;
         c2s_param.enc_params_stream_sz = ppcnn_share::seal_utility::stream_size(enc_params_);
         c2s_param.enc_inputs_stream_sz = enc_inputs.stream_size();
@@ -79,7 +129,7 @@ struct Client::Impl
         stdsc::BufferStream sbuffstream(sz);
         std::iostream stream(&sbuffstream);
 
-        splaindata.save_to_stream(stream);
+        splaindata.save(stream);
 
         // Save encryption parameter using dummy binary stream.
         // ** seal::EncryptionParameters::save() requires a binary stream. **
@@ -97,7 +147,7 @@ struct Client::Impl
         // ** seal::Ciphertext::save() requires a binary stream. **
         {
             std::ostringstream oss(std::istringstream::binary);
-            enc_inputs.save_to_stream(oss);
+            enc_inputs.save(oss);
 
             auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
             std::memcpy(p, oss.str().data(), c2s_param.enc_inputs_stream_sz);
@@ -111,7 +161,7 @@ struct Client::Impl
         stdsc::BufferStream rbuffstream(rbuffer);
         std::iostream rstream(&rbuffstream);
         ppcnn_share::PlainData<int32_t> rplaindata;
-        rplaindata.load_from_stream(rstream);
+        rplaindata.load(rstream);
 
         return rplaindata.data();
     }
@@ -128,7 +178,7 @@ struct Client::Impl
         stdsc::BufferStream sbuffstream(sz);
         std::iostream stream(&sbuffstream);
 
-        splaindata.save_to_stream(stream);
+        splaindata.save(stream);
 
         // Save encryption parameter using dummy binary stream.
         // ** seal::EncryptionParameters::save() requires a binary stream. **
@@ -150,7 +200,7 @@ struct Client::Impl
         std::iostream rstream(&rbuffstream);
 
         ppcnn_share::PlainData<ppcnn_share::Srv2CliParam> rplaindata;
-        rplaindata.load_from_stream(rstream);
+        rplaindata.load(rstream);
         auto& s2c_param = rplaindata.data();
         status = s2c_param.result == ppcnn_share::kServerCalcResultSuccess;
         printf("C_4: %d\n", status);
@@ -159,12 +209,12 @@ struct Client::Impl
 //            auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
 //            std::string s(p, p + s2c_param.enc_results_stream_sz);
 //            std::istringstream iss(s, std::istringstream::binary);
-//            enc_results.load_from_stream(iss);
+//            enc_results.load(iss);
 //
 //            // update stream position
 //            rstream.seekg(s2c_param.enc_results_stream_sz, std::ios_base::cur);
 //            
-//            //enc_result.load_from_stream(rstream);
+//            //enc_result.load(rstream);
 //#if defined ENABLE_LOCAL_DEBUG
 //            ppcnn_share::seal_utility::write_to_file("result.txt", enc_results.data());
 //#endif
@@ -187,7 +237,7 @@ struct Client::Impl
 };
 
 Client::Client(const char* host, const char* port,
-                   const seal::EncryptionParameters& enc_params)
+               const seal::EncryptionParameters& enc_params)
     : pimpl_(new Impl(host, port, enc_params))
 {
 }
@@ -205,12 +255,12 @@ void Client::disconnect(void)
     pimpl_->disconnect();
 }
 
-void Client::regist_enckeys(const int32_t key_id,
-                        const seal::PublicKey& pubkey,
-                        const seal::RelinKeys& relinkey) const
+void Client::register_enckeys(const int32_t key_id,
+                              const seal::PublicKey& pubkey,
+                              const seal::RelinKeys& relinkey) const
 {
     STDSC_LOG_INFO("Regist_Enckeys.");
-    pimpl_->regist_enckeys(key_id, pubkey, relinkey);
+    pimpl_->register_enckeys(key_id, pubkey, relinkey);
 }
 
 int32_t Client::send_query(const int32_t key_id,

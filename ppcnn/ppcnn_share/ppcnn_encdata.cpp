@@ -226,7 +226,7 @@ void EncData::decrypt(const seal::SecretKey& secret_key,
     }
 }
 
-void EncData::save_to_stream(std::ostream& os) const
+void EncData::save(std::ostream& os) const
 {
     size_t sz = vec_.size();
     os.write(reinterpret_cast<char*>(&sz), sizeof(sz));
@@ -236,7 +236,7 @@ void EncData::save_to_stream(std::ostream& os) const
     }
 }
              
-void EncData::load_from_stream(std::istream& is)
+void EncData::load(std::istream& is)
 {
     size_t sz;
     is.read(reinterpret_cast<char*>(&sz), sizeof(sz));
@@ -255,7 +255,7 @@ void EncData::load_from_stream(std::istream& is)
 void EncData::save_to_file(const std::string& filepath) const
 {
     std::ofstream ofs(filepath);
-    save_to_stream(ofs);
+    save(ofs);
     ofs.close();
 }
 
@@ -267,7 +267,7 @@ void EncData::load_from_file(const std::string& filepath)
         STDSC_THROW_FILE(oss.str());
     }
     std::ifstream ifs(filepath, std::ios::binary);
-    load_from_stream(ifs);
+    load(ifs);
     ifs.close();
 }
 

@@ -24,6 +24,7 @@ namespace ppcnn_server
 {
 
 class CalcManager;
+class KeyContainer;
     
 /**
  * @brief This class is used to hold the callback parameters for Server.
@@ -40,11 +41,14 @@ struct CallbackParam
  */
 struct CommonCallbackParam
 {
-    CommonCallbackParam(CalcManager& calc_manager)
-        : calc_manager_(calc_manager)
+    CommonCallbackParam(CalcManager& calc_manager, 
+                        KeyContainer& key_container)
+        : calc_manager_(calc_manager),
+          key_container_(key_container)
     {}
     virtual ~CommonCallbackParam(void) = default;
     CalcManager& calc_manager_;
+    KeyContainer& key_container_;
 };
     
 } /* namespace ppcnn_server */

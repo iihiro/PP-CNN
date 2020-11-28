@@ -46,6 +46,21 @@ namespace seal_utility
 
     template <>
     size_t stream_size<seal::EncryptionParameters>(const seal::EncryptionParameters& params);
+    
+    template <class T>
+    void write_to_binary_stream(std::iostream& stream, void* base_ptr_in_stream, 
+                                const T& data, const bool shift_pos_in_stream = true);
+
+    template <class T>
+    void read_from_binary_stream(std::iostream& stream, void* base_ptr_in_stream, 
+                                 const size_t read_sz, 
+                                 T& data, const bool shift_pos_in_stream = true);
+
+    template <class T>
+    void read_from_binary_stream(std::iostream& stream, void* base_ptr_in_stream, 
+                                 const size_t read_sz, const seal::EncryptionParameters& enc_params,
+                                 T& data, const bool shift_pos_in_stream = true);
+
 
 } /* namespace seal_utility */
 

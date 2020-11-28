@@ -20,7 +20,25 @@
 namespace ppcnn_share
 {
 
-std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param)
+std::ostream& operator<<(std::ostream& os, const C2SEnckeyParam& param)
+{
+    os << param.key_id               << std::endl;
+    os << param.enc_params_stream_sz << std::endl;
+    os << param.pubkey_stream_sz     << std::endl;
+    os << param.relinkey_stream_sz   << std::endl;
+    return os;
+}
+
+std::istream& operator>>(std::istream& is, C2SEnckeyParam& param)
+{
+    is >> param.key_id;
+    is >> param.enc_params_stream_sz;
+    is >> param.pubkey_stream_sz;
+    is >> param.relinkey_stream_sz;
+    return is;
+}
+
+std::ostream& operator<<(std::ostream& os, const C2SQueryParam& param)
 {
     os << param.img_info.width       << std::endl;
     os << param.img_info.height      << std::endl;
@@ -31,7 +49,7 @@ std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param)
     return os;
 }
 
-std::istream& operator>>(std::istream& is, Cli2SrvParam& param)
+std::istream& operator>>(std::istream& is, C2SQueryParam& param)
 {
     is >> param.img_info.width;
     is >> param.img_info.height;

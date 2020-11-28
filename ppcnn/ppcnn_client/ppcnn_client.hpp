@@ -61,14 +61,14 @@ public:
     void disconnect();
     
     /**
-     * Regist encryption keys
+     * Register encryption keys
      * @param[in] key_id key ID
      * @param[in] pubkey public key
      * @param[in] relinkey relin key
      */
-    void regist_enckeys(const int32_t key_id,
-                        const seal::PublicKey& pubkey,
-                        const seal::RelinKeys& relinkey) const;
+    void register_enckeys(const int32_t key_id,
+                          const seal::PublicKey& pubkey,
+                          const seal::RelinKeys& relinkey) const;
 
     /**
      * Send query

@@ -17,6 +17,7 @@
 
 #include <unordered_map>
 #include <seal/seal.h>
+#include <stdsc/stdsc_exception.hpp>
 #include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 
 
@@ -46,6 +47,7 @@ namespace ppcnn_server
     };
 
     KeyContainer::KeyContainer()
+        : pimpl_(new Impl())
     {}
 
     void KeyContainer::register_keys(const int32_t key_id,
@@ -55,6 +57,17 @@ namespace ppcnn_server
     {
         EncryptionKeys enckeys(params, pubkey, relinkey);
         pimpl_->keymap_.emplace(key_id, enckeys);
+    }
+
+    const seal::EncryptionParameters& KeyContainer::get_params(const int32_t key_id) const
+    {
+        if (pimpl_->keymap_.count(key_id) == 0) {
+            std::ostringstream oss;
+            oss << "Value not found. (key_id: ";
+            oss << key_id << ")";
+            STDSC_THROW_INVPARAM(oss.str());
+        }
+        return *(pimpl_->keymap_.at(key_id).params_);
     }
     
 } /* namespace ppcnn_server */

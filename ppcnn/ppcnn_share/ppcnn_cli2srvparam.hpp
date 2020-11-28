@@ -25,17 +25,31 @@ namespace ppcnn_share
 {
     
 /**
- * @brief This class is used to hold the parameters to compute on encryptor.
+ * @brief This class is used to hold the parameters of encryption keys from client to server.
  */
-struct Cli2SrvParam
+struct C2SEnckeyParam
+{
+    int32_t key_id;
+    size_t enc_params_stream_sz;
+    size_t pubkey_stream_sz;
+    size_t relinkey_stream_sz;
+};
+
+std::ostream& operator<<(std::ostream& os, const C2SEnckeyParam& param);
+std::istream& operator>>(std::istream& is, C2SEnckeyParam& param);
+
+/**
+ * @brief This class is used to hold the parameters of query from client to server.
+ */
+struct C2SQueryParam
 {
     ImageInfo img_info;
     size_t enc_params_stream_sz;
     size_t enc_inputs_stream_sz;
 };
 
-std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param);
-std::istream& operator>>(std::istream& is, Cli2SrvParam& param);
+std::ostream& operator<<(std::ostream& os, const C2SQueryParam& param);
+std::istream& operator>>(std::istream& is, C2SQueryParam& param);
 
 } /* namespace ppcnn_share */
 

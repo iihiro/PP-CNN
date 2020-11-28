@@ -48,12 +48,12 @@ struct BasicData
         vec_.clear();
     }
 
-    virtual void save_to_stream(std::ostream& os) const
+    virtual void save(std::ostream& os) const
     {
         STDSC_LOG_WARN("%s is not implemented.", __FUNCTION__);
     }
     
-    virtual void load_from_stream(std::istream& is)
+    virtual void load(std::istream& is)
     {
         STDSC_LOG_WARN("%s is not implemented.", __FUNCTION__);
     }
@@ -61,7 +61,7 @@ struct BasicData
     virtual void save_to_file(const std::string& filepath) const
     {
         std::ofstream ofs(filepath, std::ios::binary);
-        save_to_stream(ofs);
+        save(ofs);
         ofs.close();
     }
     
@@ -73,7 +73,7 @@ struct BasicData
             STDSC_THROW_FILE(oss.str());
         }
         std::ifstream ifs(filepath, std::ios::binary);
-        load_from_stream(ifs);
+        load(ifs);
         ifs.close();
     }
     
@@ -104,7 +104,7 @@ struct BasicData
     virtual size_t stream_size(void) const
     {
         std::ostringstream oss;
-        save_to_stream(oss);
+        save(oss);
         return oss.str().size();
     }
 

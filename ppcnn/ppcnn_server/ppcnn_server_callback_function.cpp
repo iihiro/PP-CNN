@@ -33,6 +33,7 @@
 #include <ppcnn_server/ppcnn_server_query.hpp>
 #include <ppcnn_server/ppcnn_server_result.hpp>
 #include <ppcnn_server/ppcnn_server_calcmanager.hpp>
+#include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 #include <ppcnn_server/ppcnn_server_state.hpp>
 
 #include <seal/seal.h>
@@ -49,17 +50,93 @@ DEFUN_DATA(CallbackFunctionEncryptionKeys)
                    state.current_state_str().c_str());
     
     DEF_CDATA_ON_ALL(ppcnn_server::CommonCallbackParam);
-    auto& calc_manager = cdata_a->calc_manager_;
+    //auto& calc_manager = cdata_a->calc_manager_;
+    auto& key_container = cdata_a->key_container_;
 
     stdsc::BufferStream rbuffstream(buffer);
     std::iostream rstream(&rbuffstream);
 
-    ppcnn_share::PlainData<int32_t> rplaindata;
-    rplaindata.load_from_stream(rstream);
-    const int32_t key_id = rplaindata.data();
-    
-    //seal::PublicKey pubkey;
-    //pubkey.unsafe_load(stream);
+    ppcnn_share::PlainData<ppcnn_share::C2SEnckeyParam> rplaindata;
+    rplaindata.load(rstream);
+    const auto param = rplaindata.data();
+    STDSC_LOG_DEBUG("param: key_id: %d", param.key_id);
+
+    // Load encryption parameter using dummy binary stream.
+    // ** seal::EncryptionParameters::load() requires a binary stream. **
+#if 1
+    seal::EncryptionParameters enc_params(seal::scheme_type::CKKS);
+    ppcnn_share::seal_utility::read_from_binary_stream(
+        rstream, rbuffstream.data(), param.enc_params_stream_sz, enc_params);
+#else
+    seal::EncryptionParameters enc_params(seal::scheme_type::CKKS);
+    {
+        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+        std::string s(p, p + param.enc_params_stream_sz);
+
+        std::istringstream iss(s, std::istringstream::binary);
+        auto loaded_sz = enc_params.load(iss);
+        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
+
+        // update stream position
+        rstream.seekg(loaded_sz, std::ios_base::cur);
+    }
+#endif
+#if defined ENABLE_LOCAL_DEBUG
+    ppcnn_share::seal_utility::write_to_file("params.txt", enc_params);
+#endif
+
+    auto context = seal::SEALContext::Create(enc_params);
+
+#if 1
+    seal::PublicKey pubkey;
+    ppcnn_share::seal_utility::read_from_binary_stream(
+        rstream, rbuffstream.data(), param.pubkey_stream_sz, enc_params, pubkey);
+#else
+    seal::PublicKey pubkey;
+    {
+        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+        std::string s(p, p + param.pubkey_stream_sz);
+
+        std::istringstream iss(s, std::istringstream::binary);
+        auto loaded_sz = pubkey.load(context, iss);
+        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
+
+        // update stream position
+        rstream.seekg(loaded_sz, std::ios_base::cur);
+    }
+    //pubkey.load(context, rstream);
+#endif
+#if defined ENABLE_LOCAL_DEBUG
+    ppcnn_share::seal_utility::write_to_file("pubkey.txt", pubkey);
+#endif
+
+#if 1
+        seal::RelinKeys relinkey;
+    ppcnn_share::seal_utility::read_from_binary_stream(
+        rstream, rbuffstream.data(), param.relinkey_stream_sz, enc_params, relinkey);
+#else
+    seal::RelinKeys relinkey;
+    {
+        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+        std::string s(p, p + param.relinkey_stream_sz);
+
+        std::istringstream iss(s, std::istringstream::binary);
+        auto loaded_sz = relinkey.load(context, iss);
+        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
+
+        // update stream position
+        rstream.seekg(loaded_sz, std::ios_base::cur);
+    }
+#endif
+#if defined ENABLE_LOCAL_DEBUG
+    ppcnn_share::seal_utility::write_to_file("relinkey.txt", relinkey);
+#endif
+
+
+    key_container.register_keys(param.key_id,
+                                enc_params, pubkey, relinkey);
+
+    const auto& e = key_container.get_params(param.key_id);
 }
     
 // CallbackFunction for Query
@@ -75,8 +152,8 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     std::iostream rstream(&rbuffstream);
 
     // load plaindata (param)
-    ppcnn_share::PlainData<ppcnn_share::Cli2SrvParam> rplaindata;
-    rplaindata.load_from_stream(rstream);
+    ppcnn_share::PlainData<ppcnn_share::C2SQueryParam> rplaindata;
+    rplaindata.load(rstream);
     const auto& c2s_param = rplaindata.data();
     STDSC_LOG_DEBUG("c2s_param: img_info: {%s}, "
                     "enc_params_stream_sz: %lu, "
@@ -108,14 +185,20 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
         auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
         std::string s(p, p + c2s_param.enc_inputs_stream_sz);
         std::istringstream iss(s, std::istringstream::binary);
-        enc_inputs.load_from_stream(iss);
+        enc_inputs.load(iss);
 
         // update stream position
         rstream.seekg(c2s_param.enc_inputs_stream_sz, std::ios_base::cur);
     }
 
 #if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("enc_inputs.txt", enc_inputs.data());
+    //ppcnn_share::seal_utility::write_to_file("enc_inputs.txt", enc_inputs.data());
+    printf("enc_inputs.size(): %ld\n", enc_inputs.vdata().size());
+    for (size_t i=0; i<enc_inputs.vdata().size(); ++i) {
+        std::ostringstream oss;
+        oss << "enc_inputs-" << i;
+        ppcnn_share::seal_utility::write_to_file(oss.str(), enc_inputs.vdata()[i]);
+    }
 #endif
 
     Query query(c2s_param.img_info, enc_inputs.vdata());
@@ -128,7 +211,7 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     stdsc::BufferStream sbuffstream(sz);
     std::iostream sstream(&sbuffstream);
 
-    splaindata.save_to_stream(sstream);
+    splaindata.save(sstream);
 
     STDSC_LOG_INFO("Sending query ack. (query ID: %d)", query_id);
     stdsc::Buffer* bsbuff = &sbuffstream;
@@ -151,7 +234,7 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
 
     // load plaindata (param)
     ppcnn_share::PlainData<int32_t> rplaindata;
-    rplaindata.load_from_stream(rstream);
+    rplaindata.load(rstream);
     const auto query_id = rplaindata.vdata()[0];
     const auto enc_params_stream_sz = rplaindata.vdata()[1];
 
@@ -194,18 +277,18 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
     std::iostream sstream(&sbuffstream);
 
     printf("3\n");
-    splaindata.save_to_stream(sstream);
+    splaindata.save(sstream);
 
     printf("4\n");
     {
         std::ostringstream oss(std::istringstream::binary);
-        enc_outputs.save_to_stream(oss);
+        enc_outputs.save(oss);
     
         auto* p = static_cast<uint8_t*>(sbuffstream.data()) + sstream.tellp();
         std::memcpy(p, oss.str().data(), enc_outputs.stream_size());
         sstream.seekp(enc_outputs.stream_size(), std::ios_base::cur);
     }
-    //enc_outputs.save_to_stream(sstream);
+    //enc_outputs.save(sstream);
 
     printf("5\n");
     STDSC_LOG_INFO("Sending result. (query ID: %d)", query_id);

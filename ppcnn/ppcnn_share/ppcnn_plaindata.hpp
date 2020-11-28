@@ -35,7 +35,7 @@ struct PlainData : public ppcnn_share::BasicData<T>
     PlainData() = default;
     virtual ~PlainData(void) = default;
 
-    virtual void save_to_stream(std::ostream& os) const override
+    virtual void save(std::ostream& os) const override
     {
         if (super::vec_.size() == 0) {
             return;
@@ -48,7 +48,7 @@ struct PlainData : public ppcnn_share::BasicData<T>
             os.write((char*)(&v), sizeof(v));
         }
     }        
-    virtual void load_from_stream(std::istream& is) override
+    virtual void load(std::istream& is) override
     {
         size_t sz;
         is.read(reinterpret_cast<char*>(&sz), sizeof(sz));

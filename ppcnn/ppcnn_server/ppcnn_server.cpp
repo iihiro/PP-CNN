@@ -5,6 +5,7 @@
 #include <stdsc/stdsc_callback_function_container.hpp>
 #include <ppcnn_server/ppcnn_server_callback_param.hpp>
 #include <ppcnn_server/ppcnn_server_calcmanager.hpp>
+#include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 #include <ppcnn_server/ppcnn_server.hpp>
 
 namespace ppcnn_server
@@ -20,8 +21,9 @@ public:
          const uint32_t max_results,
          const uint32_t result_lifetime_sec)
         : calc_manager_(new CalcManager(max_concurrent_queries, max_results, result_lifetime_sec)),
+          key_container_(new KeyContainer()),
           param_(new CallbackParam()),
-          cparam_(new CommonCallbackParam(*calc_manager_))
+          cparam_(new CommonCallbackParam(*calc_manager_, *key_container_))
     {
         STDSC_LOG_INFO("Initialized computation server with port #%s", port);        
         callback.set_commondata(static_cast<void*>(param_.get()), sizeof(*param_));
@@ -57,6 +59,7 @@ private:
     std::string dec_host_;
     std::string dec_port_;
     std::shared_ptr<CalcManager> calc_manager_;
+    std::shared_ptr<KeyContainer> key_container_;
     std::shared_ptr<CallbackParam> param_;
     std::shared_ptr<CommonCallbackParam> cparam_;
     std::shared_ptr<stdsc::Server<>> server_;

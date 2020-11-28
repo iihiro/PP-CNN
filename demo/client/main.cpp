@@ -132,6 +132,13 @@ int32_t init_keys(const std::string& config_filepath,
     keycont.get(key_id, ppcnn_client::KeyKind_t::kKindSecKey, seckey);
     keycont.get(key_id, ppcnn_client::KeyKind_t::kKindRelinKey, relinkey);
     keycont.get_param(key_id, params);
+
+#if defined ENABLE_LOCAL_DEBUG
+    ppcnn_share::seal_utility::write_to_file("pubkey.txt", pubkey);
+    ppcnn_share::seal_utility::write_to_file("seckey.txt", seckey);
+    ppcnn_share::seal_utility::write_to_file("relinkey.txt", relinkey);
+    ppcnn_share::seal_utility::write_to_file("params.txt", params);
+#endif
     
     return key_id;
 }
@@ -169,6 +176,7 @@ void compute(const int32_t key_id,
 
     ppcnn_client::Client client(host.c_str(), port.c_str(), params);
     client.connect();
+    client.register_enckeys(key_id, pubkey, relinkey);
 
     for (size_t step = 0, img_count_in_step; step < step_count; ++step) {
         std::cout << "Step " << step + 1 << ":\n"
@@ -194,7 +202,13 @@ void compute(const int32_t key_id,
             ppcnn_share::EncData enc_inputs(params, enc_packed_imgs.data(), elem_num);
 
 #if defined ENABLE_LOCAL_DEBUG
-            ppcnn_share::seal_utility::write_to_file("enc_inputs.txt", enc_inputs.data());
+            //ppcnn_share::seal_utility::write_to_file("enc_inputs.txt", enc_inputs.vdata());
+            printf("enc_inputs.size(): %ld\n", enc_inputs.vdata().size());
+            for (size_t i=0; i<elem_num; ++i) {
+                std::ostringstream oss;
+                oss << "enc_inputs-" << i;
+                ppcnn_share::seal_utility::write_to_file(oss.str(), enc_inputs.vdata()[i]);
+            }
 #endif
             client.send_query(key_id, img_info, enc_inputs, callback_func, &callback_param);
         }
