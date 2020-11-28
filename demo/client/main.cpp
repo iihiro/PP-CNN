@@ -182,7 +182,7 @@ void compute(const std::vector<std::vector<float>> test_imgs,
             Ciphertext3D encrypted_packed_imgs(boost::extents[rows][cols][channels]);
             std::cout << "\t<Trial " << n + 1 << ">\n"
                       << "\tEncrypting " << img_count_in_step << " imgs..." << std::endl;
-            encryptImgs(test_imgs, encrypted_packed_imgs, 
+            encryptImages(test_imgs, encrypted_packed_imgs, 
                           begin_idx, end_idx, scale_param, *encryptor, *encoder);
 
             auto packed_img_sz = rows * cols * channels;
@@ -218,16 +218,16 @@ void exec(Option& option)
 
     std::cout << "Loading test imgs & labels..." << std::endl;
     std::vector<std::vector<float>> test_imgs;
-    test_imgs = loadMnistTestImgs(option.dataset_dir, test_img_limit);
+    test_imgs = loadMnistTestImages(option.dataset_dir, test_img_limit);
     std::cout << "Finish loading!" << std::endl;
 
     std::cout << "Number of imgs for test: " << test_imgs.size() << std::endl;
     std::cout << std::endl;
 
-    ppcnn_share::ImageInfo imginfo = {MNIST_WIDTH,
-                                      MNIST_HEIGHT,
-                                      MNIST_CHANNELS,
-                                      MNIST_LABELS};
+    ppcnn_share::ImageInfo img_info = {MNIST_WIDTH,
+                                       MNIST_HEIGHT,
+                                       MNIST_CHANNELS,
+                                       MNIST_LABELS};
     
     CallbackParam callback_param = {&seckey, &params};
     compute(test_imgs,

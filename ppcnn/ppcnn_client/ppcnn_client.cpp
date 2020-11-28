@@ -152,19 +152,21 @@ void Client::disconnect(void)
     pimpl_->disconnect();
 }
 
-int32_t Client::send_query(const ppcnn_share::EncData& enc_inputs) const
+int32_t Client::send_query(const ppcnn_share::ImageInfo& img_info, 
+                           const ppcnn_share::EncData& enc_inputs) const
 {
     STDSC_LOG_INFO("Send query: sending query to computation server.");
-    auto query_id = pimpl_->send_query(enc_inputs);
+    auto query_id = pimpl_->send_query(img_info, enc_inputs);
     STDSC_LOG_INFO("Send query: received query ID (#%d)", query_id);
     return query_id;
 }
 
-int32_t Client::send_query(const ppcnn_share::EncData& enc_inputs,
+int32_t Client::send_query(const ppcnn_share::ImageInfo& img_info,
+                           const ppcnn_share::EncData& enc_inputs,
                            cbfunc_t cbfunc,
                            void* cbfunc_args) const
 {
-    int32_t query_id = pimpl_->send_query(enc_inputs);
+    int32_t query_id = pimpl_->send_query(img_info, enc_inputs);
     STDSC_LOG_INFO("Set callback function for query #%d", query_id);
     set_callback(query_id, cbfunc, cbfunc_args);
     return query_id;

@@ -20,7 +20,7 @@
 
 #include <memory>
 #include <ppcnn_share/ppcnn_define.hpp>
-#include <ppcnn_share/ppcnn_image_info.hpp>
+#include <ppcnn_share/ppcnn_imageinfo.hpp>
 #include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
 
 namespace ppcnn_share

@@ -23,7 +23,7 @@
 
 #include <seal/seal.h>
 
-#include <ppcnn_share/imageinfo.hpp>
+#include <ppcnn_share/ppcnn_imageinfo.hpp>
 #include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
 
 
@@ -50,12 +50,13 @@ struct Query
      * @param[in] q query
      */
     Query(const Query& q)
+        : img_info_(q.img_info_)
     {
         ctxts_.resize(q.ctxts_.size());
         std::copy(q.ctxts_.begin(), q.ctxts_.end(), ctxts_.begin());
     }
 
-    const ppcnn_share::ImageInfo img_info_;
+    ppcnn_share::ImageInfo img_info_;
     std::vector<seal::Ciphertext> ctxts_;
 };
 

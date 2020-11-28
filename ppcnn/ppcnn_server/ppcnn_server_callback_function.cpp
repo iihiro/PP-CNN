@@ -27,6 +27,7 @@
 #include <ppcnn_share/ppcnn_encdata.hpp>
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 #include <ppcnn_share/ppcnn_srv2cliparam.hpp>
+#include <ppcnn_share/ppcnn_seal_utility.hpp>
 #include <ppcnn_server/ppcnn_server_callback_function.hpp>
 #include <ppcnn_server/ppcnn_server_callback_param.hpp>
 #include <ppcnn_server/ppcnn_server_query.hpp>
@@ -57,7 +58,8 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     ppcnn_share::PlainData<ppcnn_share::Cli2SrvParam> rplaindata;
     rplaindata.load_from_stream(rstream);
     const auto& cli2srvparam = rplaindata.data();
-    STDSC_LOG_DBG("cli2srvparam: %d", cli2srvparam.dummy);
+    STDSC_LOG_DEBUG("cli2srvparam: img_info: {%s}", 
+                    cli2srvparam.img_info.to_string().c_str());
 
     // load encryption parameters
     seal::EncryptionParameters params(seal::scheme_type::CKKS);

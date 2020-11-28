@@ -19,7 +19,7 @@
 #define PPCNN_IMAGEINFO_HPP
 
 #include <string>
-#include <memory>
+#include <sstream>
 
 namespace ppcnn_share
 {
@@ -33,6 +33,15 @@ struct ImageInfo
     size_t height;
     size_t channels;
     size_t labels;
+
+    std::string to_string() const {
+        std::ostringstream oss;
+        oss << width    << ", "
+            << height   << ", "
+            << channels << ", "
+            << labels;
+        return oss.str();
+    }
 };
 
 } /* namespace ppcnn_share */

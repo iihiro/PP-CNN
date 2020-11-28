@@ -24,7 +24,7 @@ std::ostream& operator<<(std::ostream& os, const Cli2SrvParam& param)
 {
     os << param.img_info.width    << std::endl;
     os << param.img_info.height   << std::endl;
-    os << param.img_info.chennels << std::endl;
+    os << param.img_info.channels << std::endl;
     os << param.img_info.labels   << std::endl;
     return os;
 }
