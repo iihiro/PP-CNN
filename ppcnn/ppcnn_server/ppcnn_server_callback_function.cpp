@@ -132,11 +132,8 @@ DEFUN_DATA(CallbackFunctionEncryptionKeys)
     ppcnn_share::seal_utility::write_to_file("relinkey.txt", relinkey);
 #endif
 
-
     key_container.register_keys(param.key_id,
                                 enc_params, pubkey, relinkey);
-
-    const auto& e = key_container.get_params(param.key_id);
 }
     
 // CallbackFunction for Query
@@ -177,6 +174,10 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
         // update stream position
         rstream.seekg(loaded_sz, std::ios_base::cur);
     }
+
+    // 次回, このコールバックでkey_idを受け取れるようにして,
+    // ↓のやつでparamsをとって↑のparamsの転送をやめるところから
+    //const auto& params = key_container.get_params();
 
     // Load encryption parameter using dummy binary stream.
     // ** seal::Ciphertext::load() requires a binary stream. **
