@@ -106,7 +106,7 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     const auto& param = rplaindata.data();
     STDSC_LOG_INFO("Query params: comp_params: {%s}, "
                    "enc_inputs_stream_sz: %lu, "
-                   "key_id: %d\n",
+                   "key_id: %d",
                    param.comp_params.to_string().c_str(),
                    param.enc_inputs_stream_sz,
                    param.key_id);
@@ -175,16 +175,12 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
                    result.query_id_,
                    result.status_);
 
-    //const auto& enc_params = key_container.get_params(result.key_id_);
     const auto& enc_params = *(key_container.get_keys(result.key_id_).params);
 #if defined ENABLE_LOCAL_DEBUG
     ppcnn_share::seal_utility::write_to_file("params_on_resreq.dat", enc_params);
 #endif
 
     ppcnn_share::EncData enc_results(enc_params, result.ctxts_.data(), result.ctxts_.size());
-#if defined ENABLE_LOCAL_DEBUG
-    //ppcnn_share::seal_utility::write_to_file("result.txt", enc_results.vdata());
-#endif
 
     ppcnn_share::PlainData<ppcnn_share::Srv2CliParam> splaindata;
     ppcnn_share::Srv2CliParam s2c_param;
@@ -202,10 +198,11 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
     splaindata.save(sstream);
     ppcnn_share::seal_utility::write_to_binary_stream(sstream, sbuffstream.data(), enc_results);
 
-    STDSC_LOG_INFO("Sending results. (query ID: %d)", param.query_id);
+    STDSC_LOG_INFO("Sending results... (query ID: %d)", param.query_id);
     stdsc::Buffer* bsbuff = &sbuffstream;
     sock.send_packet(stdsc::make_data_packet(ppcnn_share::kControlCodeDataResult, sz));
     sock.send_buffer(*bsbuff);
+    STDSC_LOG_INFO("Finish sending results! (query ID: %d)", param.query_id);
     state.set(kEventResultRequest);
 }
 

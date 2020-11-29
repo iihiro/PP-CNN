@@ -58,7 +58,7 @@ constexpr const char* DEFAULT_MODEL   = "HCNN-DA";
 constexpr int32_t DEFAULT_OPTIMIZATION_LEVEL = 0;
 constexpr int32_t DEFAULT_ACTIVATION = 0;
 
-#define ENABLE_LOCAL_DEBUG
+//#define ENABLE_LOCAL_DEBUG
 
 struct Option
 {
@@ -127,7 +127,7 @@ void callback_func(const int32_t query_id,
             correct_prediction_count++;
         }
 
-        // debug by iiz
+#if defined ENABLE_LOCAL_DEBUG
         if (i % 1000 == 0) {
             double max_res = -99999.0;
             size_t max_lbl = 0;
@@ -143,6 +143,7 @@ void callback_func(const int32_t query_id,
             }
             std::cout << " : Max = " << max_lbl << std::endl;
         }
+#endif
     }
     const double accuracy = static_cast<double>(correct_prediction_count) / param->img_count;
     std::cout << "Finish calculating!\n"

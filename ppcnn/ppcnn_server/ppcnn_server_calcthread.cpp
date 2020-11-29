@@ -21,7 +21,7 @@
 #include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 #include <seal/seal.h>
 
-#define ENABLE_LOCAL_DEBUG
+//#define ENABLE_LOCAL_DEBUG
 
 namespace ppcnn_server
 {
@@ -31,13 +31,9 @@ BuildNetwork(const std::string& model_structure_path,
              const std::string& model_weights_path,
              OptOption& option)
 {
-    printf("1\n");
     Network network;
-    //picojson::array layers = loadLayers(model_structure_path_);
     picojson::array layers = loadLayers(model_structure_path);
 
-    printf("2\n");
-    //if (gOption.enable_fuse_layers()) {
     if (option.enable_fuse_layers) {
         for (picojson::array::const_iterator it = layers.cbegin(), layers_end = layers.cend(); it != layers_end; ++it) {
             picojson::object layer        = (*it).get<picojson::object>();
@@ -45,7 +41,6 @@ BuildNetwork(const std::string& model_structure_path,
 
             if (it + 1 != layers_end) {
                 picojson::object next_layer = (*(it + 1)).get<picojson::object>();
-                //network.addLayer(buildLayer(layer, next_layer, layer_class_name, model_weights_path_, it));
                 network.addLayer(buildLayer(layer, next_layer, layer_class_name, model_weights_path, it, option));
             } else {
                 network.addLayer(buildLayer(layer, layer_class_name, model_weights_path, option));
@@ -54,19 +49,12 @@ BuildNetwork(const std::string& model_structure_path,
         return network;
     }
 
-    printf("3\n");
-    size_t dbg_cnt=0;
     for (picojson::array::const_iterator it = layers.cbegin(), layers_end = layers.cend(); it != layers_end; ++it) {
-        printf("4:%lu\n", dbg_cnt);
         picojson::object layer        = (*it).get<picojson::object>();
-        printf("5:%lu\n", dbg_cnt);
         const string layer_class_name = layer["class_name"].get<string>();
-        printf("6t:%lu\n", dbg_cnt);
         network.addLayer(buildLayer(layer, layer_class_name, model_weights_path, option));
-        printf("7:%lu\n", dbg_cnt);
-        dbg_cnt++;
     }
-    printf("4\n");
+
     return network;
 }
 

@@ -196,20 +196,15 @@ Layer* buildConv2D(picojson::object& layer_info,
     DataSet kernel_ds = group.openDataSet(KERNEL_KEY);
     DataSet bias_ds   = group.openDataSet(BIAS_KEY);
 
-    printf("_1\n");
-    
     float4D filters(boost::extents[filter_height][filter_width][in_channels][filter_size]);
     Plaintext4D plain_filters(boost::extents[filter_height][filter_width][in_channels][filter_size]);
     vector<float> biases(filter_size);
     vector<Plaintext> plain_biases(filter_size);
 
-    printf("_2\n");
     kernel_ds.read(filters.data(), PredType::NATIVE_FLOAT);
     bias_ds.read(biases.data(), PredType::NATIVE_FLOAT);
     
-    printf("_3\n");
     float folding_value = 1, weight;
-#if 1
     if (option.enable_optimize_activation && option.should_multiply_coeff && option.enable_optimize_pooling && option.should_multiply_pool) {
         folding_value        = option.highest_deg_coeff * option.current_pooling_mul_factor;
         option.should_multiply_coeff = false;
@@ -221,20 +216,7 @@ Layer* buildConv2D(picojson::object& layer_info,
         folding_value       = option.current_pooling_mul_factor;
         option.should_multiply_pool = false;
     }
-#else
-    if (option.enable_optimize_activation && option.should_multiply_coeff && option.enable_optimize_pooling && option.should_multiply_pool) {
-        folding_value        = option.highest_deg_coeff * option.current_pooling_mul_factor
-        option.should_multiply_coeff = false;
-        option.should_multiply_pool  = false;
-    } else if (option.enable_optimize_activation && option.should_multiply_coeff) {
-        folding_value        = option.highest_deg_coeff;
-        option.should_multiply_coeff = false;
-    } else if (option.enable_optimize_pooling && option.should_multiply_pool) {
-        folding_value       = option.current_pooling_mul_factor
-        option.should_multiply_pool = false;
-    }
-#endif
-    printf("_4\n");
+
 #ifdef _OPENMP
 #pragma omp parallel for collapse(4) private(weight)
 #endif
@@ -255,7 +237,6 @@ Layer* buildConv2D(picojson::object& layer_info,
         }
     }
 
-    printf("_5\n");
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
@@ -277,7 +258,6 @@ Layer* buildConv2D(picojson::object& layer_info,
     next_layer_in_width    = conv2d->out_width();
     next_layer_in_channels = conv2d->out_channels();
     
-    printf("_6\n");
     return move((Layer*)conv2d);
 }
 
