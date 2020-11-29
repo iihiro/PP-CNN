@@ -22,6 +22,7 @@
 #include <cstdbool>
 #include <vector>
 #include <stdsc/stdsc_thread.hpp>
+#include <ppcnn_share/ppcnn_define.hpp>
 
 namespace ppcnn_server
 {
@@ -69,10 +70,11 @@ private:
  */
 struct CalcThreadParam
 {
+    static constexpr uint32_t DefaultRetryIntervalMsec = 100;
+
     uint32_t retry_interval_msec = DefaultRetryIntervalMsec;
     bool force_finish = false;
-
-    static constexpr uint32_t DefaultRetryIntervalMsec = 100;
+    std::string plaintext_experiment_path = PPCNN_DEFAULT_PLAINTEXT_EXPERIMENT_PATH;
 };
 
 } /* namespace ppcnn_server */

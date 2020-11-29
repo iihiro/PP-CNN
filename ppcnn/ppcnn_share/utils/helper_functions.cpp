@@ -1,8 +1,9 @@
-#include "helper_functions.hpp"
-
 #include <cmath>
 #include <fstream>
 #include <memory>
+
+#include <ppcnn_share/utils/define.h>
+#include <ppcnn_share/utils/helper_functions.hpp>
 
 using namespace seal;
 using std::cout;
@@ -41,6 +42,7 @@ inline void loadRelinKeys(RelinKeys& relin_keys, shared_ptr<SEALContext>& contex
   rk_ifs.close();
 }
 
+#if 0
 /* Setup Homomorphic Encryption tool using SEAL */
 void setupSealTool() {
   EncryptionParameters params(scheme_type::CKKS);
@@ -75,7 +77,9 @@ void setupSealTool() {
   gTool.setSlotCount(slot_count);
   gTool.setScaleParam(scale_param);
 }
+#endif
 
+#if 0
 /* Setup optimization settings */
 void setupOptimizationOption(const EOptLevel& optimization_level) {
   switch (optimization_level) {
@@ -97,23 +101,29 @@ void setupOptimizationOption(const EOptLevel& optimization_level) {
       break;
   }
 }
+#endif
 
 /* Encrypt single image using SEAL encryptor */
-void encryptImage(const vector<float>& origin_image, Ciphertext3D& target_image) {
-  const size_t rows               = target_image.shape()[0];
-  const size_t cols               = target_image.shape()[1];
-  const size_t channels           = target_image.shape()[2];
-  const size_t pixels_per_channel = rows * cols;
-
-  for (size_t ch = 0; ch < channels; ++ch) {
-    for (size_t row = 0; row < rows; ++row) {
-      for (size_t col = 0; col < cols; ++col) {
-        Plaintext plaintext_pixel;
-        gTool.encoder()->encode(origin_image[ch * pixels_per_channel + row * cols + col], gTool.scale_param(), plaintext_pixel);
-        gTool.encryptor()->encrypt(plaintext_pixel, target_image[row][col][ch]);
-      }
+void encryptImage(const vector<float>& origin_image, 
+                  Ciphertext3D& target_image,
+                  const double scale_param,
+                  seal::Encryptor& encryptor,
+                  seal::CKKSEncoder& encoder)
+{
+    const size_t rows               = target_image.shape()[0];
+    const size_t cols               = target_image.shape()[1];
+    const size_t channels           = target_image.shape()[2];
+    const size_t pixels_per_channel = rows * cols;
+    
+    for (size_t ch = 0; ch < channels; ++ch) {
+        for (size_t row = 0; row < rows; ++row) {
+            for (size_t col = 0; col < cols; ++col) {
+                Plaintext plaintext_pixel;
+                encoder.encode(origin_image[ch * pixels_per_channel + row * cols + col], scale_param, plaintext_pixel);
+                encryptor.encrypt(plaintext_pixel, target_image[row][col][ch]);
+            }
+        }
     }
-  }
 }
 
 /* Encrypt images packed by slots using SEAL encryptor */

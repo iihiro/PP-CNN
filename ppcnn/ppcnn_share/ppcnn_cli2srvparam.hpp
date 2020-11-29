@@ -19,7 +19,7 @@
 #define PPCNN_CLI2SRVPARAM_HPP
 
 #include <iostream>
-#include <ppcnn_share/ppcnn_imageinfo.hpp>
+#include <ppcnn_share/ppcnn_computation_params.hpp>
 
 namespace ppcnn_share
 {
@@ -43,7 +43,7 @@ std::istream& operator>>(std::istream& is, C2SEnckeyParam& param);
  */
 struct C2SQueryParam
 {
-    ImageInfo img_info;
+    ComputationParams comp_params;
     size_t    enc_inputs_stream_sz;
     int32_t   key_id;
 };

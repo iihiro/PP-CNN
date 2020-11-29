@@ -16,7 +16,8 @@ Conv2D::Conv2D(const string& name,
                const size_t& filter_size, const size_t& filter_height, const size_t& filter_width,
                const size_t& stride_height, const size_t& stride_width,
                const string& padding, const string& activation,
-               const Plaintext4D& plain_filters, const vector<Plaintext>& plain_biases)
+               const Plaintext4D& plain_filters, const vector<Plaintext>& plain_biases,
+               OptOption& option)
     : Layer(name, CONV2D),
       in_height_(in_height),
       in_width_(in_width),
@@ -29,36 +30,38 @@ Conv2D::Conv2D(const string& name,
       padding_(padding),
       activation_(activation),
       plain_filters_(plain_filters),
-      plain_biases_(plain_biases) {
-  if (padding == "valid") {
-    out_height_ = ceil(static_cast<float>(in_height_ - filter_height_ + 1) / static_cast<float>(stride_height_));
-    out_width_  = ceil(static_cast<float>(in_width_ - filter_width_ + 1) / static_cast<float>(stride_width_));
-    pad_top_    = 0;
-    pad_bottom_ = 0;
-    pad_left_   = 0;
-    pad_right_  = 0;
-  } else if (padding == "same") {
-    out_height_ = ceil(static_cast<float>(in_height_) / static_cast<float>(stride_height_));
-    out_width_  = ceil(static_cast<float>(in_width_) / static_cast<float>(stride_width_));
+      plain_biases_(plain_biases),
+      option_(option)
+{
+    if (padding == "valid") {
+        out_height_ = ceil(static_cast<float>(in_height_ - filter_height_ + 1) / static_cast<float>(stride_height_));
+        out_width_  = ceil(static_cast<float>(in_width_ - filter_width_ + 1) / static_cast<float>(stride_width_));
+        pad_top_    = 0;
+        pad_bottom_ = 0;
+        pad_left_   = 0;
+        pad_right_  = 0;
+    } else if (padding == "same") {
+        out_height_ = ceil(static_cast<float>(in_height_) / static_cast<float>(stride_height_));
+        out_width_  = ceil(static_cast<float>(in_width_) / static_cast<float>(stride_width_));
 
-    size_t pad_along_height, pad_along_width;
-    if (size_t rem = in_height_ % stride_height_; rem == 0)
-      pad_along_height = max(filter_height_ - stride_height_, static_cast<size_t>(0));
-    else
-      pad_along_height = max(filter_height_ - rem, static_cast<size_t>(0));
-    if (size_t rem = in_width_ % stride_width_; rem == 0)
-      pad_along_width = max(filter_width_ - stride_width_, static_cast<size_t>(0));
-    else
-      pad_along_width = max(filter_width_ - rem, static_cast<size_t>(0));
-
-    pad_top_    = pad_along_height / 2;
-    pad_bottom_ = pad_along_height - pad_top_;
-    pad_left_   = pad_along_width / 2;
-    pad_right_  = pad_along_width - pad_left_;
-  }
-  out_channels_ = filter_size_;
-
-  gConsumedLevel++;
+        size_t pad_along_height, pad_along_width;
+        if (size_t rem = in_height_ % stride_height_; rem == 0)
+            pad_along_height = max(filter_height_ - stride_height_, static_cast<size_t>(0));
+        else
+            pad_along_height = max(filter_height_ - rem, static_cast<size_t>(0));
+        if (size_t rem = in_width_ % stride_width_; rem == 0)
+            pad_along_width = max(filter_width_ - stride_width_, static_cast<size_t>(0));
+        else
+            pad_along_width = max(filter_width_ - rem, static_cast<size_t>(0));
+        
+        pad_top_    = pad_along_height / 2;
+        pad_bottom_ = pad_along_height - pad_top_;
+        pad_left_   = pad_along_width / 2;
+        pad_right_  = pad_along_width - pad_left_;
+    }
+    out_channels_ = filter_size_;
+    
+    option_.consumed_level++;
 }
 Conv2D::~Conv2D() {}
 
@@ -97,18 +100,18 @@ void Conv2D::forward(Ciphertext3D& input) const {
             if (isOutOfRangeInput(target_x, target_y)) continue;
             within_range_counter++;
             for (size_t ic = 0; ic < in_channels_; ++ic) {
-              gTool.evaluator()->multiply_plain(input[target_y][target_x][ic], plain_filters_[fh][fw][ic][oc], weighted_pixel);
+              option_.evaluator->multiply_plain(input[target_y][target_x][ic], plain_filters_[fh][fw][ic][oc], weighted_pixel);
               if (within_range_counter == 1 && ic == 0) {
                 output[oh][ow][oc] = weighted_pixel;
               } else {
-                gTool.evaluator()->add_inplace(output[oh][ow][oc], weighted_pixel);
+                option_.evaluator->add_inplace(output[oh][ow][oc], weighted_pixel);
               }
             }
           }
         }
-        gTool.evaluator()->rescale_to_next_inplace(output[oh][ow][oc]);
-        output[oh][ow][oc].scale() = gTool.scale_param();
-        gTool.evaluator()->add_plain_inplace(output[oh][ow][oc], plain_biases_[oc]);
+        option_.evaluator->rescale_to_next_inplace(output[oh][ow][oc]);
+        output[oh][ow][oc].scale() = option_.scale_param;
+        option_.evaluator->add_plain_inplace(output[oh][ow][oc], plain_biases_[oc]);
       }
     }
   }

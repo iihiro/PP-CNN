@@ -7,13 +7,67 @@
 #include <sys/syscall.h> // for thread id
 #include <stdsc/stdsc_log.hpp>
 #include <omp.h>
+#include <ppcnn_share/ppcnn_utility.hpp>
+#include <ppcnn_share/utils/globals.hpp>
+#include <ppcnn_share/utils/types.h>
+#include <ppcnn_share/utils/define.h>
+#include <ppcnn_share/cnn/network_builder.hpp>
+#include <ppcnn_share/cnn/picojson.h>
+#include <ppcnn_share/cnn/load_model.hpp>
 #include <ppcnn_server/ppcnn_server_query.hpp>
 #include <ppcnn_server/ppcnn_server_result.hpp>
 #include <ppcnn_server/ppcnn_server_calcthread.hpp>
+#include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 #include <seal/seal.h>
 
 namespace ppcnn_server
 {
+
+static Network 
+BuildNetwork(const std::string& model_structure_path,
+             const std::string& model_weights_path,
+             OptOption& option)
+{
+    printf("1\n");
+    Network network;
+    //picojson::array layers = loadLayers(model_structure_path_);
+    picojson::array layers = loadLayers(model_structure_path);
+
+    printf("2\n");
+    //if (gOption.enable_fuse_layers()) {
+    if (option.enable_fuse_layers) {
+        for (picojson::array::const_iterator it = layers.cbegin(), layers_end = layers.cend(); it != layers_end; ++it) {
+            picojson::object layer        = (*it).get<picojson::object>();
+            const string layer_class_name = layer["class_name"].get<string>();
+
+            if (it + 1 != layers_end) {
+                picojson::object next_layer = (*(it + 1)).get<picojson::object>();
+                //network.addLayer(buildLayer(layer, next_layer, layer_class_name, model_weights_path_, it));
+                network.addLayer(buildLayer(layer, next_layer, layer_class_name, model_weights_path, it, option));
+            } else {
+                network.addLayer(buildLayer(layer, layer_class_name, model_weights_path, option));
+            }
+        }
+        return network;
+    }
+
+    printf("3\n");
+    size_t dbg_cnt=0;
+    for (picojson::array::const_iterator it = layers.cbegin(), layers_end = layers.cend(); it != layers_end; ++it) {
+        printf("4:%lu\n", dbg_cnt);
+        picojson::object layer        = (*it).get<picojson::object>();
+        printf("5:%lu\n", dbg_cnt);
+        const string layer_class_name = layer["class_name"].get<string>();
+        printf("6t:%lu\n", dbg_cnt);
+        network.addLayer(buildLayer(layer, layer_class_name, model_weights_path, option));
+        printf("7:%lu\n", dbg_cnt);
+        dbg_cnt++;
+    }
+    printf("4\n");
+    return network;
+}
+
+#define LOGINFO(fmt, ...) STDSC_LOG_INFO("[th:%d,query:%d] " fmt , th_id, query_id, ##__VA_ARGS__)
 
 struct CalcThread::Impl
 {
@@ -39,16 +93,80 @@ struct CalcThread::Impl
                 usleep(args.retry_interval_msec * 1000);
             }
 
-            bool status = false;
+            const auto dataset_name = std::string(query.params_.dataset);
+            const auto model_name  = std::string(query.params_.model);
+            const std::string base_model_path      = args.plaintext_experiment_path + dataset_name + "/saved_models/" + model_name;
+            const std::string model_structure_path = base_model_path + "_structure.json";
+            const std::string model_weights_path   = base_model_path + "_weights.h5";
+
+            if (!ppcnn_share::utility::file_exist(model_structure_path)) {
+                std::ostringstream oss;
+                oss << "File not fount. (" << model_structure_path << ")";
+                STDSC_THROW_FILE(oss.str());
+            }
+            if (!ppcnn_share::utility::file_exist(model_weights_path)) {
+                std::ostringstream oss;
+                oss << "File not fount. (" << model_weights_path << ")";
+                STDSC_THROW_FILE(oss.str());
+            }
             
-            STDSC_LOG_INFO("[th:%d] Get query #%d.", th_id, query_id);
+            bool status = compute(th_id, query_id,
+                                  query.params_, 
+                                  *(query.enc_keys_p_), 
+                                  model_structure_path, 
+                                  model_weights_path);
+            
+            LOGINFO("Get query. (%s)", query.params_.to_string().c_str());
 
             std::vector<seal::Ciphertext> dummy_results;
             Result result(query.key_id_, query_id, status, dummy_results);
             out_queue_.push(query_id, result);
 
-            STDSC_LOG_INFO("[th:%d] Set result of query #%d.", th_id, query_id);
+            LOGINFO("Set result of query.");
         }
+    }
+
+    bool compute(const int32_t th_id,
+                 const int32_t query_id,
+                 const ppcnn_share::ComputationParams& params,
+                 const EncryptionKeys& enc_keys,
+                 const std::string& model_structure_path,
+                 const std::string& model_weights_path)
+    {
+        LOGINFO("Start computation.");
+        bool res = true;
+        auto context = seal::SEALContext::Create(*(enc_keys.params));
+        
+        auto& pubkey   = *(enc_keys.pubkey);
+        auto& relinkey = *(enc_keys.relinkey);
+        
+        std::shared_ptr<seal::Encryptor> encryptor(new seal::Encryptor(context, pubkey));
+        std::shared_ptr<seal::Evaluator> evaluator(new seal::Evaluator(context));
+        std::shared_ptr<seal::CKKSEncoder> encoder(new seal::CKKSEncoder(context));
+        size_t slot_count  = encoder->slot_count();
+        double scale_param = pow(2.0, INTERMEDIATE_PRIMES_BIT_SIZE);
+        
+        auto opt_level  = static_cast<EOptLevel>(params.opt_level); 
+        auto activation = static_cast<EActivation>(params.activation);
+        OptOption option(context, enc_keys.pubkey, enc_keys.relinkey, opt_level, activation);
+
+        auto trained_model_name = std::string(params.model);
+        if (option.enable_optimize_activation) {
+            if (trained_model_name.find("CKKS-swish_rg4_deg4") != std::string::npos || activation == SWISH_RG4_DEG4) {
+                option.highest_deg_coeff = SWISH_RG4_DEG4_COEFFS.front();
+                //gHighestDegCoeff = SWISH_RG4_DEG4_COEFFS.front();
+            } else if (trained_model_name.find("CKKS-swish_rg6_deg4") != string::npos || activation == SWISH_RG6_DEG4) {
+                //gHighestDegCoeff = SWISH_RG6_DEG4_COEFFS.front();
+                option.highest_deg_coeff =SWISH_RG6_DEG4_COEFFS.front();
+            }
+        }
+            
+        LOGINFO("Buiding network from trained model...");
+        BuildNetwork(model_structure_path, model_weights_path, option);
+        STDSC_LOG_INFO("Finish buiding.");
+
+
+        return res;
     }
 
     QueryQueue& in_queue_;

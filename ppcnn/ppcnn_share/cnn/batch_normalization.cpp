@@ -9,11 +9,14 @@ using std::endl;
 using std::sqrt;
 
 BatchNormalization::BatchNormalization(const string& name,
-                                       const vector<Plaintext>& plain_weights, const vector<Plaintext>& plain_biases)
+                                       const vector<Plaintext>& plain_weights, const vector<Plaintext>& plain_biases,
+                                       OptOption& option)
     : Layer(name, BATCH_NORMALIZATION),
       plain_weights_(plain_weights),
-      plain_biases_(plain_biases) {
-  gConsumedLevel++;
+      plain_biases_(plain_biases),
+      option_(option)
+{
+    option.consumed_level++;
 }
 BatchNormalization::~BatchNormalization() {}
 
@@ -43,11 +46,11 @@ void BatchNormalization::forward(Ciphertext3D& input) const {
 #endif
   for (size_t h = 0; h < height; ++h) {
     for (size_t w = 0; w < width; ++w) {
-      for (size_t c = 0; c < channels; ++c) {
-        gTool.evaluator()->multiply_plain_inplace(input[h][w][c], plain_weights_[c]);
-        gTool.evaluator()->rescale_to_next_inplace(input[h][w][c]);
-        input[h][w][c].scale() = gTool.scale_param();
-        gTool.evaluator()->add_plain_inplace(input[h][w][c], plain_biases_[c]);
+        for (size_t c = 0; c < channels; ++c) {
+        option_.evaluator->multiply_plain_inplace(input[h][w][c], plain_weights_[c]);
+        option_.evaluator->rescale_to_next_inplace(input[h][w][c]);
+        input[h][w][c].scale() = option_.scale_param;
+        option_.evaluator->add_plain_inplace(input[h][w][c], plain_biases_[c]);
 #ifdef __DEBUG__
         // if (omp_get_thread_num() == 10) {
         //   gTool.decryptor()->decrypt(input[h][w][c], plain);
@@ -79,10 +82,10 @@ void BatchNormalization::forward(vector<Ciphertext>& input) const {
 #pragma omp parallel for
 #endif
   for (size_t u = 0; u < units; ++u) {
-    gTool.evaluator()->multiply_plain_inplace(input[u], plain_weights_[u]);
-    gTool.evaluator()->rescale_to_next_inplace(input[u]);
-    input[u].scale() = gTool.scale_param();
-    gTool.evaluator()->add_plain_inplace(input[u], plain_biases_[u]);
+    option_.evaluator->multiply_plain_inplace(input[u], plain_weights_[u]);
+    option_.evaluator->rescale_to_next_inplace(input[u]);
+    input[u].scale() = option_.scale_param;
+    option_.evaluator->add_plain_inplace(input[u], plain_biases_[u]);
 #ifdef __DEBUG__
     // if (omp_get_thread_num() == 10) {
     //   gTool.decryptor()->decrypt(input[u], plain);

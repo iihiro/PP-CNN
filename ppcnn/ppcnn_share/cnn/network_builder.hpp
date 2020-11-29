@@ -4,6 +4,7 @@
 
 using std::string;
 
+#if 0
 class NetworkBuilder final {
 public:
   static void setup(const string& model_structure_path, const string& model_weights_path) {
@@ -18,3 +19,5 @@ private:
   NetworkBuilder();
   ~NetworkBuilder();
 };
+
+#endif

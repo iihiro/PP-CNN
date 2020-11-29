@@ -7,13 +7,16 @@ using std::move;
 GlobalAveragePooling2D::GlobalAveragePooling2D(const string& name,
                                                const size_t& in_height, const size_t& in_width, const size_t& in_channels,
                                                const size_t& out_units,
-                                               const Plaintext& plain_mul_factor)
+                                               const Plaintext& plain_mul_factor,
+                                               OptOption& option)
     : Layer(name, GLOBAL_AVERAGE_POOLING2D),
       in_height_(in_height),
       in_width_(in_width),
       in_channels_(in_channels),
       out_units_(out_units),
-      plain_mul_factor_(plain_mul_factor) {
+      plain_mul_factor_(plain_mul_factor),
+      option_(option)
+{
   // if (!gOption.enable_optimize_pooling()) {
   //   gConsumedLevel++;
   // }
@@ -46,7 +49,7 @@ vector<Ciphertext> GlobalAveragePooling2D::flatten(Ciphertext3D& input) const {
     for (size_t iw = 0; iw < in_width_; ++iw) {
       if (ih != 0 || iw != 0) {
         for (size_t ic = 0; ic < in_channels_; ++ic) {
-          gTool.evaluator()->add_inplace(flattened_input[ic], move(input[ih][iw][ic]));
+          option_.evaluator->add_inplace(flattened_input[ic], move(input[ih][iw][ic]));
         }
       }
     }
@@ -57,7 +60,7 @@ vector<Ciphertext> GlobalAveragePooling2D::flatten(Ciphertext3D& input) const {
   // #pragma omp parallel for
   // #endif
   //     for (size_t ou = 0; ou < out_units_; ++ou) {
-  //       gTool.evaluator()->multiply_plain_inplace(flattened_input[ou], plain_mul_factor_);
+  //       option_.evaluator->multiply_plain_inplace(flattened_input[ou], plain_mul_factor_);
   //     }
   //   }
 

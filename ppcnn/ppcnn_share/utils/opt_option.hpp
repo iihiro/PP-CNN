@@ -1,26 +1,37 @@
 #pragma once
 
-class OptOption {
-public:
-  OptOption() : enable_fuse_layers_(false), enable_optimize_activation_(false) {}
-  ~OptOption() {}
+#include <memory>
+#include <unistd.h>
+#include <ppcnn_share/utils/types.h>
+#include <seal/seal.h>
 
-  const bool& enable_fuse_layers() const { return enable_fuse_layers_; };
-  const bool& enable_optimize_activation() const { return enable_optimize_activation_; };
-  const bool& enable_optimize_pooling() const { return enable_optimize_pooling_; };
+struct OptOption 
+{
+    OptOption(const std::shared_ptr<seal::SEALContext>& context,
+              const std::shared_ptr<seal::PublicKey>& pubkey,
+              const std::shared_ptr<seal::RelinKeys>& relinkey,
+              const EOptLevel opt_level,
+              const EActivation act);
+    ~OptOption() = default;
 
-  void setEnableFuseLayers(const bool& enable_fuse_layers) {
-    enable_fuse_layers_ = enable_fuse_layers;
-  };
-  void setEnableOptimizeActivation(const bool& enable_optimize_activation) {
-    enable_optimize_activation_ = enable_optimize_activation;
-  };
-  void setEnableOptimizePooling(const bool& enable_optimize_pooling) {
-    enable_optimize_pooling_ = enable_optimize_pooling;
-  }
+    bool enable_fuse_layers;
+    bool enable_optimize_activation;
+    bool enable_optimize_pooling;
 
-private:
-  bool enable_fuse_layers_;
-  bool enable_optimize_activation_;
-  bool enable_optimize_pooling_;
+    bool should_multiply_coeff;
+    bool should_multiply_pool;
+
+    EActivation activation;
+
+    float highest_deg_coeff;
+    float current_pooling_mul_factor;
+
+    size_t consumed_level;
+
+    std::shared_ptr<seal::RelinKeys> relin_keys;
+    std::shared_ptr<seal::Encryptor> encryptor;
+    std::shared_ptr<seal::Evaluator> evaluator;
+    std::shared_ptr<seal::CKKSEncoder> encoder;
+    size_t slot_count;
+    double scale_param;
 };

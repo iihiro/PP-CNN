@@ -31,11 +31,11 @@
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 #include <ppcnn_share/ppcnn_encdata.hpp>
 #include <ppcnn_share/ppcnn_config.hpp>
-#include <ppcnn_share/ppcnn_imageinfo.hpp>
 #include <ppcnn_share/ppcnn_seal_types.hpp>
 #include <ppcnn_share/utils/load_dataset.hpp>
 #include <ppcnn_share/utils/helper_functions.hpp>
 #include <ppcnn_share/utils/globals.hpp>
+#include <ppcnn_share/utils/define.h>
 
 #include <ppcnn_client/ppcnn_client.hpp>
 #include <ppcnn_client/ppcnn_client_result_thread.hpp>
@@ -53,17 +53,21 @@ constexpr size_t CIFAR10_HEIGHT   = 32;
 constexpr size_t CIFAR10_WIDTH    = 32;
 constexpr size_t CIFAR10_LABELS   = 10;
 
-#define ENABLE_LOCAL_DEBUG
+constexpr const char* DEFAULT_DATASET = "mnist";
+constexpr const char* DEFAULT_MODEL   = "HCNN-DA";
+constexpr int32_t DEFAULT_OPTIMIZATION_LEVEL = 0;
+constexpr int32_t DEFAULT_ACTIVATION = 0;
 
-#define PRINT_USAGE_AND_EXIT() do {                         \
-        printf("Usage: %s value_x [value_y]\n", argv[0]);   \
-        exit(1);                                            \
-    } while (0)
+#define ENABLE_LOCAL_DEBUG
 
 struct Option
 {
+    std::string dataset = DEFAULT_DATASET;
+    std::string model   = DEFAULT_MODEL;
     std::string dataset_dir;
     std::string config_filepath;
+    int32_t opt_level   = DEFAULT_OPTIMIZATION_LEVEL;
+    int32_t activation  = DEFAULT_ACTIVATION;
 };
 
 struct CallbackParam
@@ -82,20 +86,32 @@ void callback_func(const int32_t query_id,
 void init(Option& option, int argc, char* argv[])
 {
     int opt;
-    while ((opt = getopt(argc, argv, "d:c:h")) != -1)
+    while ((opt = getopt(argc, argv, "D:M:O:A:d:c:h")) != -1)
     {
         switch (opt)
         {
-            case 'd':
-                option.dataset_dir = optarg;
-                break;
-            case 'c':
-                option.config_filepath = optarg;
-                break;
-            case 'h':
-            default:
-                printf("Usage: %s [-d dataset_dir] [-c config_filepath]\n", argv[0]);
-                exit(1);
+        case 'D':
+            option.dataset = optarg;
+            break;
+        case 'M':
+            option.model = optarg;
+            break;
+        case 'O':
+            option.opt_level = std::stol(optarg);
+            break;
+        case 'A':
+            option.activation = std::stol(optarg);
+            break;
+        case 'd':
+            option.dataset_dir = optarg;
+            break;
+        case 'c':
+            option.config_filepath = optarg;
+            break;
+        case 'h':
+        default:
+            printf("Usage: %s [-D dataset] [-M model] [-O opt_level] [-A activation] [-d dataset_dir] [-c config_filepath]\n", argv[0]);
+            exit(1);
         }
     }
 }
@@ -145,7 +161,7 @@ int32_t init_keys(const std::string& config_filepath,
 
 void compute(const int32_t key_id,
              const std::vector<std::vector<float>> test_imgs,
-             const ppcnn_share::ImageInfo& img_info,
+             const ppcnn_share::ComputationParams& comp_params,
              const std::string& host,
              const std::string& port,
              const size_t test_img_limit, 
@@ -166,9 +182,9 @@ void compute(const int32_t key_id,
     std::cout << "Number of steps: " << step_count << std::endl;
     std::cout << std::endl;
 
-    size_t rows = img_info.height;
-    size_t cols = img_info.width;
-    size_t channels = img_info.channels;
+    size_t rows = comp_params.img_height;
+    size_t cols = comp_params.img_width;
+    size_t channels = comp_params.img_channels;
     size_t remain_img_count = test_img_count;
 
     const double scale_param = std::pow(2.0, INTERMEDIATE_PRIMES_BIT_SIZE);
@@ -210,7 +226,11 @@ void compute(const int32_t key_id,
                 ppcnn_share::seal_utility::write_to_file(oss.str(), enc_inputs.vdata()[i]);
             }
 #endif
-            client.send_query(key_id, img_info, enc_inputs, callback_func, &callback_param);
+            client.send_query(key_id, 
+                              comp_params, 
+                              enc_inputs, 
+                              callback_func, 
+                              &callback_param);
         }
     }
 
@@ -242,15 +262,20 @@ void exec(Option& option)
     std::cout << "Number of imgs for test: " << test_imgs.size() << std::endl;
     std::cout << std::endl;
 
-    ppcnn_share::ImageInfo img_info = {MNIST_WIDTH,
-                                       MNIST_HEIGHT,
-                                       MNIST_CHANNELS,
-                                       MNIST_LABELS};
+    ppcnn_share::ComputationParams comp_params;
+    comp_params.img_width    = MNIST_WIDTH;
+    comp_params.img_height   = MNIST_HEIGHT;
+    comp_params.img_channels = MNIST_CHANNELS;
+    comp_params.labels       = MNIST_LABELS;
+    strcpy(comp_params.dataset, option.dataset.c_str());
+    strcpy(comp_params.model, option.model.c_str());
+    comp_params.opt_level    = option.opt_level;
+    comp_params.activation   = option.activation;
     
     CallbackParam callback_param = {&seckey, &params};
     compute(key_id,
             test_imgs,
-            img_info,
+            comp_params,
             host, PORT_SRV,
             test_img_limit, number_prediction_trials,
             pubkey, relinkey, params, callback_param);

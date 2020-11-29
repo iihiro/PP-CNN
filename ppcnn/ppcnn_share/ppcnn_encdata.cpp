@@ -235,7 +235,6 @@ size_t EncData::save(std::ostream& os) const
     for (const auto& v : vec_) {
         saved_bytes += v.save(os);
     }
-    printf("===hoge: saved_bytes:%lu\n", saved_bytes);
     return saved_bytes;
 }
              
@@ -254,7 +253,6 @@ size_t EncData::load(std::istream& is)
         loaded_bytes += ctxt.load(context, is);
         vec_.push_back(ctxt);
     }
-    printf("===hoge: loaded_bytes:%lu\n", loaded_bytes);
     return loaded_bytes;
 }
 

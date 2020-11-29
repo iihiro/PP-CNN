@@ -3,6 +3,7 @@
 #include "load_model.hpp"
 #include "picojson.h"
 
+#if 0
 /**
  * Create CNN
  *
@@ -35,3 +36,4 @@ Network NetworkBuilder::buildNetwork() noexcept(false) {
   }
   return network;
 }
+#endif

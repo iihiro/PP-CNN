@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef PPCNN_IMAGEINFO_HPP
-#define PPCNN_IMAGEINFO_HPP
+#ifndef PPCNN_COMPUTATION_PARAMS_HPP
+#define PPCNN_COMPUTATION_PARAMS_HPP
 
 #include <string>
 #include <sstream>
@@ -25,25 +25,36 @@ namespace ppcnn_share
 {
 
 /**
- * @brief This class is used to hold the image info.
+ * @brief This class is used to hold computation params
  */
-struct ImageInfo
+struct ComputationParams
 {
-    size_t width;
-    size_t height;
-    size_t channels;
+    size_t img_width;
+    size_t img_height;
+    size_t img_channels;
     size_t labels;
+    char dataset[1024];
+    char model[1024];
+    int32_t opt_level;
+    int32_t activation;
 
     std::string to_string() const {
         std::ostringstream oss;
-        oss << width    << ", "
-            << height   << ", "
-            << channels << ", "
-            << labels;
+        oss << img_width            << ", "
+            << img_height           << ", "
+            << img_channels         << ", "
+            << labels               << ", "
+            << std::string(dataset) << ", "
+            << std::string(model)   << ", "
+            << opt_level            << ", "
+            << activation;
         return oss.str();
     }
 };
 
+std::ostream& operator<<(std::ostream& os, const ComputationParams& params);
+std::istream& operator>>(std::istream& is, ComputationParams& params);
+
 } /* namespace ppcnn_share */
 
-#endif /* PPCNN_IMAGEINFO_HPP */
+#endif /* PPCNN_COMPUTATION_PARAMS_HPP */

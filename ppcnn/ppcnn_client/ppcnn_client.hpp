@@ -20,13 +20,12 @@
 
 #include <memory>
 #include <ppcnn_share/ppcnn_define.hpp>
-#include <ppcnn_share/ppcnn_imageinfo.hpp>
 #include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
 
 namespace ppcnn_share
 {
     class EncData;
-    class ImageInfo;
+    class ComputationParams;
 }
 
 namespace ppcnn_client
@@ -73,25 +72,25 @@ public:
     /**
      * Send query
      * @param[in] key_id key ID
-     * @param[in] info image info
+     * @param[in] comp_params computation parameters
      * @param[in] enc_input encrypted input values
      * @return queryID
      */
     int32_t send_query(const int32_t key_id,
-                       const ppcnn_share::ImageInfo& img_info, 
+                       const ppcnn_share::ComputationParams& comp_params, 
                        const ppcnn_share::EncData& enc_inputs) const;
 
     /**
      * Send query
      * @param[in] key_id key ID
-     * @param[in] info image info
+     * @param[in] comp_params computation parameters
      * @param[in] enc_input encrypted input values (1 or 2)
      * @param[in] cbfunc callback function
      * @param[in] cbfunc_args arguments for callback function
      * @return queryID
      */
     int32_t send_query(const int32_t key_id,
-                       const ppcnn_share::ImageInfo& img_info, 
+                       const ppcnn_share::ComputationParams& comp_params, 
                        const ppcnn_share::EncData& enc_inputs,
                        cbfunc_t cbfunc,
                        void* cbfunc_args) const;

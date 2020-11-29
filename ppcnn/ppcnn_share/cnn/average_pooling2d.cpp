@@ -16,7 +16,8 @@ AveragePooling2D::AveragePooling2D(const string& name,
                                    const size_t& pool_height, const size_t& pool_width,
                                    const size_t& stride_height, const size_t& stride_width,
                                    const string& padding,
-                                   const Plaintext& plain_mul_factor)
+                                   const Plaintext& plain_mul_factor,
+                                   OptOption& option)
     : Layer(name, AVERAGE_POOLING2D),
       in_height_(in_height),
       in_width_(in_width),
@@ -26,7 +27,9 @@ AveragePooling2D::AveragePooling2D(const string& name,
       stride_height_(stride_height),
       stride_width_(stride_width),
       padding_(padding),
-      plain_mul_factor_(plain_mul_factor) {
+      plain_mul_factor_(plain_mul_factor),
+      option_(option)
+{
   if (padding == "valid") {
     out_height_ = ceil(static_cast<float>(in_height_ - pool_height_ + 1) / static_cast<float>(stride_height_));
     out_width_  = ceil(static_cast<float>(in_width_ - pool_width_ + 1) / static_cast<float>(stride_width_));
@@ -55,8 +58,8 @@ AveragePooling2D::AveragePooling2D(const string& name,
   }
   out_channels_ = in_channels_;
 
-  if (!gOption.enable_optimize_pooling()) {
-    gConsumedLevel++;
+  if (!option_.enable_optimize_pooling) {
+      option.consumed_level++;
   }
 }
 AveragePooling2D::~AveragePooling2D() {}
@@ -79,7 +82,7 @@ void AveragePooling2D::forward(Ciphertext3D& input) const {
 
   int target_top, target_left, target_x, target_y;
 
-  if (gOption.enable_optimize_pooling()) {
+  if (option_.enable_optimize_pooling) {
 #ifdef _OPENMP
 #pragma omp parallel for collapse(2) private(target_top, target_left, target_x, target_y)
 #endif
@@ -96,7 +99,7 @@ void AveragePooling2D::forward(Ciphertext3D& input) const {
               if (ph == 0 && pw == 0) {
                 output[oh][ow][oc] = input[target_y][target_x][oc];
               } else {
-                gTool.evaluator()->add_inplace(output[oh][ow][oc], input[target_y][target_x][oc]);
+                option_.evaluator->add_inplace(output[oh][ow][oc], input[target_y][target_x][oc]);
               }
             }
           }
@@ -120,12 +123,12 @@ void AveragePooling2D::forward(Ciphertext3D& input) const {
               if (ph == 0 && pw == 0) {
                 output[oh][ow][oc] = input[target_y][target_x][oc];
               } else {
-                gTool.evaluator()->add_inplace(output[oh][ow][oc], input[target_y][target_x][oc]);
+                option_.evaluator->add_inplace(output[oh][ow][oc], input[target_y][target_x][oc]);
               }
             }
           }
-          gTool.evaluator()->multiply_plain_inplace(output[oh][ow][oc], plain_mul_factor_);
-          gTool.evaluator()->rescale_to_next_inplace(output[oh][ow][oc]);
+          option_.evaluator->multiply_plain_inplace(output[oh][ow][oc], plain_mul_factor_);
+          option_.evaluator->rescale_to_next_inplace(output[oh][ow][oc]);
         }
       }
     }

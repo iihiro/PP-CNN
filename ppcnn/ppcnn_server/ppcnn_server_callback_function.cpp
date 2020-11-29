@@ -104,10 +104,10 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     ppcnn_share::PlainData<ppcnn_share::C2SQueryParam> rplaindata;
     rplaindata.load(rstream);
     const auto& param = rplaindata.data();
-    STDSC_LOG_INFO("Query params: img_info: {%s}, "
+    STDSC_LOG_INFO("Query params: comp_params: {%s}, "
                    "enc_inputs_stream_sz: %lu, "
                    "key_id: %d\n",
-                   param.img_info.to_string().c_str(),
+                   param.comp_params.to_string().c_str(),
                    param.enc_inputs_stream_sz,
                    param.key_id);
 
@@ -129,7 +129,7 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     }
 #endif
 
-    Query query(param.key_id, param.img_info, enc_inputs.vdata(), &enc_keys);
+    Query query(param.key_id, param.comp_params, enc_inputs.vdata(), &enc_keys);
     int32_t query_id = calc_manager.push_query(query);
     STDSC_LOG_INFO("Generated query ID. (%d)", query_id);
 

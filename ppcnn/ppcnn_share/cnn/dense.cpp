@@ -10,14 +10,17 @@ using std::move;
 Dense::Dense(const string& name,
              const size_t& in_units, const size_t& out_units,
              const string& activation,
-             const Plaintext2D& plain_weights, const vector<Plaintext>& plain_biases)
+             const Plaintext2D& plain_weights, const vector<Plaintext>& plain_biases,
+             OptOption& option)
     : Layer(name, DENSE),
       in_units_(in_units),
       out_units_(out_units),
       activation_(activation),
       plain_weights_(plain_weights),
-      plain_biases_(plain_biases) {
-  gConsumedLevel++;
+      plain_biases_(plain_biases),
+      option_(option)
+{
+    option_.consumed_level++;
 }
 Dense::~Dense() {}
 
@@ -36,16 +39,16 @@ void Dense::forward(vector<Ciphertext>& input) const {
 #endif
   for (size_t ou = 0; ou < out_units_; ++ou) {
     for (size_t iu = 0; iu < in_units_; ++iu) {
-      gTool.evaluator()->multiply_plain(input[iu], plain_weights_[iu][ou], weighted_unit);
+      option_.evaluator->multiply_plain(input[iu], plain_weights_[iu][ou], weighted_unit);
       if (iu == 0) {
         output[ou] = weighted_unit;
       } else {
-        gTool.evaluator()->add_inplace(output[ou], weighted_unit);
+        option_.evaluator->add_inplace(output[ou], weighted_unit);
       }
     }
-    gTool.evaluator()->rescale_to_next_inplace(output[ou]);
-    output[ou].scale() = gTool.scale_param();
-    gTool.evaluator()->add_plain_inplace(output[ou], plain_biases_[ou]);
+    option_.evaluator->rescale_to_next_inplace(output[ou]);
+    output[ou].scale() = option_.scale_param;
+    option_.evaluator->add_plain_inplace(output[ou], plain_biases_[ou]);
   }
 
   input.resize(out_units_);

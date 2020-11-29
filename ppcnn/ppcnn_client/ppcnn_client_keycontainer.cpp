@@ -7,6 +7,7 @@
 #include <stdsc/stdsc_log.hpp>
 #include <ppcnn_share/ppcnn_utility.hpp>
 #include <ppcnn_share/utils/globals.hpp>
+#include <ppcnn_share/utils/define.h>
 #include <ppcnn_client/ppcnn_client_keycontainer.hpp>
 
 

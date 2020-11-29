@@ -14,7 +14,6 @@
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 #include <ppcnn_share/ppcnn_seal_utility.hpp>
 #include <ppcnn_share/ppcnn_srv2cliparam.hpp>
-#include <ppcnn_share/ppcnn_imageinfo.hpp>
 #include <ppcnn_client/ppcnn_client_result_thread.hpp>
 #include <ppcnn_client/ppcnn_client.hpp>
 
@@ -83,13 +82,13 @@ struct Client::Impl
     }
 
     int32_t send_query(const int32_t key_id,
-                       const ppcnn_share::ImageInfo& img_info,
+                       const ppcnn_share::ComputationParams& comp_params, 
                        const ppcnn_share::EncData& enc_inputs)
     {
         ppcnn_share::PlainData<ppcnn_share::C2SQueryParam> splaindata;
         ppcnn_share::C2SQueryParam c2s_param;
-        c2s_param.img_info = img_info;
-        c2s_param.key_id   = key_id;
+        c2s_param.comp_params = comp_params;
+        c2s_param.key_id      = key_id;
         c2s_param.enc_inputs_stream_sz = enc_inputs.stream_size();
         splaindata.push(c2s_param);
 
@@ -198,22 +197,22 @@ void Client::register_enckeys(const int32_t key_id,
 }
 
 int32_t Client::send_query(const int32_t key_id,
-                           const ppcnn_share::ImageInfo& img_info, 
+                           const ppcnn_share::ComputationParams& comp_params, 
                            const ppcnn_share::EncData& enc_inputs) const
 {
     STDSC_LOG_INFO("Send query: sending query to computation server.");
-    auto query_id = pimpl_->send_query(key_id, img_info, enc_inputs);
+    auto query_id = pimpl_->send_query(key_id, comp_params, enc_inputs);
     STDSC_LOG_INFO("Send query: received query ID (#%d)", query_id);
     return query_id;
 }
 
 int32_t Client::send_query(const int32_t key_id,
-                           const ppcnn_share::ImageInfo& img_info,
+                           const ppcnn_share::ComputationParams& comp_params, 
                            const ppcnn_share::EncData& enc_inputs,
                            cbfunc_t cbfunc,
                            void* cbfunc_args) const
 {
-    int32_t query_id = pimpl_->send_query(key_id, img_info, enc_inputs);
+    int32_t query_id = pimpl_->send_query(key_id, comp_params, enc_inputs);
     STDSC_LOG_INFO("Set callback function for query #%d", query_id);
     set_callback(query_id, cbfunc, cbfunc_args);
     return query_id;

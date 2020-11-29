@@ -40,10 +40,7 @@ std::istream& operator>>(std::istream& is, C2SEnckeyParam& param)
 
 std::ostream& operator<<(std::ostream& os, const C2SQueryParam& param)
 {
-    os << param.img_info.width       << std::endl;
-    os << param.img_info.height      << std::endl;
-    os << param.img_info.channels    << std::endl;
-    os << param.img_info.labels      << std::endl;
+    os << param.comp_params;
     os << param.enc_inputs_stream_sz << std::endl;
     os << param.key_id               << std::endl;
     return os;
@@ -51,10 +48,7 @@ std::ostream& operator<<(std::ostream& os, const C2SQueryParam& param)
 
 std::istream& operator>>(std::istream& is, C2SQueryParam& param)
 {
-    is >> param.img_info.width;
-    is >> param.img_info.height;
-    is >> param.img_info.channels;
-    is >> param.img_info.labels;
+    is >> param.comp_params;
     is >> param.enc_inputs_stream_sz;
     is >> param.key_id;
     return is;
@@ -62,7 +56,7 @@ std::istream& operator>>(std::istream& is, C2SQueryParam& param)
 
 std::ostream& operator<<(std::ostream& os, const C2SResreqParam& param)
 {
-    os << param.query_id             << std::endl;
+    os << param.query_id << std::endl;
     return os;
 }
 

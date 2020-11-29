@@ -23,7 +23,7 @@
 
 #include <seal/seal.h>
 
-#include <ppcnn_share/ppcnn_imageinfo.hpp>
+#include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 #include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
 
 
@@ -41,11 +41,12 @@ struct Query
     /**
      * Constructor
      * @param[in] key_id key ID
-     * @param[in] img_info image info
+     * @param[in] comp_params computation parameters
      * @param[in] ctxts cipher texts
+     * @param[in] enc_keys_p encryption keys
      */
     Query(const int32_t key_id,
-          const ppcnn_share::ImageInfo& img_info,
+          const ppcnn_share::ComputationParams& params,
           const std::vector<seal::Ciphertext>& ctxts,
           const EncryptionKeys* enc_keys_p);
     virtual ~Query() = default;
@@ -56,7 +57,7 @@ struct Query
      */
     Query(const Query& q)
         : key_id_(q.key_id_),
-          img_info_(q.img_info_),
+          params_(q.params_),
           enc_keys_p_(q.enc_keys_p_)
     {
         ctxts_.resize(q.ctxts_.size());
@@ -64,7 +65,7 @@ struct Query
     }
 
     int32_t key_id_;
-    ppcnn_share::ImageInfo img_info_;
+    ppcnn_share::ComputationParams params_;
     std::vector<seal::Ciphertext> ctxts_;
     const EncryptionKeys* enc_keys_p_;
 };

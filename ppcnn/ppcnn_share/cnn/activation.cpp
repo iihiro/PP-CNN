@@ -1,64 +1,68 @@
-#include "activation.hpp"
 #include <omp.h>
 #include <exception>
 #include <fstream>
 #include <iostream>
+
+#include <ppcnn_share/utils/define.h>
+#include <ppcnn_share/cnn/activation.hpp>
 
 using std::cout;
 using std::endl;
 using std::move;
 using std::runtime_error;
 
-Activation::Activation(const string& name, const string& activation)
+Activation::Activation(const string& name, const string& activation, OptOption& option)
     : Layer(name, ACTIVATION),
-      activation_(activation) {
-  if (activation_ == SQUARE_NAME || gActivation == SQUARE) {
-    gConsumedLevel++;
-  } else if (activation_ == SWISH_RG4_DEG4_NAME || gActivation == SWISH_RG4_DEG4) {
+      activation_(activation),
+      option_(option)
+{
+  if (activation_ == SQUARE_NAME || option.activation == SQUARE) {
+    option.consumed_level++;
+  } else if (activation_ == SWISH_RG4_DEG4_NAME || option.activation == SWISH_RG4_DEG4) {
     Plaintext plain_coeff;
-    if (gOption.enable_optimize_activation()) {
+    if (option_.enable_optimize_activation) {
       for (const float& coeff : SWISH_RG4_DEG4_OPT_COEFFS) {
-        gTool.encoder()->encode(coeff, gTool.scale_param(), plain_coeff);
-        for (size_t lv = 0; lv < gConsumedLevel + 1; ++lv) {
-          gTool.evaluator()->mod_switch_to_next_inplace(plain_coeff);
+        option_.encoder->encode(coeff, option_.scale_param, plain_coeff);
+        for (size_t lv = 0; lv < option.consumed_level + 1; ++lv) {
+          option_.evaluator->mod_switch_to_next_inplace(plain_coeff);
         }
         plain_poly_coeffs_.push_back(plain_coeff);
       }
-      gTool.evaluator()->mod_switch_to_next_inplace(plain_poly_coeffs_.back());
-      gConsumedLevel += 2;
+      option_.evaluator->mod_switch_to_next_inplace(plain_poly_coeffs_.back());
+      option.consumed_level += 2;
     } else {
       for (const float& coeff : SWISH_RG4_DEG4_COEFFS) {
-        gTool.encoder()->encode(coeff, gTool.scale_param(), plain_coeff);
-        for (size_t lv = 0; lv < gConsumedLevel + 2; ++lv) {
-          gTool.evaluator()->mod_switch_to_next_inplace(plain_coeff);
+        option_.encoder->encode(coeff, option_.scale_param, plain_coeff);
+        for (size_t lv = 0; lv < option.consumed_level + 2; ++lv) {
+          option_.evaluator->mod_switch_to_next_inplace(plain_coeff);
         }
         plain_poly_coeffs_.push_back(plain_coeff);
       }
-      gTool.evaluator()->mod_switch_to_next_inplace(plain_poly_coeffs_.back());
-      gConsumedLevel += 3;
+      option_.evaluator->mod_switch_to_next_inplace(plain_poly_coeffs_.back());
+      option.consumed_level += 3;
     }
-  } else if (activation_ == SWISH_RG6_DEG4_NAME || gActivation == SWISH_RG6_DEG4) {
+  } else if (activation_ == SWISH_RG6_DEG4_NAME || option.activation == SWISH_RG6_DEG4) {
     Plaintext plain_coeff;
-    if (gOption.enable_optimize_activation()) {
+    if (option_.enable_optimize_activation) {
       for (const float& coeff : SWISH_RG6_DEG4_OPT_COEFFS) {
-        gTool.encoder()->encode(coeff, gTool.scale_param(), plain_coeff);
-        for (size_t lv = 0; lv < gConsumedLevel + 1; ++lv) {
-          gTool.evaluator()->mod_switch_to_next_inplace(plain_coeff);
+        option_.encoder->encode(coeff, option_.scale_param, plain_coeff);
+        for (size_t lv = 0; lv < option.consumed_level + 1; ++lv) {
+          option_.evaluator->mod_switch_to_next_inplace(plain_coeff);
         }
         plain_poly_coeffs_.push_back(plain_coeff);
       }
-      gTool.evaluator()->mod_switch_to_next_inplace(plain_poly_coeffs_.back());
-      gConsumedLevel += 2;
+      option_.evaluator->mod_switch_to_next_inplace(plain_poly_coeffs_.back());
+      option.consumed_level += 2;
     } else {
       for (const float& coeff : SWISH_RG6_DEG4_COEFFS) {
-        gTool.encoder()->encode(coeff, gTool.scale_param(), plain_coeff);
-        for (size_t lv = 0; lv < gConsumedLevel + 2; ++lv) {
-          gTool.evaluator()->mod_switch_to_next_inplace(plain_coeff);
+        option_.encoder->encode(coeff, option_.scale_param, plain_coeff);
+        for (size_t lv = 0; lv < option.consumed_level + 2; ++lv) {
+          option_.evaluator->mod_switch_to_next_inplace(plain_coeff);
         }
         plain_poly_coeffs_.push_back(plain_coeff);
       }
-      gTool.evaluator()->mod_switch_to_next_inplace(plain_poly_coeffs_.back());
-      gConsumedLevel += 3;
+      option_.evaluator->mod_switch_to_next_inplace(plain_poly_coeffs_.back());
+      option.consumed_level += 3;
     }
   } else {
     throw runtime_error("\"" + activation_ + "\" is not registered as activation function");
@@ -98,11 +102,11 @@ void Activation::forward(Ciphertext3D& input) const {
 #ifdef __DEBUG__
         // if (omp_get_thread_num() == 10) {
         //   gTool.decryptor()->decrypt(input[h][w][c], plain);
-        //   gTool.encoder()->decode(plain, vec_tmp);
+        //   option_.encoder->decode(plain, vec_tmp);
         //   debug_file << "\toutput[" << h << "][" << w << "][" << c << "]: " << vec_tmp[0] << ", " << vec_tmp[1] << ", " << vec_tmp[2] << endl;
         // }
         gTool.decryptor()->decrypt(input[h][w][c], plain);
-        gTool.encoder()->decode(plain, vec_tmp);
+        option_.encoder->decode(plain, vec_tmp);
         debug_file << "\toutput[" << h << "][" << w << "][" << c << "]: " << vec_tmp[0] << ", " << vec_tmp[1] << ", " << vec_tmp[2] << endl;
 #endif
       }
@@ -130,11 +134,11 @@ void Activation::forward(vector<Ciphertext>& input) const {
 #ifdef __DEBUG__
     // if (omp_get_thread_num() == 10) {
     //   gTool.decryptor()->decrypt(input[u], plain);
-    //   gTool.encoder()->decode(plain, vec_tmp);
+    //   option_.encoder->decode(plain, vec_tmp);
     //   debug_file << "\toutput[" << u << "]: " << vec_tmp[0] << ", " << vec_tmp[1] << ", " << vec_tmp[2] << endl;
     // }
     gTool.decryptor()->decrypt(input[u], plain);
-    gTool.encoder()->decode(plain, vec_tmp);
+    option_.encoder->decode(plain, vec_tmp);
     debug_file << "\toutput[" << u << "]: " << vec_tmp[0] << ", " << vec_tmp[1] << ", " << vec_tmp[2] << endl;
 #endif
   }
@@ -144,7 +148,7 @@ Ciphertext Activation::activate(Ciphertext& x) const {
   if (activation_ == SQUARE_NAME) {
     return square(x);
   } else {
-    if (gOption.enable_optimize_activation()) {
+    if (option_.enable_optimize_activation) {
       return swishDeg4Opt(x);
     } else {
       return swishDeg4(x);
@@ -157,9 +161,9 @@ Ciphertext Activation::square(Ciphertext& x) const {
 
   /* Assume that input level is l */
   // Calculate x^2 (Level: l-1)
-  gTool.evaluator()->square(x, y);
-  gTool.evaluator()->relinearize_inplace(y, *(gTool.relin_keys()));
-  gTool.evaluator()->rescale_to_next_inplace(y);
+  option_.evaluator->square(x, y);
+  option_.evaluator->relinearize_inplace(y, *(option_.relin_keys));
+  option_.evaluator->rescale_to_next_inplace(y);
 
   return move(y);
 }
@@ -169,36 +173,36 @@ Ciphertext Activation::swishDeg4(Ciphertext& x) const {
 
   /* Assume that input level is l */
   // Calculate x^2 (Level: l-1)
-  gTool.evaluator()->square(x, x2);
-  gTool.evaluator()->relinearize_inplace(x2, *(gTool.relin_keys()));
-  gTool.evaluator()->rescale_to_next_inplace(x2);
+  option_.evaluator->square(x, x2);
+  option_.evaluator->relinearize_inplace(x2, *(option_.relin_keys));
+  option_.evaluator->rescale_to_next_inplace(x2);
   // Calculate x^4 (Level: l-2)
-  gTool.evaluator()->square(x2, x4);
-  gTool.evaluator()->relinearize_inplace(x4, *(gTool.relin_keys()));
-  gTool.evaluator()->rescale_to_next_inplace(x4);
+  option_.evaluator->square(x2, x4);
+  option_.evaluator->relinearize_inplace(x4, *(option_.relin_keys));
+  option_.evaluator->rescale_to_next_inplace(x4);
   // Reduce modulus of x^2 (Level: l-2)
-  gTool.evaluator()->mod_switch_to_next_inplace(x2);
+  option_.evaluator->mod_switch_to_next_inplace(x2);
   // Reduce modulus of x (Level: l-2)
-  gTool.evaluator()->mod_switch_to_next_inplace(x);
-  gTool.evaluator()->mod_switch_to_next_inplace(x);
+  option_.evaluator->mod_switch_to_next_inplace(x);
+  option_.evaluator->mod_switch_to_next_inplace(x);
 
   // Calculate ax^4 (Level: l-3)
-  gTool.evaluator()->multiply_plain(x4, plain_poly_coeffs_[0], ax4);
+  option_.evaluator->multiply_plain(x4, plain_poly_coeffs_[0], ax4);
   // Calculate bx^2 (Level: l-3)
-  gTool.evaluator()->multiply_plain(x2, plain_poly_coeffs_[1], bx2);
+  option_.evaluator->multiply_plain(x2, plain_poly_coeffs_[1], bx2);
   // Calculate cx (Level: l-3)
-  gTool.evaluator()->multiply_plain(x, plain_poly_coeffs_[2], cx);
+  option_.evaluator->multiply_plain(x, plain_poly_coeffs_[2], cx);
 
   // Normalize scales
-  ax4.scale() = gTool.scale_param();
-  bx2.scale() = gTool.scale_param();
-  cx.scale()  = gTool.scale_param();
+  ax4.scale() = option_.scale_param;
+  bx2.scale() = option_.scale_param;
+  cx.scale()  = option_.scale_param;
   // Calculate ax^4 + bx^2 + cx + d (Level: l-3)
-  gTool.evaluator()->add(ax4, bx2, y);
-  gTool.evaluator()->add_inplace(y, cx);
-  gTool.evaluator()->rescale_to_next_inplace(y);
-  y.scale() = gTool.scale_param();
-  gTool.evaluator()->add_plain_inplace(y, plain_poly_coeffs_[3]);
+  option_.evaluator->add(ax4, bx2, y);
+  option_.evaluator->add_inplace(y, cx);
+  option_.evaluator->rescale_to_next_inplace(y);
+  y.scale() = option_.scale_param;
+  option_.evaluator->add_plain_inplace(y, plain_poly_coeffs_[3]);
 
   return move(y);
 }
@@ -208,30 +212,30 @@ Ciphertext Activation::swishDeg4Opt(Ciphertext& x) const {
 
   /* Assume that input level is l */
   // Calculate x^2 (Level: l-1)
-  gTool.evaluator()->square(x, x2);
-  gTool.evaluator()->relinearize_inplace(x2, *(gTool.relin_keys()));
-  gTool.evaluator()->rescale_to_next_inplace(x2);
+  option_.evaluator->square(x, x2);
+  option_.evaluator->relinearize_inplace(x2, *(option_.relin_keys));
+  option_.evaluator->rescale_to_next_inplace(x2);
   // Calculate x^4 (Level: l-2)
-  gTool.evaluator()->square(x2, x4);
-  gTool.evaluator()->relinearize_inplace(x4, *(gTool.relin_keys()));
+  option_.evaluator->square(x2, x4);
+  option_.evaluator->relinearize_inplace(x4, *(option_.relin_keys));
   // Reduce modulus of x (Level: l-1)
-  gTool.evaluator()->mod_switch_to_next_inplace(x);
+  option_.evaluator->mod_switch_to_next_inplace(x);
 
   // Calculate b'x^2 (Level: l-2)
-  gTool.evaluator()->multiply_plain(x2, plain_poly_coeffs_[0], bx2);
+  option_.evaluator->multiply_plain(x2, plain_poly_coeffs_[0], bx2);
   // Calculate c'x (Level: l-2)
-  gTool.evaluator()->multiply_plain(x, plain_poly_coeffs_[1], cx);
+  option_.evaluator->multiply_plain(x, plain_poly_coeffs_[1], cx);
 
   // Normalize scales
-  x4.scale()  = gTool.scale_param();
-  bx2.scale() = gTool.scale_param();
-  cx.scale()  = gTool.scale_param();
+  x4.scale()  = option_.scale_param;
+  bx2.scale() = option_.scale_param;
+  cx.scale()  = option_.scale_param;
   // Calculate x^4 + b'x^2 + c'x + d' (Level: l-2)
-  gTool.evaluator()->add(x4, bx2, y);
-  gTool.evaluator()->add_inplace(y, cx);
-  gTool.evaluator()->rescale_to_next_inplace(y);
-  y.scale() = gTool.scale_param();
-  gTool.evaluator()->add_plain_inplace(y, plain_poly_coeffs_[2]);
+  option_.evaluator->add(x4, bx2, y);
+  option_.evaluator->add_inplace(y, cx);
+  option_.evaluator->rescale_to_next_inplace(y);
+  y.scale() = option_.scale_param;
+  option_.evaluator->add_plain_inplace(y, plain_poly_coeffs_[2]);
 
   return move(y);
 }
