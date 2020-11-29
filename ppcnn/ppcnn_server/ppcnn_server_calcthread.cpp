@@ -8,6 +8,7 @@
 #include <stdsc/stdsc_log.hpp>
 #include <omp.h>
 #include <ppcnn_share/ppcnn_utility.hpp>
+#include <ppcnn_share/ppcnn_seal_utility.hpp>
 #include <ppcnn_share/utils/globals.hpp>
 #include <ppcnn_share/utils/types.h>
 #include <ppcnn_share/utils/define.h>
@@ -19,6 +20,8 @@
 #include <ppcnn_server/ppcnn_server_calcthread.hpp>
 #include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 #include <seal/seal.h>
+
+#define ENABLE_LOCAL_DEBUG
 
 namespace ppcnn_server
 {
@@ -93,6 +96,8 @@ struct CalcThread::Impl
                 usleep(args.retry_interval_msec * 1000);
             }
 
+            LOGINFO("Get query. (%s)\n", query.params_.to_string().c_str());
+
             const auto dataset_name = std::string(query.params_.dataset);
             const auto model_name  = std::string(query.params_.model);
             const std::string base_model_path      = args.plaintext_experiment_path + dataset_name + "/saved_models/" + model_name;
@@ -110,17 +115,26 @@ struct CalcThread::Impl
                 STDSC_THROW_FILE(oss.str());
             }
             
+            std::vector<Ciphertext> encrypted_results(query.params_.labels);
+
             bool status = compute(th_id, query_id,
                                   query.params_, 
-                                  *(query.enc_keys_p_), 
+                                  *(query.enc_keys_p_),
+                                  query.ctxts_,
                                   model_structure_path, 
-                                  model_weights_path);
-            
-            LOGINFO("Get query. (%s)\n", query.params_.to_string().c_str());
+                                  model_weights_path,
+                                  encrypted_results);
 
-            std::vector<seal::Ciphertext> dummy_results;
-            Result result(query.key_id_, query_id, status, dummy_results);
+            Result result(query.key_id_, query_id, status, encrypted_results);
             out_queue_.push(query_id, result);
+
+#if defined ENABLE_LOCAL_DEBUG
+            for (size_t i=0; i<encrypted_results.size(); ++i) {
+                std::ostringstream oss;
+                oss << "_enc_results-" << i << ".dat";
+                ppcnn_share::seal_utility::write_to_file(oss.str(), encrypted_results[i]);
+            }
+#endif
 
             LOGINFO("Set result of query.\n");
         }
@@ -130,8 +144,10 @@ struct CalcThread::Impl
                  const int32_t query_id,
                  const ppcnn_share::ComputationParams& params,
                  const EncryptionKeys& enc_keys,
+                 const std::vector<seal::Ciphertext>& ctxts,
                  const std::string& model_structure_path,
-                 const std::string& model_weights_path)
+                 const std::string& model_weights_path,
+                 std::vector<Ciphertext>& encrypted_results)
     {
         LOGINFO("Start computation.\n");
         bool res = true;
@@ -156,8 +172,10 @@ struct CalcThread::Impl
         }
             
         LOGINFO("Buiding network from trained model...\n");
-        BuildNetwork(model_structure_path, model_weights_path, option);
+        Network network = BuildNetwork(model_structure_path, model_weights_path, option);
         STDSC_LOG_INFO("Finish buiding.\n");
+
+        network.printStructure();
 
         LOGINFO("Predicting...\n");
 
@@ -165,15 +183,19 @@ struct CalcThread::Impl
         const auto cols = params.img_width;
         const auto channels = params.img_channels;
         Ciphertext3D encrypted_packed_images(boost::extents[rows][cols][channels]);
-        
-        //for (Ciphertext3D::index row=0; row<rows; ++row) {
-        //    for (Ciphertext3D::index col=0; col<cols; ++col) {
-        //        for (Ciphertext3D::index ch=0; ch<channels; ++ch) {
-        //            auto index = row * cols * channels + col * channels + ch;
-        //            printf("%lu\n", index);
-        //        }
-        //    }
-        //}
+      
+        auto* dst = encrypted_packed_images.data();
+        std::memcpy(dst, ctxts.data(), sizeof(ctxts[0]) * ctxts.size());
+      
+#if defined ENABLE_LOCAL_DEBUG  
+        for (size_t i=0; i<rows * cols * channels; ++i) {
+            std::ostringstream oss;
+            oss << "_enc_inputs-" << i << ".dat";
+            ppcnn_share::seal_utility::write_to_file(oss.str(), dst[i]);
+        }
+#endif
+
+        encrypted_results = network.predict(encrypted_packed_images);
 
         STDSC_LOG_INFO("Finish predicting.\n");
 

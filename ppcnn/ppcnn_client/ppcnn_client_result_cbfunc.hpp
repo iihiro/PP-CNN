@@ -19,12 +19,17 @@
 #define PPCNN_CLIENT_RESULT_CBFUNC_HPP
 
 #include <functional>
+#include <vector>
 #include <seal/seal.h>
 
 namespace ppcnn_client
 {
 
-using cbfunc_t = std::function<void(const int32_t query_id, const bool status, const seal::Ciphertext*, void*)>;
+//using cbfunc_t = std::function<void(const int32_t query_id, const bool status, const seal::Ciphertext*, void*)>;
+using cbfunc_t = std::function<void(const int32_t query_id, 
+                                    const bool status, 
+                                    const std::vector<seal::Ciphertext>&,
+                                    void*)>;
     
 } /* namespace ppcnn_client */
 

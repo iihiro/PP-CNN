@@ -30,6 +30,7 @@ Result::Result(const int32_t key_id,
       query_id_(query_id),
       status_(status)
 {
+    ctxts_.resize(ctxts.size());
     std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());
     created_time_ = std::chrono::system_clock::now();
 }

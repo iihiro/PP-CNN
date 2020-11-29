@@ -139,6 +139,10 @@ struct Client::Impl
         status = s2c_param.result == ppcnn_share::kServerCalcResultSuccess;
 
         if (status) {
+            ppcnn_share::seal_utility::read_from_binary_stream(
+                rstream, rbuffstream.data(), s2c_param.enc_results_stream_sz, enc_results);
+            STDSC_LOG_INFO("Downloaded encryption results. (elements: %lu)", enc_results.vdata().size());
+            
 //            auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
 //            std::string s(p, p + s2c_param.enc_results_stream_sz);
 //            std::istringstream iss(s, std::istringstream::binary);
