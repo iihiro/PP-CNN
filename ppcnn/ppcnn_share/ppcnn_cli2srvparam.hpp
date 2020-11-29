@@ -44,7 +44,6 @@ std::istream& operator>>(std::istream& is, C2SEnckeyParam& param);
 struct C2SQueryParam
 {
     ImageInfo img_info;
-    size_t    enc_params_stream_sz;
     size_t    enc_inputs_stream_sz;
     int32_t   key_id;
 };
@@ -57,7 +56,6 @@ std::istream& operator>>(std::istream& is, C2SQueryParam& param);
  */
 struct C2SResreqParam
 {
-    size_t  enc_params_stream_sz;
     int32_t query_id;
 };
 

@@ -230,10 +230,12 @@ void EncData::save(std::ostream& os) const
 {
     size_t sz = vec_.size();
     os.write(reinterpret_cast<char*>(&sz), sizeof(sz));
-
+    
+    size_t saved_bytes = sizeof(sz);
     for (const auto& v : vec_) {
-        v.save(os);
+        saved_bytes += v.save(os);
     }
+    printf("===hoge: saved_bytes:%lu\n", saved_bytes);
 }
              
 void EncData::load(std::istream& is)
@@ -245,11 +247,13 @@ void EncData::load(std::istream& is)
 
     auto context = seal::SEALContext::Create(pimpl_->params_);
     
+    size_t loaded_bytes = sizeof(sz);
     for (size_t i=0; i<sz; ++i) {
         seal::Ciphertext ctxt;
-        ctxt.load(context, is);
+        loaded_bytes += ctxt.load(context, is);
         vec_.push_back(ctxt);
     }
+    printf("===hoge: loaded_bytes:%lu\n", loaded_bytes);
 }
 
 void EncData::save_to_file(const std::string& filepath) const
