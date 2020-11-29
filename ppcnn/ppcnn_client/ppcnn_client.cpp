@@ -130,16 +130,21 @@ struct Client::Impl
         splaindata.save(stream);
 
         printf("===hoge: enc_inptus_stream_sz: %lu\n", c2s_param.enc_inputs_stream_sz);
+#if 1
+        ppcnn_share::seal_utility::write_to_binary_stream(stream, sbuffstream.data(), enc_inputs);
+#else
         // Save encryption inputs using dummy binary stream.
         // ** seal::Ciphertext::save() requires a binary stream. **
         {
             std::ostringstream oss(std::istringstream::binary);
-            enc_inputs.save(oss);
+            auto saved_sz = enc_inputs.save(oss);
+            printf("2222hoge: saved_sz:%lu, enc_inputs_stream_sz:%lu\n", saved_sz, c2s_param.enc_inputs_stream_sz);
 
             auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
             std::memcpy(p, oss.str().data(), c2s_param.enc_inputs_stream_sz);
             stream.seekp(enc_inputs.stream_size(), std::ios_base::cur);
         }
+#endif
         
         stdsc::Buffer* sbuffer = &sbuffstream;
         stdsc::Buffer rbuffer;

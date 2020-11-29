@@ -48,14 +48,16 @@ struct BasicData
         vec_.clear();
     }
 
-    virtual void save(std::ostream& os) const
+    virtual size_t save(std::ostream& os) const
     {
         STDSC_LOG_WARN("%s is not implemented.", __FUNCTION__);
+        return -1;
     }
     
-    virtual void load(std::istream& is)
+    virtual size_t load(std::istream& is)
     {
         STDSC_LOG_WARN("%s is not implemented.", __FUNCTION__);
+        return -1;
     }
 
     virtual void save_to_file(const std::string& filepath) const

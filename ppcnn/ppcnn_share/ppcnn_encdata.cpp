@@ -226,7 +226,7 @@ void EncData::decrypt(const seal::SecretKey& secret_key,
     }
 }
 
-void EncData::save(std::ostream& os) const
+size_t EncData::save(std::ostream& os) const
 {
     size_t sz = vec_.size();
     os.write(reinterpret_cast<char*>(&sz), sizeof(sz));
@@ -236,9 +236,10 @@ void EncData::save(std::ostream& os) const
         saved_bytes += v.save(os);
     }
     printf("===hoge: saved_bytes:%lu\n", saved_bytes);
+    return saved_bytes;
 }
              
-void EncData::load(std::istream& is)
+size_t EncData::load(std::istream& is)
 {
     size_t sz;
     is.read(reinterpret_cast<char*>(&sz), sizeof(sz));
@@ -254,6 +255,7 @@ void EncData::load(std::istream& is)
         vec_.push_back(ctxt);
     }
     printf("===hoge: loaded_bytes:%lu\n", loaded_bytes);
+    return loaded_bytes;
 }
 
 void EncData::save_to_file(const std::string& filepath) const

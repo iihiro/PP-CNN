@@ -91,14 +91,16 @@ struct EncData : public ppcnn_share::BasicData<seal::Ciphertext>
     /**
      * Save ciphertexts to stream
      * @param[out] os output stream
+     * @return saved size (bytes)
      */
-    virtual void save(std::ostream& os) const override;
+    virtual size_t save(std::ostream& os) const override;
 
     /**
      * Load ciphertexts from stream
      * @param[in] is input stream
+     * @return loaded size (bytes)
      */
-    virtual void load(std::istream& is) override;
+    virtual size_t load(std::istream& is) override;
 
     /**
      * Save ciphertexts to file

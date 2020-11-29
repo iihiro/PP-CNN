@@ -258,14 +258,16 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
 
     splaindata.save(sstream);
 
-    {
-        std::ostringstream oss(std::istringstream::binary);
-        enc_results.save(oss);
-    
-        auto* p = static_cast<uint8_t*>(sbuffstream.data()) + sstream.tellp();
-        std::memcpy(p, oss.str().data(), enc_results.stream_size());
-        sstream.seekp(enc_results.stream_size(), std::ios_base::cur);
-    }
+    //{
+    //    std::ostringstream oss(std::istringstream::binary);
+    //    auto saved_sz = enc_results.save(oss);
+    //    printf("22222onresreq hoge: saved_sz:%lu, stream_size:%lu\n", saved_sz, enc_results.stream_size());
+    //
+    //    auto* p = static_cast<uint8_t*>(sbuffstream.data()) + sstream.tellp();
+    //    std::memcpy(p, oss.str().data(), enc_results.stream_size());
+    //    sstream.seekp(enc_results.stream_size(), std::ios_base::cur);
+    //}
+    ppcnn_share::seal_utility::write_to_binary_stream(sstream, sbuffstream.data(), enc_results);
 
     STDSC_LOG_INFO("Sending results. (query ID: %d)", param.query_id);
     stdsc::Buffer* bsbuff = &sbuffstream;

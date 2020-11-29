@@ -126,6 +126,8 @@ namespace seal_utility
     TEMPLATE_INSTANTIATE(seal::GaloisKeys);
     TEMPLATE_INSTANTIATE(seal::RelinKeys);
     TEMPLATE_INSTANTIATE(seal::Ciphertext);
+    TEMPLATE_INSTANTIATE(EncData);
+
 
 #undef TEMPLATE_INSTANTIATE
 
