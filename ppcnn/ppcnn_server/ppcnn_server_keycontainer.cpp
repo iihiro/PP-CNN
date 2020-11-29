@@ -22,22 +22,7 @@
 
 
 namespace ppcnn_server
-{
-    struct EncryptionKeys
-    {
-        EncryptionKeys(const seal::EncryptionParameters& params,
-                       const seal::PublicKey& pubkey,
-                       const seal::RelinKeys& relinkey)
-            : params_(new seal::EncryptionParameters(params)),
-              pubkey_(new seal::PublicKey(pubkey)),
-              relinkey_(new seal::RelinKeys(relinkey))
-        {}
-
-        std::shared_ptr<seal::EncryptionParameters> params_;
-        std::shared_ptr<seal::PublicKey> pubkey_;
-        std::shared_ptr<seal::RelinKeys> relinkey_;
-    };
-    
+{    
     struct KeyContainer::Impl
     {
         Impl()
@@ -59,7 +44,17 @@ namespace ppcnn_server
         pimpl_->keymap_.emplace(key_id, enckeys);
     }
 
-    const seal::EncryptionParameters& KeyContainer::get_params(const int32_t key_id) const
+    //const seal::EncryptionParameters& KeyContainer::get_params(const int32_t key_id) const
+    //{
+    //    if (pimpl_->keymap_.count(key_id) == 0) {
+    //        std::ostringstream oss;
+    //        oss << "Value not found. (key_id: ";
+    //        oss << key_id << ")";
+    //        STDSC_THROW_INVPARAM(oss.str());
+    //    }
+    //    return *(pimpl_->keymap_.at(key_id).params_);
+    //}
+    const EncryptionKeys& KeyContainer::get_keys(const int32_t key_id) const
     {
         if (pimpl_->keymap_.count(key_id) == 0) {
             std::ostringstream oss;
@@ -67,7 +62,17 @@ namespace ppcnn_server
             oss << key_id << ")";
             STDSC_THROW_INVPARAM(oss.str());
         }
-        return *(pimpl_->keymap_.at(key_id).params_);
+        return pimpl_->keymap_.at(key_id);
     }
+ 
+    EncryptionKeys::EncryptionKeys(const seal::EncryptionParameters& params,
+                                   const seal::PublicKey& pubkey,
+                                   const seal::RelinKeys& relinkey)
+        : params(new seal::EncryptionParameters(params)),
+          pubkey(new seal::PublicKey(pubkey)),
+          relinkey(new seal::RelinKeys(relinkey))
+    {}
     
+
+   
 } /* namespace ppcnn_server */

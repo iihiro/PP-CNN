@@ -24,9 +24,11 @@ namespace ppcnn_server
 {
 Query::Query(const int32_t key_id,
              const ppcnn_share::ImageInfo& img_info,
-             const std::vector<seal::Ciphertext>& ctxts)
+             const std::vector<seal::Ciphertext>& ctxts,
+             const EncryptionKeys* enc_keys_p)
     : key_id_(key_id),
-      img_info_(img_info)
+      img_info_(img_info),
+      enc_keys_p_(enc_keys_p)
 {
     ctxts_.resize(ctxts.size());
     std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());

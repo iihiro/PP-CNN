@@ -50,7 +50,6 @@ DEFUN_DATA(CallbackFunctionEncryptionKeys)
                    state.current_state_str().c_str());
     
     DEF_CDATA_ON_ALL(ppcnn_server::CommonCallbackParam);
-    //auto& calc_manager = cdata_a->calc_manager_;
     auto& key_container = cdata_a->key_container_;
 
     stdsc::BufferStream rbuffstream(buffer);
@@ -59,81 +58,34 @@ DEFUN_DATA(CallbackFunctionEncryptionKeys)
     ppcnn_share::PlainData<ppcnn_share::C2SEnckeyParam> rplaindata;
     rplaindata.load(rstream);
     const auto param = rplaindata.data();
-    STDSC_LOG_DEBUG("param: key_id: %d", param.key_id);
+    STDSC_LOG_INFO("Encryption key upload params: key_id: %d", param.key_id);
 
-    // Load encryption parameter using dummy binary stream.
-    // ** seal::EncryptionParameters::load() requires a binary stream. **
-#if 1
     seal::EncryptionParameters enc_params(seal::scheme_type::CKKS);
     ppcnn_share::seal_utility::read_from_binary_stream(
         rstream, rbuffstream.data(), param.enc_params_stream_sz, enc_params);
-#else
-    seal::EncryptionParameters enc_params(seal::scheme_type::CKKS);
-    {
-        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
-        std::string s(p, p + param.enc_params_stream_sz);
-
-        std::istringstream iss(s, std::istringstream::binary);
-        auto loaded_sz = enc_params.load(iss);
-        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
-
-        // update stream position
-        rstream.seekg(loaded_sz, std::ios_base::cur);
-    }
-#endif
-#if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("params.dat", enc_params);
-#endif
-
+    STDSC_LOG_INFO("Uploaded encryption params.");
+    
     auto context = seal::SEALContext::Create(enc_params);
 
-#if 1
     seal::PublicKey pubkey;
     ppcnn_share::seal_utility::read_from_binary_stream(
         rstream, rbuffstream.data(), param.pubkey_stream_sz, enc_params, pubkey);
-#else
-    seal::PublicKey pubkey;
-    {
-        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
-        std::string s(p, p + param.pubkey_stream_sz);
+    STDSC_LOG_INFO("Uploaded public key.");
 
-        std::istringstream iss(s, std::istringstream::binary);
-        auto loaded_sz = pubkey.load(context, iss);
-        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
-
-        // update stream position
-        rstream.seekg(loaded_sz, std::ios_base::cur);
-    }
-    //pubkey.load(context, rstream);
-#endif
-#if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("pubkey.dat", pubkey);
-#endif
-
-#if 1
-        seal::RelinKeys relinkey;
+    seal::RelinKeys relinkey;
     ppcnn_share::seal_utility::read_from_binary_stream(
         rstream, rbuffstream.data(), param.relinkey_stream_sz, enc_params, relinkey);
-#else
-    seal::RelinKeys relinkey;
-    {
-        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
-        std::string s(p, p + param.relinkey_stream_sz);
+    STDSC_LOG_INFO("Uploaded relin keys.");
 
-        std::istringstream iss(s, std::istringstream::binary);
-        auto loaded_sz = relinkey.load(context, iss);
-        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
-
-        // update stream position
-        rstream.seekg(loaded_sz, std::ios_base::cur);
-    }
-#endif
 #if defined ENABLE_LOCAL_DEBUG
+    ppcnn_share::seal_utility::write_to_file("params.dat", enc_params);
+    ppcnn_share::seal_utility::write_to_file("pubkey.dat", pubkey);
     ppcnn_share::seal_utility::write_to_file("relinkey.dat", relinkey);
 #endif
 
     key_container.register_keys(param.key_id,
                                 enc_params, pubkey, relinkey);
+    STDSC_LOG_INFO("Registered encryptions keys.");
 }
     
 // CallbackFunction for Query
@@ -159,27 +111,17 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
                    param.enc_inputs_stream_sz,
                    param.key_id);
 
-    const auto& enc_params = key_container.get_params(param.key_id);
-#if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("params_on_query.dat", enc_params);
-#endif
+    const auto& enc_keys   = key_container.get_keys(param.key_id);
+    const auto& enc_params = *enc_keys.params;//key_container.get_params(param.key_id);
 
-    // Load encryption parameter using dummy binary stream.
-    // ** seal::Ciphertext::load() requires a binary stream. **
     ppcnn_share::EncData enc_inputs(enc_params);
-    {
-        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
-        std::string s(p, p + param.enc_inputs_stream_sz);
-        std::istringstream iss(s, std::istringstream::binary);
-        enc_inputs.load(iss);
-
-        // update stream position
-        rstream.seekg(param.enc_inputs_stream_sz, std::ios_base::cur);
-    }
+    ppcnn_share::seal_utility::read_from_binary_stream(
+        rstream, rbuffstream.data(), param.enc_inputs_stream_sz, enc_inputs);
     STDSC_LOG_INFO("Uploaded encryption inputs. (elements: %lu)", enc_inputs.vdata().size());
 
 #if defined ENABLE_LOCAL_DEBUG
-    printf("enc_inputs.size(): %ld\n", enc_inputs.vdata().size());
+    ppcnn_share::seal_utility::write_to_file("params_on_query.dat", enc_params);
+
     for (size_t i=0; i<enc_inputs.vdata().size(); ++i) {
         std::ostringstream oss;
         oss << "enc_inputs-" << i << ".dat";
@@ -187,7 +129,7 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     }
 #endif
 
-    Query query(param.key_id, param.img_info, enc_inputs.vdata());
+    Query query(param.key_id, param.img_info, enc_inputs.vdata(), &enc_keys);
     int32_t query_id = calc_manager.push_query(query);
     STDSC_LOG_INFO("Generated query ID. (%d)", query_id);
 
@@ -233,7 +175,8 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
                    result.query_id_,
                    result.status_);
 
-    const auto& enc_params = key_container.get_params(result.key_id_);
+    //const auto& enc_params = key_container.get_params(result.key_id_);
+    const auto& enc_params = *(key_container.get_keys(result.key_id_).params);
 #if defined ENABLE_LOCAL_DEBUG
     ppcnn_share::seal_utility::write_to_file("params_on_resreq.dat", enc_params);
 #endif

@@ -74,38 +74,8 @@ struct Client::Impl
         std::iostream stream(&sbuffstream);
 
         splaindata.save(stream);
-
-#if 1
         ppcnn_share::seal_utility::write_to_binary_stream(stream, sbuffstream.data(), enc_params_);
-#else
-        // Save encryption parameter using dummy binary stream.
-        // ** seal::EncryptionParameters::save() requires a binary stream. **
-        {
-            std::ostringstream oss(std::istringstream::binary);
-            auto saved_sz = enc_params_.save(oss);
-            STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
-
-            auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
-            std::memcpy(p, oss.str().data(), c2s_param.enc_params_stream_sz);
-            stream.seekp(saved_sz, std::ios_base::cur);
-        }
-#endif
-
-#if 1
         ppcnn_share::seal_utility::write_to_binary_stream(stream, sbuffstream.data(), pubkey);
-#else
-        {
-            std::ostringstream oss(std::istringstream::binary);
-            auto saved_sz = pubkey.save(oss);
-            STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
-
-            auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
-            //std::memcpy(p, oss.str().data(), c2s_param.pubkey_stream_sz);
-            std::memcpy(p, oss.str().data(), saved_sz);
-            stream.seekp(saved_sz, std::ios_base::cur);
-        }
-#endif
-
         ppcnn_share::seal_utility::write_to_binary_stream(stream, sbuffstream.data(), relinkey);
 
         stdsc::Buffer* sbuffer = &sbuffstream;
@@ -128,23 +98,7 @@ struct Client::Impl
         std::iostream stream(&sbuffstream);
 
         splaindata.save(stream);
-
-        printf("===hoge: enc_inptus_stream_sz: %lu\n", c2s_param.enc_inputs_stream_sz);
-#if 1
         ppcnn_share::seal_utility::write_to_binary_stream(stream, sbuffstream.data(), enc_inputs);
-#else
-        // Save encryption inputs using dummy binary stream.
-        // ** seal::Ciphertext::save() requires a binary stream. **
-        {
-            std::ostringstream oss(std::istringstream::binary);
-            auto saved_sz = enc_inputs.save(oss);
-            printf("2222hoge: saved_sz:%lu, enc_inputs_stream_sz:%lu\n", saved_sz, c2s_param.enc_inputs_stream_sz);
-
-            auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
-            std::memcpy(p, oss.str().data(), c2s_param.enc_inputs_stream_sz);
-            stream.seekp(enc_inputs.stream_size(), std::ios_base::cur);
-        }
-#endif
         
         stdsc::Buffer* sbuffer = &sbuffstream;
         stdsc::Buffer rbuffer;

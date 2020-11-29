@@ -30,6 +30,8 @@
 namespace ppcnn_server
 {
 
+class EncryptionKeys;
+
 /**
  * @brief This class is used to hold the query data.
  */
@@ -44,7 +46,8 @@ struct Query
      */
     Query(const int32_t key_id,
           const ppcnn_share::ImageInfo& img_info,
-          const std::vector<seal::Ciphertext>& ctxts);
+          const std::vector<seal::Ciphertext>& ctxts,
+          const EncryptionKeys* enc_keys_p);
     virtual ~Query() = default;
 
     /**
@@ -53,7 +56,8 @@ struct Query
      */
     Query(const Query& q)
         : key_id_(q.key_id_),
-          img_info_(q.img_info_)
+          img_info_(q.img_info_),
+          enc_keys_p_(q.enc_keys_p_)
     {
         ctxts_.resize(q.ctxts_.size());
         std::copy(q.ctxts_.begin(), q.ctxts_.end(), ctxts_.begin());
@@ -62,6 +66,7 @@ struct Query
     int32_t key_id_;
     ppcnn_share::ImageInfo img_info_;
     std::vector<seal::Ciphertext> ctxts_;
+    const EncryptionKeys* enc_keys_p_;
 };
 
 /**
