@@ -5,7 +5,7 @@ else
 fi
 
 if [ $cmd == "start" ]; then
-    docker run -d --rm -it -v `pwd`:/root/work/PP-CNN --name ppcnn ppcnn
+    docker run -d --rm -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix -v `pwd`:/root/work/PP-CNN --name ppcnn ppcnn
 elif [ $cmd == "stop" ]; then
     docker stop ppcnn
 fi

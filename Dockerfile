@@ -3,6 +3,7 @@ FROM centos:7
 RUN yum install -y gcc-c++ wget make openssl-devel git bzip2 which mlocate
 RUN yum install -y centos-release-scl
 RUN yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
+RUN yum install -y xterm
 
 # for Devel (to be removed)
 RUN yum install -y emacs
@@ -17,9 +18,6 @@ RUN cd tmp \
     && ./b2 -j12 link=static,shared runtime-link=shared threading=multi variant=release --layout=tagged --build-dir=../b2gcc --stagedir=stage/gcc stage \
     && ./b2 -j12 --prefix=/usr install \
     && ldconfig
-#    && ./bootstrap.sh --without-icu --with-libraries=context,filesystem,graph,iostreams,program_options,serialization,system,test
-#    && ./bootstrap.sh \
-#    && ./b2 --without-python --prefix=/usr -j 4 link=shared runtime-link=shared install
 
 RUN cd tmp \
     && wget https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz \

@@ -64,10 +64,9 @@ struct Option
 {
     std::string dataset = DEFAULT_DATASET;
     std::string model   = DEFAULT_MODEL;
-    std::string dataset_dir;
-    std::string config_filepath;
     int32_t opt_level   = DEFAULT_OPTIMIZATION_LEVEL;
     int32_t activation  = DEFAULT_ACTIVATION;
+    std::string config_filepath;
 };
 
 struct CallbackParam
@@ -155,7 +154,7 @@ void callback_func(const int32_t query_id,
 void init(Option& option, int argc, char* argv[])
 {
     int opt;
-    while ((opt = getopt(argc, argv, "D:M:O:A:d:c:h")) != -1)
+    while ((opt = getopt(argc, argv, "D:M:O:A:C:h")) != -1)
     {
         switch (opt)
         {
@@ -171,15 +170,12 @@ void init(Option& option, int argc, char* argv[])
         case 'A':
             option.activation = std::stol(optarg);
             break;
-        case 'd':
-            option.dataset_dir = optarg;
-            break;
-        case 'c':
+        case 'C':
             option.config_filepath = optarg;
             break;
         case 'h':
         default:
-            printf("Usage: %s [-D dataset] [-M model] [-O opt_level] [-A activation] [-d dataset_dir] [-c config_filepath]\n", argv[0]);
+            printf("Usage: %s [-D dataset] [-M model] [-O opt_level] [-A activation] [-C config_filepath]\n", argv[0]);
             exit(1);
         }
     }
@@ -329,8 +325,9 @@ void exec(Option& option)
     std::cout << "Loading test imgs & labels..." << std::endl;
     std::vector<std::vector<float>> test_imgs;
     std::vector<unsigned char> test_lbls;
-    test_imgs = loadMnistTestImages(option.dataset_dir, test_img_limit);
-    test_lbls = loadMnistTestLabels(option.dataset_dir, test_img_limit);
+    std::string datasets_dir = PPCNN_DEFAULT_DATASETS_PATH + option.dataset;
+    test_imgs = loadMnistTestImages(datasets_dir, test_img_limit);
+    test_lbls = loadMnistTestLabels(datasets_dir, test_img_limit);
     std::cout << "Finish loading!" << std::endl;
 
     std::cout << "Number of imgs for test: " << test_imgs.size() << std::endl;

@@ -9,5 +9,6 @@
 #define PPCNN_DEFAULT_MAX_RESULT_LIFETIME_SEC 50000
 
 #define PPCNN_DEFAULT_PLAINTEXT_EXPERIMENT_PATH "../../../plaintext_experiment/"
+#define PPCNN_DEFAULT_DATASETS_PATH "../../../datasets/"
 
 #endif /* PPCNN_DEFINE_HPP */
