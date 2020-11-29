@@ -146,7 +146,6 @@ struct CalcThread::Impl
         auto activation = static_cast<EActivation>(params.activation);
         OptOption option(opt_level, activation, relin_keys, *evaluator, *encoder);
 
-        printf("*2\n");
         auto trained_model_name = std::string(params.model);
         if (option.enable_optimize_activation) {
             if (trained_model_name.find("CKKS-swish_rg4_deg4") != std::string::npos || activation == SWISH_RG4_DEG4) {
@@ -156,11 +155,27 @@ struct CalcThread::Impl
             }
         }
             
-        printf("*3\n");
         LOGINFO("Buiding network from trained model...\n");
         BuildNetwork(model_structure_path, model_weights_path, option);
         STDSC_LOG_INFO("Finish buiding.\n");
 
+        LOGINFO("Predicting...\n");
+
+        const auto rows = params.img_height;
+        const auto cols = params.img_width;
+        const auto channels = params.img_channels;
+        Ciphertext3D encrypted_packed_images(boost::extents[rows][cols][channels]);
+        
+        //for (Ciphertext3D::index row=0; row<rows; ++row) {
+        //    for (Ciphertext3D::index col=0; col<cols; ++col) {
+        //        for (Ciphertext3D::index ch=0; ch<channels; ++ch) {
+        //            auto index = row * cols * channels + col * channels + ch;
+        //            printf("%lu\n", index);
+        //        }
+        //    }
+        //}
+
+        STDSC_LOG_INFO("Finish predicting.\n");
 
         return res;
     }
