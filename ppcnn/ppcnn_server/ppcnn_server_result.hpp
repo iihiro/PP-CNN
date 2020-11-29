@@ -36,16 +36,20 @@ struct Result
     Result() = default;
     /**
      * Constructor
+     * @param[in] key_id key ID
      * @param[in] query_id query ID
      * @param[in] status   calcuration status
      * @param[in] ctxts     cipher texts
      */
-    Result(const int32_t query_id, const bool status, 
+    Result(const int32_t key_id,
+           const int32_t query_id, 
+           const bool status, 
            const std::vector<seal::Ciphertext>& ctxts);
     virtual ~Result() = default;
 
     double elapsed_time() const;
 
+    int32_t key_id_;
     int32_t query_id_;
     bool status_;
     std::vector<seal::Ciphertext> ctxts_;

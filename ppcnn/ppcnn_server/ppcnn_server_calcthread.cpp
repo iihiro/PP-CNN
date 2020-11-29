@@ -44,7 +44,7 @@ struct CalcThread::Impl
             STDSC_LOG_INFO("[th:%d] Get query #%d.", th_id, query_id);
 
             std::vector<seal::Ciphertext> dummy_results;
-            Result result(query_id, status, dummy_results);
+            Result result(query.key_id_, query_id, status, dummy_results);
             out_queue_.push(query_id, result);
 
             STDSC_LOG_INFO("[th:%d] Set result of query #%d.", th_id, query_id);

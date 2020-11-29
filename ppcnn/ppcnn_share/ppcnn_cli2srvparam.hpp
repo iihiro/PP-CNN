@@ -30,9 +30,9 @@ namespace ppcnn_share
 struct C2SEnckeyParam
 {
     int32_t key_id;
-    size_t enc_params_stream_sz;
-    size_t pubkey_stream_sz;
-    size_t relinkey_stream_sz;
+    size_t  enc_params_stream_sz;
+    size_t  pubkey_stream_sz;
+    size_t  relinkey_stream_sz;
 };
 
 std::ostream& operator<<(std::ostream& os, const C2SEnckeyParam& param);
@@ -44,12 +44,25 @@ std::istream& operator>>(std::istream& is, C2SEnckeyParam& param);
 struct C2SQueryParam
 {
     ImageInfo img_info;
-    size_t enc_params_stream_sz;
-    size_t enc_inputs_stream_sz;
+    size_t    enc_params_stream_sz;
+    size_t    enc_inputs_stream_sz;
+    int32_t   key_id;
 };
 
 std::ostream& operator<<(std::ostream& os, const C2SQueryParam& param);
 std::istream& operator>>(std::istream& is, C2SQueryParam& param);
+
+/**
+ * @brief This class is used to hold the parameters of result request from client to server.
+ */
+struct C2SResreqParam
+{
+    size_t  enc_params_stream_sz;
+    int32_t query_id;
+};
+
+std::ostream& operator<<(std::ostream& os, const C2SResreqParam& param);
+std::istream& operator>>(std::istream& is, C2SResreqParam& param);
 
 } /* namespace ppcnn_share */
 

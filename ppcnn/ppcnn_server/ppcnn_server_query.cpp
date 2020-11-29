@@ -22,9 +22,11 @@
 
 namespace ppcnn_server
 {
-Query::Query(const ppcnn_share::ImageInfo& img_info,
+Query::Query(const int32_t key_id,
+             const ppcnn_share::ImageInfo& img_info,
              const std::vector<seal::Ciphertext>& ctxts)
-    : img_info_(img_info)
+    : key_id_(key_id),
+      img_info_(img_info)
 {
     ctxts_.resize(ctxts.size());
     std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());

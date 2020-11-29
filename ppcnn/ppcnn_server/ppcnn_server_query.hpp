@@ -38,10 +38,12 @@ struct Query
     Query() = default;
     /**
      * Constructor
+     * @param[in] key_id key ID
      * @param[in] img_info image info
      * @param[in] ctxts cipher texts
      */
-    Query(const ppcnn_share::ImageInfo& img_info,
+    Query(const int32_t key_id,
+          const ppcnn_share::ImageInfo& img_info,
           const std::vector<seal::Ciphertext>& ctxts);
     virtual ~Query() = default;
 
@@ -50,12 +52,14 @@ struct Query
      * @param[in] q query
      */
     Query(const Query& q)
-        : img_info_(q.img_info_)
+        : key_id_(q.key_id_),
+          img_info_(q.img_info_)
     {
         ctxts_.resize(q.ctxts_.size());
         std::copy(q.ctxts_.begin(), q.ctxts_.end(), ctxts_.begin());
     }
 
+    int32_t key_id_;
     ppcnn_share::ImageInfo img_info_;
     std::vector<seal::Ciphertext> ctxts_;
 };

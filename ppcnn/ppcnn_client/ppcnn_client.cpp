@@ -119,29 +119,30 @@ struct Client::Impl
         ppcnn_share::PlainData<ppcnn_share::C2SQueryParam> splaindata;
         ppcnn_share::C2SQueryParam c2s_param;
         c2s_param.img_info = img_info;
+        c2s_param.key_id   = key_id;
         c2s_param.enc_params_stream_sz = ppcnn_share::seal_utility::stream_size(enc_params_);
         c2s_param.enc_inputs_stream_sz = enc_inputs.stream_size();
         splaindata.push(c2s_param);
 
         auto sz = (splaindata.stream_size()
-                   + c2s_param.enc_params_stream_sz
+//                   + c2s_param.enc_params_stream_sz
                    + c2s_param.enc_inputs_stream_sz);
         stdsc::BufferStream sbuffstream(sz);
         std::iostream stream(&sbuffstream);
 
         splaindata.save(stream);
 
-        // Save encryption parameter using dummy binary stream.
-        // ** seal::EncryptionParameters::save() requires a binary stream. **
-        {
-            std::ostringstream oss(std::istringstream::binary);
-            auto saved_sz = enc_params_.save(oss);
-            STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
-
-            auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
-            std::memcpy(p, oss.str().data(), c2s_param.enc_params_stream_sz);
-            stream.seekp(saved_sz, std::ios_base::cur);
-        }
+        //// Save encryption parameter using dummy binary stream.
+        //// ** seal::EncryptionParameters::save() requires a binary stream. **
+        //{
+        //    std::ostringstream oss(std::istringstream::binary);
+        //    auto saved_sz = enc_params_.save(oss);
+        //    STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
+        //
+        //    auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
+        //    std::memcpy(p, oss.str().data(), c2s_param.enc_params_stream_sz);
+        //    stream.seekp(saved_sz, std::ios_base::cur);
+        //}
 
         // Save encryption parameter using dummy binary stream.
         // ** seal::Ciphertext::save() requires a binary stream. **
@@ -170,27 +171,34 @@ struct Client::Impl
     {
         int32_t enc_params_stream_sz = ppcnn_share::seal_utility::stream_size(enc_params_);
 
-        ppcnn_share::PlainData<int32_t> splaindata;
-        splaindata.push(query_id);
-        splaindata.push(enc_params_stream_sz);
+        //ppcnn_share::PlainData<int32_t> splaindata;
+        //splaindata.push(query_id);
+        //splaindata.push(enc_params_stream_sz);
+        ppcnn_share::PlainData<ppcnn_share::C2SResreqParam> splaindata;
+        ppcnn_share::C2SResreqParam c2s_param;
+        c2s_param.query_id = query_id;
+        c2s_param.enc_params_stream_sz = ppcnn_share::seal_utility::stream_size(enc_params_);
+        splaindata.push(c2s_param);
+        
 
-        auto sz = (splaindata.stream_size() + enc_params_stream_sz);
+        //auto sz = (splaindata.stream_size() + enc_params_stream_sz);
+        auto sz = splaindata.stream_size();
         stdsc::BufferStream sbuffstream(sz);
         std::iostream stream(&sbuffstream);
 
         splaindata.save(stream);
 
-        // Save encryption parameter using dummy binary stream.
-        // ** seal::EncryptionParameters::save() requires a binary stream. **
-        {
-            std::ostringstream oss(std::istringstream::binary);
-            auto saved_sz = enc_params_.save(oss);
-            STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
-
-            auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
-            std::memcpy(p, oss.str().data(), enc_params_stream_sz);
-            stream.seekp(saved_sz, std::ios_base::cur);
-        }
+        //// Save encryption parameter using dummy binary stream.
+        //// ** seal::EncryptionParameters::save() requires a binary stream. **
+        //{
+        //    std::ostringstream oss(std::istringstream::binary);
+        //    auto saved_sz = enc_params_.save(oss);
+        //    STDSC_LOG_DEBUG("Saved %lu bytes to stream.", saved_sz);
+        //
+        //    auto* p = static_cast<uint8_t*>(sbuffstream.data()) + stream.tellp();
+        //    std::memcpy(p, oss.str().data(), enc_params_stream_sz);
+        //    stream.seekp(saved_sz, std::ios_base::cur);
+        //}
 
         stdsc::Buffer* sbuffer = &sbuffstream;
         stdsc::Buffer rbuffer;

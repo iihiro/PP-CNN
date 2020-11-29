@@ -134,10 +134,10 @@ int32_t init_keys(const std::string& config_filepath,
     keycont.get_param(key_id, params);
 
 #if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("pubkey.txt", pubkey);
-    ppcnn_share::seal_utility::write_to_file("seckey.txt", seckey);
-    ppcnn_share::seal_utility::write_to_file("relinkey.txt", relinkey);
-    ppcnn_share::seal_utility::write_to_file("params.txt", params);
+    ppcnn_share::seal_utility::write_to_file("pubkey.dat", pubkey);
+    ppcnn_share::seal_utility::write_to_file("seckey.dat", seckey);
+    ppcnn_share::seal_utility::write_to_file("relinkey.dat", relinkey);
+    ppcnn_share::seal_utility::write_to_file("params.dat", params);
 #endif
     
     return key_id;
@@ -206,7 +206,7 @@ void compute(const int32_t key_id,
             printf("enc_inputs.size(): %ld\n", enc_inputs.vdata().size());
             for (size_t i=0; i<elem_num; ++i) {
                 std::ostringstream oss;
-                oss << "enc_inputs-" << i;
+                oss << "enc_inputs-" << i << ".dat";
                 ppcnn_share::seal_utility::write_to_file(oss.str(), enc_inputs.vdata()[i]);
             }
 #endif
@@ -230,6 +230,7 @@ void exec(Option& option)
     seal::RelinKeys relinkey;
     seal::EncryptionParameters params(seal::scheme_type::CKKS);
     auto key_id = init_keys(option.config_filepath, seckey, pubkey, relinkey, params);
+    STDSC_LOG_INFO("Generated encryption keys. (key_id:%d)", key_id);
 
     size_t test_img_limit = 0, number_prediction_trials = 1;
 

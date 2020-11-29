@@ -102,7 +102,9 @@ public:
      * @param[out] status      calcuration status
      * @param[out] enc_results encrypted results
      */
-    void recv_results(const int32_t query_id, bool& status, ppcnn_share::EncData& enc_results) const;
+    void recv_results(const int32_t query_id, 
+                      bool& status, 
+                      ppcnn_share::EncData& enc_results) const;
 
     /**
      * Set callback functions

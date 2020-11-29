@@ -82,7 +82,7 @@ DEFUN_DATA(CallbackFunctionEncryptionKeys)
     }
 #endif
 #if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("params.txt", enc_params);
+    ppcnn_share::seal_utility::write_to_file("params.dat", enc_params);
 #endif
 
     auto context = seal::SEALContext::Create(enc_params);
@@ -107,7 +107,7 @@ DEFUN_DATA(CallbackFunctionEncryptionKeys)
     //pubkey.load(context, rstream);
 #endif
 #if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("pubkey.txt", pubkey);
+    ppcnn_share::seal_utility::write_to_file("pubkey.dat", pubkey);
 #endif
 
 #if 1
@@ -129,7 +129,7 @@ DEFUN_DATA(CallbackFunctionEncryptionKeys)
     }
 #endif
 #if defined ENABLE_LOCAL_DEBUG
-    ppcnn_share::seal_utility::write_to_file("relinkey.txt", relinkey);
+    ppcnn_share::seal_utility::write_to_file("relinkey.dat", relinkey);
 #endif
 
     key_container.register_keys(param.key_id,
@@ -143,7 +143,8 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
                    state.current_state_str().c_str());
 
     DEF_CDATA_ON_ALL(ppcnn_server::CommonCallbackParam);
-    auto& calc_manager = cdata_a->calc_manager_;
+    auto& calc_manager  = cdata_a->calc_manager_;
+    auto& key_container = cdata_a->key_container_;
 
     stdsc::BufferStream rbuffstream(buffer);
     std::iostream rstream(&rbuffstream);
@@ -151,45 +152,51 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     // load plaindata (param)
     ppcnn_share::PlainData<ppcnn_share::C2SQueryParam> rplaindata;
     rplaindata.load(rstream);
-    const auto& c2s_param = rplaindata.data();
-    STDSC_LOG_DEBUG("c2s_param: img_info: {%s}, "
+    const auto& param = rplaindata.data();
+    STDSC_LOG_DEBUG("param: img_info: {%s}, "
                     "enc_params_stream_sz: %lu, "
-                    "enc_inputs_stream_sz: %lu\n",
-                    c2s_param.img_info.to_string().c_str(),
-                    c2s_param.enc_params_stream_sz,
-                    c2s_param.enc_inputs_stream_sz);
+                    "enc_inputs_stream_sz: %lu, "
+                    "key_id: %d\n",
+                    param.img_info.to_string().c_str(),
+                    param.enc_params_stream_sz,
+                    param.enc_inputs_stream_sz,
+                    param.key_id);
 
+//    // Load encryption parameter using dummy binary stream.
+//    // ** seal::EncryptionParameters::load() requires a binary stream. **
+//    seal::EncryptionParameters enc_params(seal::scheme_type::CKKS);
+//    {
+//        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+//        std::string s(p, p + param.enc_params_stream_sz);
+//
+//        std::istringstream iss(s, std::istringstream::binary);
+//        auto loaded_sz = enc_params.load(iss);
+//        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
+//
+//        // update stream position
+//        rstream.seekg(loaded_sz, std::ios_base::cur);
+//    }
+//#if defined ENABLE_LOCAL_DEBUG
+//    ppcnn_share::seal_utility::write_to_file("params_on_query_0.dat", enc_params);
+//#endif
 
-    // Load encryption parameter using dummy binary stream.
-    // ** seal::EncryptionParameters::load() requires a binary stream. **
-    seal::EncryptionParameters params(seal::scheme_type::CKKS);
-    {
-        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
-        std::string s(p, p + c2s_param.enc_params_stream_sz);
+    const auto& enc_params = key_container.get_params(param.key_id);
+#if defined ENABLE_LOCAL_DEBUG
+    ppcnn_share::seal_utility::write_to_file("params_on_query.dat", enc_params);
+#endif
 
-        std::istringstream iss(s, std::istringstream::binary);
-        auto loaded_sz = params.load(iss);
-        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
-
-        // update stream position
-        rstream.seekg(loaded_sz, std::ios_base::cur);
-    }
-
-    // 次回, このコールバックでkey_idを受け取れるようにして,
-    // ↓のやつでparamsをとって↑のparamsの転送をやめるところから
-    //const auto& params = key_container.get_params();
 
     // Load encryption parameter using dummy binary stream.
     // ** seal::Ciphertext::load() requires a binary stream. **
-    ppcnn_share::EncData enc_inputs(params);
+    ppcnn_share::EncData enc_inputs(enc_params);
     {
         auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
-        std::string s(p, p + c2s_param.enc_inputs_stream_sz);
+        std::string s(p, p + param.enc_inputs_stream_sz);
         std::istringstream iss(s, std::istringstream::binary);
         enc_inputs.load(iss);
 
         // update stream position
-        rstream.seekg(c2s_param.enc_inputs_stream_sz, std::ios_base::cur);
+        rstream.seekg(param.enc_inputs_stream_sz, std::ios_base::cur);
     }
 
 #if defined ENABLE_LOCAL_DEBUG
@@ -197,12 +204,12 @@ DEFUN_UPDOWNLOAD(CallbackFunctionQuery)
     printf("enc_inputs.size(): %ld\n", enc_inputs.vdata().size());
     for (size_t i=0; i<enc_inputs.vdata().size(); ++i) {
         std::ostringstream oss;
-        oss << "enc_inputs-" << i;
+        oss << "enc_inputs-" << i << ".dat";
         ppcnn_share::seal_utility::write_to_file(oss.str(), enc_inputs.vdata()[i]);
     }
 #endif
 
-    Query query(c2s_param.img_info, enc_inputs.vdata());
+    Query query(param.key_id, param.img_info, enc_inputs.vdata());
     int32_t query_id = calc_manager.push_query(query);
 
     ppcnn_share::PlainData<int32_t> splaindata;
@@ -228,38 +235,55 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
                    state.current_state_str().c_str());
 
     DEF_CDATA_ON_ALL(ppcnn_server::CommonCallbackParam);
-    auto& calc_manager = cdata_a->calc_manager_;
+    auto& calc_manager  = cdata_a->calc_manager_;
+    auto& key_container = cdata_a->key_container_;
 
     stdsc::BufferStream rbuffstream(buffer);
     std::iostream rstream(&rbuffstream);
 
+    //// load plaindata (param)
+    //ppcnn_share::PlainData<int32_t> rplaindata;
+    //rplaindata.load(rstream);
+    //const auto query_id = rplaindata.vdata()[0];
+    //const auto enc_params_stream_sz = rplaindata.vdata()[1];
     // load plaindata (param)
-    ppcnn_share::PlainData<int32_t> rplaindata;
+    ppcnn_share::PlainData<ppcnn_share::C2SResreqParam> rplaindata;
     rplaindata.load(rstream);
-    const auto query_id = rplaindata.vdata()[0];
-    const auto enc_params_stream_sz = rplaindata.vdata()[1];
+    const auto& param = rplaindata.data();
+    STDSC_LOG_DEBUG("param: query_id: %d, enc_param_stream_sz: %lu",
+                    param.query_id,
+                    param.enc_params_stream_sz);
 
-    // Load encryption parameter using dummy binary stream.
-    // ** seal::EncryptionParameters::load() requires a binary stream. **
-    seal::EncryptionParameters params(seal::scheme_type::CKKS);
-    {
-        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
-        std::string s(p, p + enc_params_stream_sz);
+//    // Load encryption parameter using dummy binary stream.
+//    // ** seal::EncryptionParameters::load() requires a binary stream. **
+//    seal::EncryptionParameters enc_params(seal::scheme_type::CKKS);
+//    {
+//        auto* p = static_cast<uint8_t*>(rbuffstream.data()) + rstream.tellg();
+//        std::string s(p, p + param.enc_params_stream_sz);
+//
+//        std::istringstream iss(s, std::istringstream::binary);
+//        auto loaded_sz = enc_params.load(iss);
+//        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
+//
+//        // update stream position
+//        rstream.seekg(loaded_sz, std::ios_base::cur);
+//    }
 
-        std::istringstream iss(s, std::istringstream::binary);
-        auto loaded_sz = params.load(iss);
-        STDSC_LOG_DEBUG("Loaded %lu bytes to stream.", loaded_sz);
 
-        // update stream position
-        rstream.seekg(loaded_sz, std::ios_base::cur);
-    }
-
-    printf("0_1\n");
     Result result;
-    calc_manager.pop_result(query_id, result);
+    calc_manager.pop_result(param.query_id, result);
+    STDSC_LOG_INFO("result: key_id:%d, query_id:%d, status:%d\n", 
+                   result.key_id_, 
+                   result.query_id_,
+                   result.status_);
+
+    const auto& enc_params = key_container.get_params(result.key_id_);
+#if defined ENABLE_LOCAL_DEBUG
+    ppcnn_share::seal_utility::write_to_file("params_on_resreq.dat", enc_params);
+#endif
 
     printf("0_2\n");
-    ppcnn_share::EncData enc_outputs(params, result.ctxts_.data(), result.ctxts_.size());
+    ppcnn_share::EncData enc_outputs(enc_params, result.ctxts_.data(), result.ctxts_.size());
 #if defined ENABLE_LOCAL_DEBUG
     //ppcnn_share::seal_utility::write_to_file("result.txt", enc_outputs.vdata());
 #endif
@@ -292,7 +316,7 @@ DEFUN_UPDOWNLOAD(CallbackFunctionResultRequest)
     //enc_outputs.save(sstream);
 
     printf("5\n");
-    STDSC_LOG_INFO("Sending result. (query ID: %d)", query_id);
+    STDSC_LOG_INFO("Sending result. (query ID: %d)", param.query_id);
     stdsc::Buffer* bsbuff = &sbuffstream;
     sock.send_packet(stdsc::make_data_packet(ppcnn_share::kControlCodeDataResult, sz));
     sock.send_buffer(*bsbuff);
