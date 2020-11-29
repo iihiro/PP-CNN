@@ -99,7 +99,7 @@ void AveragePooling2D::forward(Ciphertext3D& input) const {
               if (ph == 0 && pw == 0) {
                 output[oh][ow][oc] = input[target_y][target_x][oc];
               } else {
-                option_.evaluator->add_inplace(output[oh][ow][oc], input[target_y][target_x][oc]);
+                option_.evaluator.add_inplace(output[oh][ow][oc], input[target_y][target_x][oc]);
               }
             }
           }
@@ -123,12 +123,12 @@ void AveragePooling2D::forward(Ciphertext3D& input) const {
               if (ph == 0 && pw == 0) {
                 output[oh][ow][oc] = input[target_y][target_x][oc];
               } else {
-                option_.evaluator->add_inplace(output[oh][ow][oc], input[target_y][target_x][oc]);
+                option_.evaluator.add_inplace(output[oh][ow][oc], input[target_y][target_x][oc]);
               }
             }
           }
-          option_.evaluator->multiply_plain_inplace(output[oh][ow][oc], plain_mul_factor_);
-          option_.evaluator->rescale_to_next_inplace(output[oh][ow][oc]);
+          option_.evaluator.multiply_plain_inplace(output[oh][ow][oc], plain_mul_factor_);
+          option_.evaluator.rescale_to_next_inplace(output[oh][ow][oc]);
         }
       }
     }

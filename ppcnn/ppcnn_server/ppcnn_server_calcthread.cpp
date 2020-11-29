@@ -116,13 +116,13 @@ struct CalcThread::Impl
                                   model_structure_path, 
                                   model_weights_path);
             
-            LOGINFO("Get query. (%s)", query.params_.to_string().c_str());
+            LOGINFO("Get query. (%s)\n", query.params_.to_string().c_str());
 
             std::vector<seal::Ciphertext> dummy_results;
             Result result(query.key_id_, query_id, status, dummy_results);
             out_queue_.push(query_id, result);
 
-            LOGINFO("Set result of query.");
+            LOGINFO("Set result of query.\n");
         }
     }
 
@@ -133,37 +133,33 @@ struct CalcThread::Impl
                  const std::string& model_structure_path,
                  const std::string& model_weights_path)
     {
-        LOGINFO("Start computation.");
+        LOGINFO("Start computation.\n");
         bool res = true;
         auto context = seal::SEALContext::Create(*(enc_keys.params));
         
-        auto& pubkey   = *(enc_keys.pubkey);
-        auto& relinkey = *(enc_keys.relinkey);
-        
-        std::shared_ptr<seal::Encryptor> encryptor(new seal::Encryptor(context, pubkey));
+        auto& pubkey     = *(enc_keys.pubkey);
+        auto& relin_keys = *(enc_keys.relinkey);
         std::shared_ptr<seal::Evaluator> evaluator(new seal::Evaluator(context));
         std::shared_ptr<seal::CKKSEncoder> encoder(new seal::CKKSEncoder(context));
-        size_t slot_count  = encoder->slot_count();
-        double scale_param = pow(2.0, INTERMEDIATE_PRIMES_BIT_SIZE);
         
         auto opt_level  = static_cast<EOptLevel>(params.opt_level); 
         auto activation = static_cast<EActivation>(params.activation);
-        OptOption option(context, enc_keys.pubkey, enc_keys.relinkey, opt_level, activation);
+        OptOption option(opt_level, activation, relin_keys, *evaluator, *encoder);
 
+        printf("*2\n");
         auto trained_model_name = std::string(params.model);
         if (option.enable_optimize_activation) {
             if (trained_model_name.find("CKKS-swish_rg4_deg4") != std::string::npos || activation == SWISH_RG4_DEG4) {
                 option.highest_deg_coeff = SWISH_RG4_DEG4_COEFFS.front();
-                //gHighestDegCoeff = SWISH_RG4_DEG4_COEFFS.front();
             } else if (trained_model_name.find("CKKS-swish_rg6_deg4") != string::npos || activation == SWISH_RG6_DEG4) {
-                //gHighestDegCoeff = SWISH_RG6_DEG4_COEFFS.front();
                 option.highest_deg_coeff =SWISH_RG6_DEG4_COEFFS.front();
             }
         }
             
-        LOGINFO("Buiding network from trained model...");
+        printf("*3\n");
+        LOGINFO("Buiding network from trained model...\n");
         BuildNetwork(model_structure_path, model_weights_path, option);
-        STDSC_LOG_INFO("Finish buiding.");
+        STDSC_LOG_INFO("Finish buiding.\n");
 
 
         return res;

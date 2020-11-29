@@ -49,7 +49,7 @@ vector<Ciphertext> GlobalAveragePooling2D::flatten(Ciphertext3D& input) const {
     for (size_t iw = 0; iw < in_width_; ++iw) {
       if (ih != 0 || iw != 0) {
         for (size_t ic = 0; ic < in_channels_; ++ic) {
-          option_.evaluator->add_inplace(flattened_input[ic], move(input[ih][iw][ic]));
+          option_.evaluator.add_inplace(flattened_input[ic], move(input[ih][iw][ic]));
         }
       }
     }
@@ -60,7 +60,7 @@ vector<Ciphertext> GlobalAveragePooling2D::flatten(Ciphertext3D& input) const {
   // #pragma omp parallel for
   // #endif
   //     for (size_t ou = 0; ou < out_units_; ++ou) {
-  //       option_.evaluator->multiply_plain_inplace(flattened_input[ou], plain_mul_factor_);
+  //       option_.evaluator.multiply_plain_inplace(flattened_input[ou], plain_mul_factor_);
   //     }
   //   }
 

@@ -100,18 +100,18 @@ void Conv2D::forward(Ciphertext3D& input) const {
             if (isOutOfRangeInput(target_x, target_y)) continue;
             within_range_counter++;
             for (size_t ic = 0; ic < in_channels_; ++ic) {
-              option_.evaluator->multiply_plain(input[target_y][target_x][ic], plain_filters_[fh][fw][ic][oc], weighted_pixel);
+              option_.evaluator.multiply_plain(input[target_y][target_x][ic], plain_filters_[fh][fw][ic][oc], weighted_pixel);
               if (within_range_counter == 1 && ic == 0) {
                 output[oh][ow][oc] = weighted_pixel;
               } else {
-                option_.evaluator->add_inplace(output[oh][ow][oc], weighted_pixel);
+                option_.evaluator.add_inplace(output[oh][ow][oc], weighted_pixel);
               }
             }
           }
         }
-        option_.evaluator->rescale_to_next_inplace(output[oh][ow][oc]);
+        option_.evaluator.rescale_to_next_inplace(output[oh][ow][oc]);
         output[oh][ow][oc].scale() = option_.scale_param;
-        option_.evaluator->add_plain_inplace(output[oh][ow][oc], plain_biases_[oc]);
+        option_.evaluator.add_plain_inplace(output[oh][ow][oc], plain_biases_[oc]);
       }
     }
   }

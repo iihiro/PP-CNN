@@ -7,11 +7,11 @@
 
 struct OptOption 
 {
-    OptOption(const std::shared_ptr<seal::SEALContext>& context,
-              const std::shared_ptr<seal::PublicKey>& pubkey,
-              const std::shared_ptr<seal::RelinKeys>& relinkey,
-              const EOptLevel opt_level,
-              const EActivation act);
+    OptOption(const EOptLevel opt_level,
+              const EActivation act,
+              seal::RelinKeys& relinkey,
+              seal::Evaluator& evaluator,
+              seal::CKKSEncoder& encoder);
     ~OptOption() = default;
 
     bool enable_fuse_layers;
@@ -28,10 +28,10 @@ struct OptOption
 
     size_t consumed_level;
 
-    std::shared_ptr<seal::RelinKeys> relin_keys;
-    std::shared_ptr<seal::Encryptor> encryptor;
-    std::shared_ptr<seal::Evaluator> evaluator;
-    std::shared_ptr<seal::CKKSEncoder> encoder;
+    seal::RelinKeys& relin_keys;
+    seal::Evaluator& evaluator;
+    seal::CKKSEncoder& encoder;
     size_t slot_count;
     double scale_param;
 };
+

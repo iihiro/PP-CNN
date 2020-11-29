@@ -246,9 +246,9 @@ Layer* buildConv2D(picojson::object& layer_info,
                     if (fabs(weight) < EPSILON) {
                         roundValue(weight);
                     }
-                    option.encoder->encode(weight, option.scale_param, plain_filters[fh][fw][ic][fs]);
+                    option.encoder.encode(weight, option.scale_param, plain_filters[fh][fw][ic][fs]);
                     for (size_t lv = 0; lv < option.consumed_level; ++lv) {
-                        option.evaluator->mod_switch_to_next_inplace(plain_filters[fh][fw][ic][fs]);
+                        option.evaluator.mod_switch_to_next_inplace(plain_filters[fh][fw][ic][fs]);
                     }
                 }
             }
@@ -260,9 +260,9 @@ Layer* buildConv2D(picojson::object& layer_info,
 #pragma omp parallel for
 #endif
     for (size_t fs = 0; fs < filter_size; ++fs) {
-        option.encoder->encode(biases[fs], option.scale_param, plain_biases[fs]);
+        option.encoder.encode(biases[fs], option.scale_param, plain_biases[fs]);
         for (size_t lv = 0; lv < option.consumed_level + 1; ++lv) {
-            option.evaluator->mod_switch_to_next_inplace(plain_biases[fs]);
+            option.evaluator.mod_switch_to_next_inplace(plain_biases[fs]);
         }
     }
     
@@ -302,15 +302,15 @@ Layer* buildAveragePooling2D(picojson::object& layer_info,
         option.current_pooling_mul_factor = 1.0 / (pool_height * pool_width);
         option.should_multiply_pool      = true;
     } else if (option.enable_optimize_activation && option.should_multiply_coeff) {
-        option.encoder->encode(option.highest_deg_coeff / (pool_height * pool_width), option.scale_param, plain_mul_factor);
+        option.encoder.encode(option.highest_deg_coeff / (pool_height * pool_width), option.scale_param, plain_mul_factor);
         option.should_multiply_coeff = false;
         for (size_t lv = 0; lv < option.consumed_level; ++lv) {
-            option.evaluator->mod_switch_to_next_inplace(plain_mul_factor);
+            option.evaluator.mod_switch_to_next_inplace(plain_mul_factor);
         }
     } else {
-        option.encoder->encode(1.0 / (pool_height * pool_width), option.scale_param, plain_mul_factor);
+        option.encoder.encode(1.0 / (pool_height * pool_width), option.scale_param, plain_mul_factor);
         for (size_t lv = 0; lv < option.consumed_level; ++lv) {
-            option.evaluator->mod_switch_to_next_inplace(plain_mul_factor);
+            option.evaluator.mod_switch_to_next_inplace(plain_mul_factor);
         }
     }
 
@@ -366,13 +366,13 @@ Layer* buildBatchNormalization(picojson::object& layer_info,
         weight = gamma[i] / sqrt(moving_variance[i] + BN_EPSILON);
         bias   = beta[i] - (weight * moving_mean[i]);
 
-        option.encoder->encode(weight, option.scale_param, plain_weights[i]);
-        option.encoder->encode(bias, option.scale_param, plain_biases[i]);
+        option.encoder.encode(weight, option.scale_param, plain_weights[i]);
+        option.encoder.encode(bias, option.scale_param, plain_biases[i]);
         for (size_t lv = 0; lv < option.consumed_level; ++lv) {
-            option.evaluator->mod_switch_to_next_inplace(plain_weights[i]);
-            option.evaluator->mod_switch_to_next_inplace(plain_biases[i]);
+            option.evaluator.mod_switch_to_next_inplace(plain_weights[i]);
+            option.evaluator.mod_switch_to_next_inplace(plain_biases[i]);
         }
-        option.evaluator->mod_switch_to_next_inplace(plain_biases[i]);
+        option.evaluator.mod_switch_to_next_inplace(plain_biases[i]);
     }
     
     return move((Layer*)new BatchNormalization(layer_name, plain_weights, plain_biases, option));
@@ -437,9 +437,9 @@ Layer* buildDense(picojson::object& layer_info,
             if (fabs(weight) < EPSILON) {
                 roundValue(weight);
             }
-            option.encoder->encode(weight, option.scale_param, plain_weights[iu][ou]);
+            option.encoder.encode(weight, option.scale_param, plain_weights[iu][ou]);
             for (size_t lv = 0; lv < option.consumed_level; ++lv) {
-                option.evaluator->mod_switch_to_next_inplace(plain_weights[iu][ou]);
+                option.evaluator.mod_switch_to_next_inplace(plain_weights[iu][ou]);
             }
         }
     }
@@ -448,9 +448,9 @@ Layer* buildDense(picojson::object& layer_info,
 #pragma omp parallel for
 #endif
     for (size_t ou = 0; ou < out_units; ++ou) {
-        option.encoder->encode(biases[ou], option.scale_param, plain_biases[ou]);
+        option.encoder.encode(biases[ou], option.scale_param, plain_biases[ou]);
         for (size_t lv = 0; lv < option.consumed_level + 1; ++lv) {
-            option.evaluator->mod_switch_to_next_inplace(plain_biases[ou]);
+            option.evaluator.mod_switch_to_next_inplace(plain_biases[ou]);
         }
     }
     
@@ -500,9 +500,9 @@ Layer* buildGlobalAveragePooling2D(picojson::object& layer_info,
         }
         option.should_multiply_pool = true;
     } else {
-        option.encoder->encode(1.0 / (next_layer_in_height * next_layer_in_width), option.scale_param, plain_mul_factor);
+        option.encoder.encode(1.0 / (next_layer_in_height * next_layer_in_width), option.scale_param, plain_mul_factor);
         for (size_t lv = 0; lv < option.consumed_level; ++lv) {
-            option.evaluator->mod_switch_to_next_inplace(plain_mul_factor);
+            option.evaluator.mod_switch_to_next_inplace(plain_mul_factor);
         }
     }
     
@@ -580,9 +580,9 @@ Layer* buildConv2DFusedBN(picojson::object& conv2d_layer_info,
         weights_bn[fs] = gamma[fs] / sqrt(moving_variance[fs] + BN_EPSILON);
         biases_bn[fs]  = beta[fs] - (weights_bn[fs] * moving_mean[fs]);
         biases[fs]     = biases[fs] * weights_bn[fs] + biases_bn[fs];
-        option.encoder->encode(biases[fs], option.scale_param, plain_biases[fs]);
+        option.encoder.encode(biases[fs], option.scale_param, plain_biases[fs]);
         for (size_t lv = 0; lv < option.consumed_level + 1; ++lv) {
-            option.evaluator->mod_switch_to_next_inplace(plain_biases[fs]);
+            option.evaluator.mod_switch_to_next_inplace(plain_biases[fs]);
         }
     }
 
@@ -610,9 +610,9 @@ Layer* buildConv2DFusedBN(picojson::object& conv2d_layer_info,
                     if (fabs(weight) < EPSILON) {
                         roundValue(weight);
                     }
-                    option.encoder->encode(weight, option.scale_param, plain_filters[fh][fw][ic][fs]);
+                    option.encoder.encode(weight, option.scale_param, plain_filters[fh][fw][ic][fs]);
                     for (size_t lv = 0; lv < option.consumed_level; ++lv) {
-                        option.evaluator->mod_switch_to_next_inplace(plain_filters[fh][fw][ic][fs]);
+                        option.evaluator.mod_switch_to_next_inplace(plain_filters[fh][fw][ic][fs]);
                     }
                 }
             }
@@ -679,9 +679,9 @@ Layer* buildDenseFusedBN(picojson::object& dense_layer_info,
         weights_bn[ou] = gamma[ou] / sqrt(moving_variance[ou] + BN_EPSILON);
         biases_bn[ou]  = beta[ou] - (weights_bn[ou] * moving_mean[ou]);
         biases[ou]     = biases[ou] * weights_bn[ou] + biases_bn[ou];
-        option.encoder->encode(biases[ou], option.scale_param, plain_biases[ou]);
+        option.encoder.encode(biases[ou], option.scale_param, plain_biases[ou]);
         for (size_t lv = 0; lv < option.consumed_level + 1; ++lv) {
-            option.evaluator->mod_switch_to_next_inplace(plain_biases[ou]);
+            option.evaluator.mod_switch_to_next_inplace(plain_biases[ou]);
         }
     }
     
@@ -707,9 +707,9 @@ Layer* buildDenseFusedBN(picojson::object& dense_layer_info,
             if (fabs(weight) < EPSILON) {
                 roundValue(weight);
             }
-            option.encoder->encode(weight, option.scale_param, plain_weights[iu][ou]);
+            option.encoder.encode(weight, option.scale_param, plain_weights[iu][ou]);
             for (size_t lv = 0; lv < option.consumed_level; ++lv) {
-                option.evaluator->mod_switch_to_next_inplace(plain_weights[iu][ou]);
+                option.evaluator.mod_switch_to_next_inplace(plain_weights[iu][ou]);
             }
         }
     }

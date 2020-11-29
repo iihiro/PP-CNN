@@ -39,16 +39,16 @@ void Dense::forward(vector<Ciphertext>& input) const {
 #endif
   for (size_t ou = 0; ou < out_units_; ++ou) {
     for (size_t iu = 0; iu < in_units_; ++iu) {
-      option_.evaluator->multiply_plain(input[iu], plain_weights_[iu][ou], weighted_unit);
+      option_.evaluator.multiply_plain(input[iu], plain_weights_[iu][ou], weighted_unit);
       if (iu == 0) {
         output[ou] = weighted_unit;
       } else {
-        option_.evaluator->add_inplace(output[ou], weighted_unit);
+        option_.evaluator.add_inplace(output[ou], weighted_unit);
       }
     }
-    option_.evaluator->rescale_to_next_inplace(output[ou]);
+    option_.evaluator.rescale_to_next_inplace(output[ou]);
     output[ou].scale() = option_.scale_param;
-    option_.evaluator->add_plain_inplace(output[ou], plain_biases_[ou]);
+    option_.evaluator.add_plain_inplace(output[ou], plain_biases_[ou]);
   }
 
   input.resize(out_units_);
