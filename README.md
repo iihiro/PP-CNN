@@ -9,6 +9,9 @@ Privacy Preserving CNN Inference over Homomorphic Encryption
 - HDF5
   - Require zlib & szip
 
+[Build and run using Docker]
+- Docker (19.03.13) 
+
 [Model training] (Python)
 - Keras(2.0.8)
 - tensorflow-gpu(1.4.0)
@@ -71,7 +74,7 @@ $ ./demo.sh
 ## Demo App
 The demo app consists of two processes: Client and Server. These processes communicate as shown in the following figure.
 
-![](docs/images/pp-cnn_design-flow.png)
+![](doc/images/pp-cnn_design-flow.png)
 
 ### Client demo app
 * Behavior
@@ -112,7 +115,7 @@ The demo app consists of two processes: Client and Server. These processes commu
     * max_results : max resutls (default: 128)
     * max_result_lifetime_sec : max result lifetime sec (default: 50000)
 * State Transition Diagram
-    * ![](docs/images/pp-cnn_design-state-server.png)
+    * ![](doc/images/pp-cnn_design-state-server.png)
 
 ## Train model
 Model training code (Python) is in `plaintext_experiment/`
