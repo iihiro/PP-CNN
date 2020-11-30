@@ -54,8 +54,9 @@ WORKDIR /root/PP-CNN
 COPY . /root/PP-CNN
 
 RUN mkdir build \
+    && cd build \
     && cmake .. \
-    & make -j12
+    && make -j12
 
 RUN mkdir -p datasets/mnist && cd datasets/mnist \
     && wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz \
@@ -67,4 +68,3 @@ RUN mkdir -p datasets/cifar-10 && cd datasets/cifar-10 \
     && wget https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz \
     && tar zxvf cifar-10-binary.tar.gz \
     && mv cifar-10-batches-bin/* ./ && rmdir cifar-10-batches-bin
-RUN mkdir pp_cnn/logs && touch pp_cnn/logs/main_log.txt
