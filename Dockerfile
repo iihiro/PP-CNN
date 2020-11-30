@@ -50,22 +50,20 @@ ENV PATH $PATH:/usr/local/hdf5/bin
 ENV LIBRARY_PATH $LIBRARY_PATH:/usr/local/hdf5/lib
 ENV LD_LIBRARY_PATH /usr/lib:$LD_LIBRARY_PATH:/usr/local/hdf5/lib
 
-WORKDIR /root/build/PP-CNN
-COPY . /root/build/PP-CNN
+WORKDIR /root/PP-CNN
+COPY . /root/PP-CNN
 
-RUN cd pp_cnn/src \
-    && mkdir build \
-    && cd build \
+RUN mkdir build \
     && cmake .. \
-    && make
+    & make -j12
 
-RUN mkdir -p pp_cnn/datasets/mnist && cd pp_cnn/datasets/mnist \
+RUN mkdir -p datasets/mnist && cd datasets/mnist \
     && wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz \
     && wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz \
     && wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz \
     && wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz \
     && gunzip *.gz
-RUN mkdir -p pp_cnn/datasets/cifar-10 && cd pp_cnn/datasets/cifar-10 \
+RUN mkdir -p datasets/cifar-10 && cd datasets/cifar-10 \
     && wget https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz \
     && tar zxvf cifar-10-binary.tar.gz \
     && mv cifar-10-batches-bin/* ./ && rmdir cifar-10-batches-bin

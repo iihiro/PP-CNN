@@ -1,1 +1,1 @@
-docker build --rm -f Dockerfile -t ppcnn .
+docker build --rm -f Dockerfile -t pp-cnn .
