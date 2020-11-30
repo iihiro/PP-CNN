@@ -1,12 +1,25 @@
+/*
+ * Copyright 2018 Yamana Laboratory, Waseda University
+ * Supported by JST CREST Grant Number JPMJCR1503, Japan.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE‐2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include <fstream>
 #include <unordered_map>
-
 #include <seal/seal.h>
-
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
 #include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_share/utils/globals.hpp>
 #include <ppcnn_share/utils/define.h>
 #include <ppcnn_client/ppcnn_client_keycontainer.hpp>
 
@@ -80,7 +93,6 @@ struct KeyContainer::Impl
         {
             filenames_.emplace(kKindPubKey,    std::string("pubkey_")    + std::to_string(id));
             filenames_.emplace(kKindSecKey,    std::string("seckey_")    + std::to_string(id));
-            //filenames_.emplace(kKindGaloisKey, std::string("galoiskey_") + std::to_string(id));
             filenames_.emplace(kKindRelinKey,  std::string("relinkey_")  + std::to_string(id));
             filenames_.emplace(kKindParam,     std::string("param_")     + std::to_string(id));
         }
@@ -174,10 +186,6 @@ private:
         params.set_poly_modulus_degree(poly_mod_degree);
         params.set_coeff_modulus(seal::CoeffModulus::Create(poly_mod_degree, bit_sizes));
 
-        
-        //params.set_coeff_modulus(seal::DefaultParams::coeff_modulus_192(coef_mod_192));
-        //params.set_plain_modulus(plain_mod);
-
         auto context = seal::SEALContext::Create(params);
         print_parameters(context);
 
@@ -185,17 +193,6 @@ private:
         seal::PublicKey public_key = keygen.public_key();
         seal::SecretKey secret_key = keygen.secret_key();
         seal::RelinKeys relin_keys = keygen.relin_keys();
-
-
-        
-        //auto gal_keys = keygen.galois_keys(16);
-        //auto relin_keys16 = keygen.relin_keys(16);
-        //seal::BatchEncoder batch_encoder(context);
-
-        //size_t slot_count = batch_encoder.slot_count();
-        //size_t row_size = slot_count / 2;
-        //std::cout << "Plaintext matrix row size: " << row_size << std::endl;
-        //std::cout << "Slot nums = " << slot_count << std::endl;
 
         std::cout << "Save public key and secret key..." << std::flush;
         std::ofstream pkFile(filenames.filename(KeyKind_t::kKindPubKey), std::ios::binary);
@@ -209,10 +206,6 @@ private:
         std::ofstream paramsFile(filenames.filename(KeyKind_t::kKindParam), std::ios::binary);
         params.save(paramsFile);
         paramsFile.close();
-
-        //std::ofstream galFile(filenames.filename(KeyKind_t::kKindGaloisKey), std::ios::binary);
-        //gal_keys.save(galFile);
-        //galFile.close();
 
         std::ofstream relinFile(filenames.filename(KeyKind_t::kKindRelinKey), std::ios::binary);
         relin_keys.save(relinFile);
@@ -275,7 +268,6 @@ void KeyContainer::get(const int32_t key_id, const KeyKind_t kind, T& data) cons
 
     DEF_GET_WITH_TYPE(seal::PublicKey,  "public key");
     DEF_GET_WITH_TYPE(seal::SecretKey,  "secret key");
-//    DEF_GET_WITH_TYPE(seal::GaloisKeys, "galois keys")
     DEF_GET_WITH_TYPE(seal::RelinKeys,  "relin keys");
 
 #undef DEF_GET_WITH_TYPE

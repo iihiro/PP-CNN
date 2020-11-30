@@ -58,8 +58,6 @@ struct ResultThread::Impl
             client_.recv_results(args.query_id, status, enc_results);
             
             STDSC_LOG_INFO("Invoke callback function of query #%d", args.query_id);
-            //auto* enc_results_data = status ? &enc_results.data() : nullptr;
-            //cbfunc_(args.query_id, status, enc_results_data, cbargs_);
             cbfunc_(args.query_id, status, enc_results.vdata(), cbargs_);
         }
         catch (const stdsc::AbstractException& e)

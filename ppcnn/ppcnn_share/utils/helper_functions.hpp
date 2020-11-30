@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <ppcnn_share/utils/globals.hpp>
 
 using std::string;
 using std::vector;
@@ -14,7 +13,7 @@ extern const string RK_FILE_PATH;
 extern const string GK_FILE_PATH;
 
 void setupSealTool();
-//void setupOptimizationOption(const EOptLevel& optimization_level);
+
 void encryptImage(const vector<float>& origin_image, 
                   Ciphertext3D& target_image,
                   const double scale_param,

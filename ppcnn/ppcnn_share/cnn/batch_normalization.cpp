@@ -2,7 +2,6 @@
 #include <omp.h>
 #include <fstream>
 #include <iostream>
-#include <ppcnn_share/utils/globals.hpp>
 
 using std::cout;
 using std::endl;

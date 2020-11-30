@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <seal/seal.h>
-#include <ppcnn_share/utils/globals.hpp>
 
 using seal::Ciphertext;
 using seal::Plaintext;

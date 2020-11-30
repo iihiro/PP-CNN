@@ -25,7 +25,6 @@
 namespace ppcnn_client
 {
 
-//using cbfunc_t = std::function<void(const int32_t query_id, const bool status, const seal::Ciphertext*, void*)>;
 using cbfunc_t = std::function<void(const int32_t query_id, 
                                     const bool status, 
                                     const std::vector<seal::Ciphertext>&,
