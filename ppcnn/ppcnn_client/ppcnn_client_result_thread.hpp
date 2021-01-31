@@ -18,17 +18,18 @@
 #ifndef PPCNN_CLIENT_RESULT_THREAD_HPP
 #define PPCNN_CLIENT_RESULT_THREAD_HPP
 
-#include <memory>
-#include <vector>
-#include <string>
-#include <functional>
-#include <stdsc/stdsc_thread.hpp>
-#include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
 #include <seal/seal.h>
+
+#include <functional>
+#include <memory>
+#include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
+#include <stdsc/stdsc_thread.hpp>
+#include <string>
+#include <vector>
 
 namespace ppcnn_client
 {
-    
+
 class ResultThreadParam;
 class Client;
 
@@ -48,8 +49,8 @@ public:
      * @param[in] cbargs arguments for callback function
      */
     ResultThread(const Client& client,
-                 const seal::EncryptionParameters& enc_params,
-                 cbfunc_t cbfunc, void* cbargs);
+                 const seal::EncryptionParameters& enc_params, cbfunc_t cbfunc,
+                 void* cbargs);
     virtual ~ResultThread(void);
 
     /**
@@ -64,8 +65,9 @@ public:
     void wait(void);
 
 private:
-    virtual void exec(ResultThreadParam& args,
-                      std::shared_ptr<stdsc::ThreadException> te) const override;
+    virtual void exec(
+      ResultThreadParam& args,
+      std::shared_ptr<stdsc::ThreadException> te) const override;
 
     struct Impl;
     std::shared_ptr<Impl> pimpl_;

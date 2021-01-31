@@ -36,5 +36,5 @@ std::istream& operator>>(std::istream& is, Srv2CliParam& param)
     param.result = static_cast<ServerCalcResult_t>(i32_result);
     return is;
 }
-    
+
 } /* namespace ppcnn_share */

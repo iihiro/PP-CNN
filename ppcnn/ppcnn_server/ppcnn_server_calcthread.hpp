@@ -18,15 +18,15 @@
 #ifndef PPCNN_SERVER_CALCTHREAD_HPP
 #define PPCNN_SERVER_CALCTHREAD_HPP
 
-#include <memory>
 #include <cstdbool>
-#include <vector>
-#include <stdsc/stdsc_thread.hpp>
+#include <memory>
 #include <ppcnn_share/ppcnn_define.hpp>
+#include <stdsc/stdsc_thread.hpp>
+#include <vector>
 
 namespace ppcnn_server
 {
-    
+
 class CalcThreadParam;
 class QueryQueue;
 class ResultQueue;
@@ -37,29 +37,30 @@ class ResultQueue;
 class CalcThread : public stdsc::Thread<CalcThreadParam>
 {
     using super = Thread<CalcThreadParam>;
+
 public:
     /**
      * Constructor
      * @param[in] in_queue query queue
      * @param[out] out_queue result queue
      */
-    CalcThread(QueryQueue& in_queue,
-               ResultQueue& out_queue);
+    CalcThread(QueryQueue& in_queue, ResultQueue& out_queue);
     virtual ~CalcThread(void) = default;
 
     /**
      * Start thread
      */
     void start();
-    
+
     /**
      * Stop thread
      */
     void stop();
-    
+
 private:
-    virtual void exec(CalcThreadParam& args,
-                      std::shared_ptr<stdsc::ThreadException> te) const override;
+    virtual void exec(
+      CalcThreadParam& args,
+      std::shared_ptr<stdsc::ThreadException> te) const override;
 
     struct Impl;
     std::shared_ptr<Impl> pimpl_;
@@ -74,7 +75,8 @@ struct CalcThreadParam
 
     uint32_t retry_interval_msec = DefaultRetryIntervalMsec;
     bool force_finish = false;
-    std::string plaintext_experiment_path = PPCNN_DEFAULT_PLAINTEXT_EXPERIMENT_PATH;
+    std::string plaintext_experiment_path =
+      PPCNN_DEFAULT_PLAINTEXT_EXPERIMENT_PATH;
 };
 
 } /* namespace ppcnn_server */

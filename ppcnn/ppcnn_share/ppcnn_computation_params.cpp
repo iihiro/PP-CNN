@@ -22,14 +22,14 @@ namespace ppcnn_share
 
 std::ostream& operator<<(std::ostream& os, const ComputationParams& params)
 {
-    os << params.img_width            << std::endl;
-    os << params.img_height           << std::endl;
-    os << params.img_channels         << std::endl;
-    os << params.labels               << std::endl;
+    os << params.img_width << std::endl;
+    os << params.img_height << std::endl;
+    os << params.img_channels << std::endl;
+    os << params.labels << std::endl;
     os << std::string(params.dataset) << std::endl;
-    os << std::string(params.model)   << std::endl;
-    os << params.opt_level            << std::endl;
-    os << params.activation           << std::endl;
+    os << std::string(params.model) << std::endl;
+    os << params.opt_level << std::endl;
+    os << params.activation << std::endl;
     return os;
 }
 
@@ -48,5 +48,5 @@ std::istream& operator>>(std::istream& is, ComputationParams& params)
     dataset.copy(params.model, model.size());
     return is;
 }
-    
+
 } /* namespace ppcnn_share */

@@ -31,33 +31,36 @@ template <class T>
 struct PlainData : public ppcnn_share::BasicData<T>
 {
     using super = ppcnn_share::BasicData<T>;
-    
+
     PlainData() = default;
     virtual ~PlainData(void) = default;
 
     virtual size_t save(std::ostream& os) const override
     {
-        if (super::vec_.size() == 0) {
+        if (super::vec_.size() == 0)
+        {
             return -1;
         }
 
         size_t sz = super::vec_.size();
         os.write(reinterpret_cast<char*>(&sz), sizeof(sz));
 
-        for (const auto& v : super::vec_) {
+        for (const auto& v : super::vec_)
+        {
             os.write((char*)(&v), sizeof(v));
         }
 
         return 0;
-    }        
+    }
     virtual size_t load(std::istream& is) override
     {
         size_t sz;
         is.read(reinterpret_cast<char*>(&sz), sizeof(sz));
 
         super::clear();
-        
-        for (size_t i=0; i<sz; ++i) {
+
+        for (size_t i = 0; i < sz; ++i)
+        {
             T v;
             is.read((char*)(&v), sizeof(v));
             super::vec_.push_back(v);

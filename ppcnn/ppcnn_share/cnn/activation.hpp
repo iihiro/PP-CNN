@@ -18,16 +18,17 @@
 #pragma once
 
 #include <functional>
+
 #include "layer.hpp"
 
 using std::function;
 
 const string ACTIVATION_CLASS_NAME = "Activation";
-const string SQUARE_NAME           = "square";
-const string SWISH_RG4_DEG4_NAME   = "swish_rg4_deg4";
-const string SWISH_RG6_DEG4_NAME   = "swish_rg6_deg4";
+const string SQUARE_NAME = "square";
+const string SWISH_RG4_DEG4_NAME = "swish_rg4_deg4";
+const string SWISH_RG6_DEG4_NAME = "swish_rg6_deg4";
 
-class Activation : Layer 
+class Activation : Layer
 {
 public:
     Activation(const string& name, const string& activation, OptOption& option);
@@ -44,6 +45,6 @@ private:
     Ciphertext square(Ciphertext& x) const;
     Ciphertext swishDeg4(Ciphertext& x) const;
     Ciphertext swishDeg4Opt(Ciphertext& x) const;
-    
+
     OptOption& option_;
 };

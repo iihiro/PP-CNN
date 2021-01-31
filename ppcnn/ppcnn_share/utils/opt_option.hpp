@@ -17,17 +17,16 @@
 
 #pragma once
 
-#include <memory>
-#include <unistd.h>
 #include <ppcnn_share/utils/types.h>
 #include <seal/seal.h>
+#include <unistd.h>
 
-struct OptOption 
+#include <memory>
+
+struct OptOption
 {
-    OptOption(const EOptLevel opt_level,
-              const EActivation act,
-              seal::RelinKeys& relinkey,
-              seal::Evaluator& evaluator,
+    OptOption(const EOptLevel opt_level, const EActivation act,
+              seal::RelinKeys& relinkey, seal::Evaluator& evaluator,
               seal::CKKSEncoder& encoder);
     ~OptOption() = default;
 
@@ -51,4 +50,3 @@ struct OptOption
     size_t slot_count;
     double scale_param;
 };
-

@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
+#include <dirent.h>   // scandir
+#include <string.h>   // strcmp
 #include <sys/stat.h> // stat
-#include <cstdlib>    // std::env, std::rand
-#include <cstdlib>    // std::env
-#include <ctime>      // std::time
-#include <cctype>     // isdigit
-#include <fstream>
-#include <sstream>
+
 #include <algorithm> // std::all_of
-#include <dirent.h>  // scandir
-#include <string.h>  // strcmp
-#include <stdsc/stdsc_exception.hpp>
+#include <cctype>    // isdigit
+#include <cstdlib>   // std::env, std::rand
+#include <cstdlib>   // std::env
+#include <ctime>     // std::time
+#include <fstream>
 #include <ppcnn_share/ppcnn_utility.hpp>
+#include <sstream>
+#include <stdsc/stdsc_exception.hpp>
 
 namespace ppcnn_share
 {
@@ -131,7 +132,8 @@ int32_t gen_uuid(void)
 std::string trim_string(const std::string& str, const std::string& whitespace)
 {
     const auto bgn = str.find_first_not_of(whitespace);
-    if (bgn == std::string::npos) {
+    if (bgn == std::string::npos)
+    {
         return "";
     }
 
@@ -141,7 +143,8 @@ std::string trim_string(const std::string& str, const std::string& whitespace)
     return str.substr(bgn, len);
 }
 
-std::vector<std::string> get_filelist(const std::string& dir, const std::string& ext)
+std::vector<std::string> get_filelist(const std::string& dir,
+                                      const std::string& ext)
 {
     std::vector<std::string> flist;
 
@@ -149,13 +152,18 @@ std::vector<std::string> get_filelist(const std::string& dir, const std::string&
     struct dirent** namelist = nullptr;
 
     auto n = ::scandir(dir.c_str(), &namelist, NULL, NULL);
-    for (int i=0; i<n; ++i) {
+    for (int i = 0; i < n; ++i)
+    {
         if (::strcmp(namelist[i]->d_name, ".\0") &&
-            ::strcmp(namelist[i]->d_name, "..\0")) {
+            ::strcmp(namelist[i]->d_name, "..\0"))
+        {
             auto fullpath = dir + "/" + std::string(namelist[i]->d_name);
-            if (::stat(fullpath.c_str(), &stat_buf) == 0 && (stat_buf.st_mode & S_IFMT) != S_IFDIR) {
+            if (::stat(fullpath.c_str(), &stat_buf) == 0 &&
+                (stat_buf.st_mode & S_IFMT) != S_IFDIR)
+            {
                 auto extname = get_extname(fullpath);
-                if (ext.empty() || ext == extname) {
+                if (ext.empty() || ext == extname)
+                {
                     flist.push_back(fullpath);
                 }
             }
@@ -165,9 +173,10 @@ std::vector<std::string> get_filelist(const std::string& dir, const std::string&
     return flist;
 }
 
-std::string get_filename(const std::string& path, const bool without_ext) 
+std::string get_filename(const std::string& path, const bool without_ext)
 {
-    int endpos = without_ext ? path.length() - (path.find_last_of('.') + 1) : -1;
+    int endpos =
+      without_ext ? path.length() - (path.find_last_of('.') + 1) : -1;
     return path.substr(path.find_last_of('/') + 1, endpos);
 }
 
@@ -182,7 +191,6 @@ std::string get_extname(const std::string& path)
     return filename.substr(filename.find_last_of('.') + 1);
 }
 
-    
 } /* namespace utility */
 
 } /* namespace ppcnn_share */

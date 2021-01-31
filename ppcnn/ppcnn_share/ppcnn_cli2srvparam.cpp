@@ -22,10 +22,10 @@ namespace ppcnn_share
 
 std::ostream& operator<<(std::ostream& os, const C2SEnckeyParam& param)
 {
-    os << param.key_id               << std::endl;
+    os << param.key_id << std::endl;
     os << param.enc_params_stream_sz << std::endl;
-    os << param.pubkey_stream_sz     << std::endl;
-    os << param.relinkey_stream_sz   << std::endl;
+    os << param.pubkey_stream_sz << std::endl;
+    os << param.relinkey_stream_sz << std::endl;
     return os;
 }
 
@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& os, const C2SQueryParam& param)
 {
     os << param.comp_params;
     os << param.enc_inputs_stream_sz << std::endl;
-    os << param.key_id               << std::endl;
+    os << param.key_id << std::endl;
     return os;
 }
 
@@ -65,5 +65,5 @@ std::istream& operator>>(std::istream& is, C2SResreqParam& param)
     is >> param.query_id;
     return is;
 }
-    
+
 } /* namespace ppcnn_share */

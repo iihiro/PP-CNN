@@ -18,14 +18,12 @@
 #ifndef PPCNN_SERVER_QUERY_HPP
 #define PPCNN_SERVER_QUERY_HPP
 
-#include <cstdint>
-#include <vector>
-
 #include <seal/seal.h>
 
+#include <cstdint>
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 #include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
-
+#include <vector>
 
 namespace ppcnn_server
 {
@@ -45,8 +43,7 @@ struct Query
      * @param[in] ctxts cipher texts
      * @param[in] enc_keys_p encryption keys
      */
-    Query(const int32_t key_id,
-          const ppcnn_share::ComputationParams& params,
+    Query(const int32_t key_id, const ppcnn_share::ComputationParams& params,
           const std::vector<seal::Ciphertext>& ctxts,
           const EncryptionKeys* enc_keys_p);
     virtual ~Query() = default;
@@ -56,9 +53,7 @@ struct Query
      * @param[in] q query
      */
     Query(const Query& q)
-        : key_id_(q.key_id_),
-          params_(q.params_),
-          enc_keys_p_(q.enc_keys_p_)
+      : key_id_(q.key_id_), params_(q.params_), enc_keys_p_(q.enc_keys_p_)
     {
         ctxts_.resize(q.ctxts_.size());
         std::copy(q.ctxts_.begin(), q.ctxts_.end(), ctxts_.begin());
@@ -73,10 +68,11 @@ struct Query
 /**
  * @brief This class is used to hold the queue of queries.
  */
-struct QueryQueue : public ppcnn_share::ConcurrentMapQueue<int32_t, ppcnn_server::Query>
+struct QueryQueue
+  : public ppcnn_share::ConcurrentMapQueue<int32_t, ppcnn_server::Query>
 {
     using super = ppcnn_share::ConcurrentMapQueue<int32_t, ppcnn_server::Query>;
-    
+
     QueryQueue() = default;
     virtual ~QueryQueue() = default;
 

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include <stdsc/stdsc_log.hpp>
 #include <ppcnn_server/ppcnn_server_state.hpp>
+#include <stdsc/stdsc_log.hpp>
 
 namespace ppcnn_server
 {
@@ -45,8 +45,7 @@ std::shared_ptr<stdsc::State> StateReady::create(void)
     return std::shared_ptr<stdsc::State>(new StateReady());
 }
 
-StateReady::StateReady()
-  : pimpl_(new Impl())
+StateReady::StateReady() : pimpl_(new Impl())
 {
 }
 

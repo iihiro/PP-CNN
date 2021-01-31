@@ -28,9 +28,9 @@ namespace ppcnn_share
  */
 enum ServerCalcResult_t : int32_t
 {
-    kServerCalcResultNil     = -1,
+    kServerCalcResultNil = -1,
     kServerCalcResultSuccess = 0,
-    kServerCalcResultFailed  = 1,
+    kServerCalcResultFailed = 1,
 };
 
 /**

@@ -19,14 +19,14 @@
 #define PPCNN_CLIENT_HPP
 
 #include <memory>
-#include <ppcnn_share/ppcnn_define.hpp>
 #include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
+#include <ppcnn_share/ppcnn_define.hpp>
 
 namespace ppcnn_share
 {
-    class EncData;
-    class ComputationParams;
-}
+class EncData;
+class ComputationParams;
+} // namespace ppcnn_share
 
 namespace ppcnn_client
 {
@@ -58,15 +58,14 @@ public:
      * Disconnect
      */
     void disconnect();
-    
+
     /**
      * Register encryption keys
      * @param[in] key_id key ID
      * @param[in] pubkey public key
      * @param[in] relinkey relin key
      */
-    void register_enckeys(const int32_t key_id,
-                          const seal::PublicKey& pubkey,
+    void register_enckeys(const int32_t key_id, const seal::PublicKey& pubkey,
                           const seal::RelinKeys& relinkey) const;
 
     /**
@@ -77,7 +76,7 @@ public:
      * @return queryID
      */
     int32_t send_query(const int32_t key_id,
-                       const ppcnn_share::ComputationParams& comp_params, 
+                       const ppcnn_share::ComputationParams& comp_params,
                        const ppcnn_share::EncData& enc_inputs) const;
 
     /**
@@ -90,19 +89,17 @@ public:
      * @return queryID
      */
     int32_t send_query(const int32_t key_id,
-                       const ppcnn_share::ComputationParams& comp_params, 
-                       const ppcnn_share::EncData& enc_inputs,
-                       cbfunc_t cbfunc,
+                       const ppcnn_share::ComputationParams& comp_params,
+                       const ppcnn_share::EncData& enc_inputs, cbfunc_t cbfunc,
                        void* cbfunc_args) const;
-    
+
     /**
      * Receive results
      * @param[in] query_id     query ID
      * @param[out] status      calcuration status
      * @param[out] enc_results encrypted results
      */
-    void recv_results(const int32_t query_id, 
-                      bool& status, 
+    void recv_results(const int32_t query_id, bool& status,
                       ppcnn_share::EncData& enc_results) const;
 
     /**

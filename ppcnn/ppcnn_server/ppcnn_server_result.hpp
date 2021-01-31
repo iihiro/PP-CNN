@@ -18,12 +18,13 @@
 #ifndef PPCNN_SERVER_RESULT_HPP
 #define PPCNN_SERVER_RESULT_HPP
 
-#include <cstdint>
-#include <cstdbool>
-#include <chrono>
-#include <vector>
-#include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
 #include <seal/seal.h>
+
+#include <chrono>
+#include <cstdbool>
+#include <cstdint>
+#include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
+#include <vector>
 
 namespace ppcnn_server
 {
@@ -41,9 +42,7 @@ struct Result
      * @param[in] status   calcuration status
      * @param[in] ctxts     cipher texts
      */
-    Result(const int32_t key_id,
-           const int32_t query_id, 
-           const bool status, 
+    Result(const int32_t key_id, const int32_t query_id, const bool status,
            const std::vector<seal::Ciphertext>& ctxts);
     virtual ~Result() = default;
 
@@ -62,7 +61,7 @@ struct Result
 struct ResultQueue : public ppcnn_share::ConcurrentMapQueue<int32_t, Result>
 {
     using super = ppcnn_share::ConcurrentMapQueue<int32_t, Result>;
-    
+
     ResultQueue() = default;
     virtual ~ResultQueue() = default;
 };

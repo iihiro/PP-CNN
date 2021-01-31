@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_server/ppcnn_server_query.hpp>
 #include <seal/seal.h>
+
+#include <ppcnn_server/ppcnn_server_query.hpp>
+#include <ppcnn_share/ppcnn_utility.hpp>
 
 namespace ppcnn_server
 {
-Query::Query(const int32_t key_id,
-             const ppcnn_share::ComputationParams& params,
+Query::Query(const int32_t key_id, const ppcnn_share::ComputationParams& params,
              const std::vector<seal::Ciphertext>& ctxts,
              const EncryptionKeys* enc_keys_p)
-    : key_id_(key_id),
-      params_(params),
-      enc_keys_p_(enc_keys_p)
+  : key_id_(key_id), params_(params), enc_keys_p_(enc_keys_p)
 {
     ctxts_.resize(ctxts.size());
     std::copy(ctxts.begin(), ctxts.end(), ctxts_.begin());

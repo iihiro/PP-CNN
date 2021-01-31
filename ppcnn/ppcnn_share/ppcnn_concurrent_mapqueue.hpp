@@ -18,9 +18,9 @@
 #ifndef PPCNN_CONCURRENT_MAPQUEUE_HPP
 #define PPCNN_CONCURRENT_MAPQUEUE_HPP
 
+#include <cstdbool>
 #include <map>
 #include <mutex>
-#include <cstdbool>
 #include <stdsc/stdsc_exception.hpp>
 
 namespace ppcnn_share
@@ -35,7 +35,8 @@ public:
 
     virtual void push(const Tk& key, const Tv& val)
     {
-        STDSC_THROW_INVPARAM_IF_CHECK(!map_.count(key), "key has already exist.");
+        STDSC_THROW_INVPARAM_IF_CHECK(!map_.count(key),
+                                      "key has already exist.");
         std::lock_guard<std::mutex> lock(mtx_);
         map_.emplace(key, val);
     }
@@ -54,17 +55,18 @@ public:
     {
         return map_.end();
     }
-    
+
     virtual size_t count(const Tk& key) const
     {
         return map_.count(key);
     }
-    
+
     virtual bool pop(Tk& key, Tv& val)
     {
         std::lock_guard<std::mutex> lock(mtx_);
 
-        if (0 == map_.size()) {
+        if (0 == map_.size())
+        {
             return false;
         }
 
@@ -78,27 +80,29 @@ public:
     virtual bool pop(const Tk& key, Tv& val)
     {
         std::lock_guard<std::mutex> lock(mtx_);
-        
-        if (0 == map_.size() || 0 == map_.count(key)) {
+
+        if (0 == map_.size() || 0 == map_.count(key))
+        {
             return false;
         }
-        
+
         val = map_.at(key);
         map_.erase(key);
-        
-        return true;        
+
+        return true;
     }
 
     virtual bool get(const Tk& key, Tv& val)
     {
         std::lock_guard<std::mutex> lock(mtx_);
-        
-        if (0 == map_.size() || 0 == map_.count(key)) {
+
+        if (0 == map_.size() || 0 == map_.count(key))
+        {
             return false;
         }
-        
+
         val = map_.at(key);
-        return true;        
+        return true;
     }
 
 private:

@@ -23,21 +23,30 @@ using std::size_t;
 
 const string CONV2D_CLASS_NAME = "Conv2D";
 
-class Conv2D : public Layer 
+class Conv2D : public Layer
 {
 public:
-    Conv2D(const string& name,
-           const size_t& in_height, const size_t& in_width, const size_t& in_channels,
-           const size_t& filter_size, const size_t& filter_height, const size_t& filter_width,
+    Conv2D(const string& name, const size_t& in_height, const size_t& in_width,
+           const size_t& in_channels, const size_t& filter_size,
+           const size_t& filter_height, const size_t& filter_width,
            const size_t& stride_height, const size_t& stride_width,
            const string& padding, const string& activation,
-           const Plaintext4D& plain_filters, const vector<Plaintext>& plain_biases,
-           OptOption& option);
+           const Plaintext4D& plain_filters,
+           const vector<Plaintext>& plain_biases, OptOption& option);
     ~Conv2D();
 
-    const size_t& out_height() const { return out_height_; }
-    const size_t& out_width() const { return out_width_; }
-    const size_t& out_channels() const { return out_channels_; }
+    const size_t& out_height() const
+    {
+        return out_height_;
+    }
+    const size_t& out_width() const
+    {
+        return out_width_;
+    }
+    const size_t& out_channels() const
+    {
+        return out_channels_;
+    }
 
     void printInfo() const override;
     bool isOutOfRangeInput(const int& target_x, const int& target_y) const;

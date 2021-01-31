@@ -22,10 +22,10 @@
 
 namespace seal
 {
-    class EncryptionParameters;
-    class PublicKey;
-    class RelinKeys;
-}
+class EncryptionParameters;
+class PublicKey;
+class RelinKeys;
+} // namespace seal
 
 namespace ppcnn_server
 {
@@ -57,15 +57,14 @@ public:
      * Register encryption keys
      * @param[in] key_id key ID
      */
-    //const seal::EncryptionParameters& get_params(const int32_t key_id) const;
-    
+    // const seal::EncryptionParameters& get_params(const int32_t key_id) const;
+
     /**
      * Get encryption keys
      * @param[in] key_id key ID
      * @return encryption keys
      */
     const EncryptionKeys& get_keys(const int32_t key_id) const;
-    
 
 private:
     class Impl;
@@ -78,12 +77,11 @@ struct EncryptionKeys
                    const seal::PublicKey& pubkey,
                    const seal::RelinKeys& relinkey);
     virtual ~EncryptionKeys() = default;
-    
+
     std::shared_ptr<seal::EncryptionParameters> params;
     std::shared_ptr<seal::PublicKey> pubkey;
     std::shared_ptr<seal::RelinKeys> relinkey;
 };
-
 
 } /* namespace ppcnn_server */
 

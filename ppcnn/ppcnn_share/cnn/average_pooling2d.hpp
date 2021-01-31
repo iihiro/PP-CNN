@@ -23,21 +23,30 @@ using std::size_t;
 
 const string AVERAGE_POOLING2D_CLASS_NAME = "AveragePooling2D";
 
-class AveragePooling2D : public Layer {
+class AveragePooling2D : public Layer
+{
 public:
-    AveragePooling2D(const string& name,
-                     const size_t& in_height, const size_t& in_width, const size_t& in_channels,
+    AveragePooling2D(const string& name, const size_t& in_height,
+                     const size_t& in_width, const size_t& in_channels,
                      const size_t& pool_height, const size_t& pool_width,
                      const size_t& stride_height, const size_t& stride_width,
-                     const string& padding,
-                     const Plaintext& plain_mul_factor,
+                     const string& padding, const Plaintext& plain_mul_factor,
                      OptOption& option);
     ~AveragePooling2D();
-    
-    const size_t& out_height() const { return out_height_; }
-    const size_t& out_width() const { return out_width_; }
-    const size_t& out_channels() const { return out_channels_; }
-    
+
+    const size_t& out_height() const
+    {
+        return out_height_;
+    }
+    const size_t& out_width() const
+    {
+        return out_width_;
+    }
+    const size_t& out_channels() const
+    {
+        return out_channels_;
+    }
+
     void printInfo() const override;
     bool isOutOfRangeInput(const int& target_x, const int& target_y) const;
     void forward(Ciphertext3D& input) const;

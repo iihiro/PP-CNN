@@ -16,7 +16,9 @@
  */
 
 #include "network_builder.hpp"
+
 #include <stdexcept>
+
 #include "load_model.hpp"
 #include "picojson.h"
 

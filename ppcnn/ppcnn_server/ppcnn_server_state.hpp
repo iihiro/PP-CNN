@@ -18,8 +18,8 @@
 #ifndef PPCNN_SERVER_STATE_HPP
 #define PPCNN_SERVER_STATE_HPP
 
-#include <memory>
 #include <cstdbool>
+#include <memory>
 #include <stdsc/stdsc_state.hpp>
 
 namespace ppcnn_server
@@ -30,9 +30,9 @@ namespace ppcnn_server
  */
 enum StateId_t : int32_t
 {
-    kStateNil      = 0,
-    kStateReady    = 1,
-    kStateExit     = 2,
+    kStateNil = 0,
+    kStateReady = 1,
+    kStateExit = 2,
 };
 
 /**
@@ -40,8 +40,8 @@ enum StateId_t : int32_t
  */
 enum Event_t : uint64_t
 {
-    kEventNil           = 0,
-    kEventQuery         = 1,
+    kEventNil = 0,
+    kEventQuery = 1,
     kEventResultRequest = 2,
 };
 
@@ -59,7 +59,6 @@ private:
     struct Impl;
     std::shared_ptr<Impl> pimpl_;
 };
-
 
 } /* namespace ppcnn_server */
 

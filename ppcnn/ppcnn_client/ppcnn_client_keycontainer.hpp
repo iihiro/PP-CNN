@@ -18,12 +18,13 @@
 #ifndef PPCNN_CLIENT_KEYCONTAINER_HPP
 #define PPCNN_CLIENT_KEYCONTAINER_HPP
 
-#include <memory>
 #include <seal/seal.h>
+
+#include <memory>
 
 namespace ppcnn_share
 {
-    class User2DecParam;
+class User2DecParam;
 }
 
 namespace ppcnn_client
@@ -31,15 +32,15 @@ namespace ppcnn_client
 
 enum KeyKind_t : int32_t
 {
-    kKindUnknown   = -1,
-    kKindPubKey    = 0,
-    kKindSecKey    = 1,
+    kKindUnknown = -1,
+    kKindPubKey = 0,
+    kKindSecKey = 1,
     kKindGaloisKey = 2,
-    kKindRelinKey  = 3,
-    kKindParam     = 4,
+    kKindRelinKey = 3,
+    kKindParam = 4,
     kNumOfKind,
 };
-    
+
 /**
  * @brief This class is used to hold the SEAL keys.
  */
@@ -68,14 +69,16 @@ struct KeyContainer
      * @param[in] kind key kind
      * @param[out] data key data
      */
-    template <class T> void get(const int32_t key_id, const KeyKind_t kind, T& data) const;
+    template <class T>
+    void get(const int32_t key_id, const KeyKind_t kind, T& data) const;
 
     /**
      * get encryption parameters
      * @param[in] key_id key ID
      * @param[out] params encryption parameters
      */
-    void get_param(const int32_t key_id, seal::EncryptionParameters& params) const;
+    void get_param(const int32_t key_id,
+                   seal::EncryptionParameters& params) const;
 
     /**
      * get data size
