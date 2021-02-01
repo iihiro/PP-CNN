@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/utils/define.h>
+#include <ppcnn_share/cnn_utils/define.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -29,8 +29,8 @@
 #include <ppcnn_share/ppcnn_encdata.hpp>
 #include <ppcnn_share/ppcnn_seal_utility.hpp>
 #include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_share/utils/helper_functions.hpp>
-#include <ppcnn_share/utils/load_dataset.hpp>
+#include <ppcnn_share/cnn_utils/helper_functions.hpp>
+#include <ppcnn_share/cnn_utils/load_dataset.hpp>
 #include <share/define.hpp>
 #include <stdsc/stdsc_buffer.hpp>
 #include <stdsc/stdsc_exception.hpp>

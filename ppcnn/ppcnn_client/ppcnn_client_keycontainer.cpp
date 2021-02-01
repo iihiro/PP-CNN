@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <ppcnn_share/utils/define.h>
+#include <ppcnn_share/cnn_utils/define.h>
 #include <seal/seal.h>
 
 #include <fstream>

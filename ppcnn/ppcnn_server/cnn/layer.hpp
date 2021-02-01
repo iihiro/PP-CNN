@@ -19,7 +19,7 @@
 
 #include <seal/seal.h>
 
-#include <ppcnn_share/utils/opt_option.hpp>
+#include <ppcnn_share/cnn_utils/opt_option.hpp>
 #include <string>
 #include <vector>
 

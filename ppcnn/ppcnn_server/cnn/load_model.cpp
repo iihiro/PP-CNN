@@ -18,7 +18,7 @@
 #include "load_model.hpp"
 
 #include <H5Cpp.h>
-#include <ppcnn_share/utils/define.h>
+#include <ppcnn_share/cnn_utils/define.h>
 
 #include <fstream>
 #include <iostream>

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/cifar/cifar10_reader.hpp>
-#include <ppcnn_share/mnist/mnist_reader.hpp>
-#include <ppcnn_share/utils/load_dataset.hpp>
+#include <ppcnn_share/cnn_utils/cifar/cifar10_reader.hpp>
+#include <ppcnn_share/cnn_utils/mnist/mnist_reader.hpp>
+#include <ppcnn_share/cnn_utils/load_dataset.hpp>
 
 using std::move;
 using std::size_t;

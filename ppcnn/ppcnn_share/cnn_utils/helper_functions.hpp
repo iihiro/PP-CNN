@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <ppcnn_share/utils/types.h>
+#include <ppcnn_share/cnn_utils/types.h>
 
 #include <vector>
 

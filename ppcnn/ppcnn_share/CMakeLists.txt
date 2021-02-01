@@ -1,9 +1,8 @@
 set(module_name ppcnn_share)
-#include(${PROJECT_SOURCE_DIR}/ppcnn/module.cmake)
 
 option(BUILD_SHARED_LIBS "build as a shared library" ON)
 
-file(GLOB sources *.cpp utils/*.cpp cnn/*.cpp)
+file(GLOB sources *.cpp cnn_utils/*.cpp)
 
 if (BUILD_SHARED_LIBS)
   add_library(${module_name} SHARED ${sources})

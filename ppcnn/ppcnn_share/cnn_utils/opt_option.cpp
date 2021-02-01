@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/utils/define.h>
+#include <ppcnn_share/cnn_utils/define.h>
 
-#include <ppcnn_share/utils/opt_option.hpp>
+#include <ppcnn_share/cnn_utils/opt_option.hpp>
 
 OptOption::OptOption(const EOptLevel opt_level, const EActivation act,
                      seal::RelinKeys& _relin_keys, seal::Evaluator& _evaluator,

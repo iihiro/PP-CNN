@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/utils/define.h>
+#include <ppcnn_share/cnn_utils/define.h>
 
 #include <cmath>
 #include <fstream>
 #include <memory>
-#include <ppcnn_share/utils/helper_functions.hpp>
+#include <ppcnn_share/cnn_utils/helper_functions.hpp>
 
 using namespace seal;
 using std::cout;
