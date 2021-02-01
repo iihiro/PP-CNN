@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
  */
 
 #include <stdsc/stdsc_log.hpp>
+
 #include <ppcnn_server/ppcnn_server_state.hpp>
 
 namespace ppcnn_server
@@ -45,8 +46,7 @@ std::shared_ptr<stdsc::State> StateReady::create(void)
     return std::shared_ptr<stdsc::State>(new StateReady());
 }
 
-StateReady::StateReady()
-  : pimpl_(new Impl())
+StateReady::StateReady() : pimpl_(new Impl())
 {
 }
 

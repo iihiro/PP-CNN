@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,5 +36,5 @@ std::istream& operator>>(std::istream& is, Srv2CliParam& param)
     param.result = static_cast<ServerCalcResult_t>(i32_result);
     return is;
 }
-    
+
 } /* namespace ppcnn_share */

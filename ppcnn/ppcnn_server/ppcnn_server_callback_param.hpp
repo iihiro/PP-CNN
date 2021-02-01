@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ namespace ppcnn_server
 
 class CalcManager;
 class KeyContainer;
-    
+
 /**
  * @brief This class is used to hold the callback parameters for Server.
  */
@@ -41,16 +41,15 @@ struct CallbackParam
  */
 struct CommonCallbackParam
 {
-    CommonCallbackParam(CalcManager& calc_manager, 
-                        KeyContainer& key_container)
-        : calc_manager_(calc_manager),
-          key_container_(key_container)
-    {}
+    CommonCallbackParam(CalcManager& calc_manager, KeyContainer& key_container)
+      : calc_manager_(calc_manager), key_container_(key_container)
+    {
+    }
     virtual ~CommonCallbackParam(void) = default;
     CalcManager& calc_manager_;
     KeyContainer& key_container_;
 };
-    
+
 } /* namespace ppcnn_server */
 
 #endif /* PPCNN_SERVER_CALLBACK_PARAM_HPP */

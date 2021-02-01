@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,49 +15,53 @@
  * limitations under the License.
  */
 
-#include <memory>
-#include <fstream>
-#include <vector>
 #include <cstring>
-#include <stdsc/stdsc_client.hpp>
+#include <fstream>
+#include <memory>
+#include <vector>
+
 #include <stdsc/stdsc_buffer.hpp>
-#include <stdsc/stdsc_packet.hpp>
-#include <stdsc/stdsc_log.hpp>
+#include <stdsc/stdsc_client.hpp>
 #include <stdsc/stdsc_exception.hpp>
-#include <ppcnn_share/ppcnn_packet.hpp>
+#include <stdsc/stdsc_log.hpp>
+#include <stdsc/stdsc_packet.hpp>
+
 #include <ppcnn_share/ppcnn_encdata.hpp>
+#include <ppcnn_share/ppcnn_packet.hpp>
 #include <ppcnn_client/ppcnn_client.hpp>
 #include <ppcnn_client/ppcnn_client_result_thread.hpp>
 
 namespace ppcnn_client
 {
-    
+
 struct ResultThread::Impl
 {
     std::shared_ptr<stdsc::ThreadException> te_;
 
-    Impl(const Client& client,
-         const seal::EncryptionParameters& enc_params,
+    Impl(const Client& client, const seal::EncryptionParameters& enc_params,
          cbfunc_t cbfunc, void* cbargs)
-        : client_(client),
-          enc_params_(enc_params),
-          cbfunc_(cbfunc),
-          cbargs_(cbargs)
+      : client_(client),
+        enc_params_(enc_params),
+        cbfunc_(cbfunc),
+        cbargs_(cbargs)
     {
         te_ = stdsc::ThreadException::create();
     }
 
-    void exec(ResultThreadParam& args, std::shared_ptr<stdsc::ThreadException> te)
+    void exec(ResultThreadParam& args,
+              std::shared_ptr<stdsc::ThreadException> te)
     {
         try
         {
-            STDSC_LOG_INFO("Launched result thread for query #%d", args.query_id);
+            STDSC_LOG_INFO("Launched result thread for query #%d",
+                           args.query_id);
 
             bool status = false;
             ppcnn_share::EncData enc_results(enc_params_);
             client_.recv_results(args.query_id, status, enc_results);
-            
-            STDSC_LOG_INFO("Invoke callback function of query #%d", args.query_id);
+
+            STDSC_LOG_INFO("Invoke callback function of query #%d",
+                           args.query_id);
             cbfunc_(args.query_id, status, enc_results.vdata(), cbargs_);
         }
         catch (const stdsc::AbstractException& e)
@@ -77,7 +81,7 @@ private:
 ResultThread::ResultThread(const Client& client,
                            const seal::EncryptionParameters& enc_params,
                            cbfunc_t cbfunc, void* cbargs)
-    : pimpl_(new Impl(client, enc_params, cbfunc, cbargs))
+  : pimpl_(new Impl(client, enc_params, cbfunc, cbargs))
 {
 }
 

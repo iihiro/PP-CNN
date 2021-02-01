@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,17 +18,21 @@
 #ifndef PPCNN_CLIENT_RESULT_THREAD_HPP
 #define PPCNN_CLIENT_RESULT_THREAD_HPP
 
-#include <memory>
-#include <vector>
+
 #include <string>
+#include <vector>
 #include <functional>
+#include <memory>
+
 #include <stdsc/stdsc_thread.hpp>
+
 #include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
+
 #include <seal/seal.h>
 
 namespace ppcnn_client
 {
-    
+
 class ResultThreadParam;
 class Client;
 
@@ -48,8 +52,8 @@ public:
      * @param[in] cbargs arguments for callback function
      */
     ResultThread(const Client& client,
-                 const seal::EncryptionParameters& enc_params,
-                 cbfunc_t cbfunc, void* cbargs);
+                 const seal::EncryptionParameters& enc_params, cbfunc_t cbfunc,
+                 void* cbargs);
     virtual ~ResultThread(void);
 
     /**
@@ -64,8 +68,9 @@ public:
     void wait(void);
 
 private:
-    virtual void exec(ResultThreadParam& args,
-                      std::shared_ptr<stdsc::ThreadException> te) const override;
+    virtual void exec(
+      ResultThreadParam& args,
+      std::shared_ptr<stdsc::ThreadException> te) const override;
 
     struct Impl;
     std::shared_ptr<Impl> pimpl_;

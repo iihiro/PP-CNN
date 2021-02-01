@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,9 +28,9 @@ namespace ppcnn_share
  */
 enum ServerCalcResult_t : int32_t
 {
-    kServerCalcResultNil     = -1,
+    kServerCalcResultNil = -1,
     kServerCalcResultSuccess = 0,
-    kServerCalcResultFailed  = 1,
+    kServerCalcResultFailed = 1,
 };
 
 /**

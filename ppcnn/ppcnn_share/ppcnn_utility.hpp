@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,12 +37,14 @@ std::string getenv(const char* env_var);
 void split(const std::string& str, const std::string& delims,
            std::vector<std::string>& vec_str);
 int32_t gen_uuid(void);
-std::string trim_string(const std::string& str, const std::string& whitespace = " \t");
-std::vector<std::string> get_filelist(const std::string& dir, const std::string& ext = "");
-std::string get_filename(const std::string& path, const bool without_ext = false);
+std::string trim_string(const std::string& str,
+                        const std::string& whitespace = " \t");
+std::vector<std::string> get_filelist(const std::string& dir,
+                                      const std::string& ext = "");
+std::string get_filename(const std::string& path,
+                         const bool without_ext = false);
 std::string get_dirname(const std::string& path);
 std::string get_extname(const std::string& path);
-
 
 } /* namespace utility */
 

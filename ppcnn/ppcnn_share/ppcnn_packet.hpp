@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,16 +31,16 @@ enum ControlCode_t : uint64_t
     /* Code for Request packet: 0x201-0x2FF */
 
     /* Code for Data packet: 0x401-0x4FF */
-    kControlCodeDataEncKeys     = 0x401,
-    kControlCodeDataParam       = 0x402,
-    kControlCodeDataQueryID     = 0x403,
-    kControlCodeDataResult      = 0x404,
+    kControlCodeDataEncKeys = 0x401,
+    kControlCodeDataParam = 0x402,
+    kControlCodeDataQueryID = 0x403,
+    kControlCodeDataResult = 0x404,
 
     /* Code for Download packet: 0x801-0x8FF */
 
     /* Code for UpDownload packet: 0x1000-0x10FF */
-    kControlCodeUpDownloadQuery       = 0x1001,
-    kControlCodeUpDownloadResult      = 0x1002,
+    kControlCodeUpDownloadQuery = 0x1001,
+    kControlCodeUpDownloadResult = 0x1002,
 };
 
 } /* namespace ppcnn_share */

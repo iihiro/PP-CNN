@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,16 +18,16 @@
 #ifndef PPCNN_SERVER_CALCMANAGER_HPP
 #define PPCNN_SERVER_CALCMANAGER_HPP
 
-#include <memory>
 #include <cstdbool>
+#include <memory>
 #include <string>
 
 namespace seal
 {
-    class EncryptionParameters;
-    class PublicKey;
-    class RelinKeys;
-}
+class EncryptionParameters;
+class PublicKey;
+class RelinKeys;
+} // namespace seal
 
 namespace ppcnn_server
 {
@@ -45,8 +45,7 @@ public:
      * @param[in] result_lifetime_sec    lifetime to hold (sec)
      */
     CalcManager(const uint32_t max_concurrent_queries,
-                const uint32_t max_results,
-                const uint32_t result_lifetime_sec);
+                const uint32_t max_results, const uint32_t result_lifetime_sec);
     virtual ~CalcManager() = default;
 
     /**
@@ -85,10 +84,11 @@ public:
      * @param[in] retry_interval_usec retry interval (usec)
      */
     void pop_result(const int32_t query_id, Result& result,
-                    const uint32_t retry_interval_msec=100) const;
+                    const uint32_t retry_interval_msec = 100) const;
 
     /**
-     * Delete results if number of results grater than max number and expired lifetime
+     * Delete results if number of results grater than max number and expired
+     * lifetime
      */
     void cleanup_results();
 

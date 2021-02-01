@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@
 
 namespace seal
 {
-    class EncryptionParameters;
+class EncryptionParameters;
 }
 
 namespace ppcnn_share
@@ -31,36 +31,38 @@ namespace ppcnn_share
 
 namespace seal_utility
 {
-    template <class T>
-    void write_to_file(const std::string& filepath, const T& data);
-    
-    template <class T>
-    void write_to_file(const std::string& filepath, const std::vector<T>& vdata);
-    
-    template <>
-    void write_to_file<seal::EncryptionParameters>(const std::string& filepath,
-                                                   const seal::EncryptionParameters& params);
+template <class T>
+void write_to_file(const std::string& filepath, const T& data);
 
-    template <class T>
-    size_t stream_size(const T& data);
+template <class T>
+void write_to_file(const std::string& filepath, const std::vector<T>& vdata);
 
-    template <>
-    size_t stream_size<seal::EncryptionParameters>(const seal::EncryptionParameters& params);
-    
-    template <class T>
-    void write_to_binary_stream(std::iostream& stream, void* base_ptr_in_stream, 
-                                const T& data, const bool shift_pos_in_stream = true);
+template <>
+void write_to_file<seal::EncryptionParameters>(
+  const std::string& filepath, const seal::EncryptionParameters& params);
 
-    template <class T>
-    void read_from_binary_stream(std::iostream& stream, void* base_ptr_in_stream, 
-                                 const size_t read_sz, 
-                                 T& data, const bool shift_pos_in_stream = true);
+template <class T>
+size_t stream_size(const T& data);
 
-    template <class T>
-    void read_from_binary_stream(std::iostream& stream, void* base_ptr_in_stream, 
-                                 const size_t read_sz, const seal::EncryptionParameters& enc_params,
-                                 T& data, const bool shift_pos_in_stream = true);
+template <>
+size_t stream_size<seal::EncryptionParameters>(
+  const seal::EncryptionParameters& params);
 
+template <class T>
+void write_to_binary_stream(std::iostream& stream, void* base_ptr_in_stream,
+                            const T& data,
+                            const bool shift_pos_in_stream = true);
+
+template <class T>
+void read_from_binary_stream(std::iostream& stream, void* base_ptr_in_stream,
+                             const size_t read_sz, T& data,
+                             const bool shift_pos_in_stream = true);
+
+template <class T>
+void read_from_binary_stream(std::iostream& stream, void* base_ptr_in_stream,
+                             const size_t read_sz,
+                             const seal::EncryptionParameters& enc_params,
+                             T& data, const bool shift_pos_in_stream = true);
 
 } /* namespace seal_utility */
 

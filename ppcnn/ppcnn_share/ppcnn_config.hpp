@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 #ifndef PPCNN_CONFIG_HPP
 #define PPCNN_CONFIG_HPP
 
-#include <string>
 #include <memory>
+#include <string>
 
 namespace ppcnn_share
 {
@@ -35,7 +35,7 @@ struct Config
     std::string get_value(const std::string& key) const;
     bool is_exist_key(const std::string& key) const;
     void load_from_file(const std::string& filename);
-    
+
 private:
     struct Impl;
     std::shared_ptr<Impl> pimpl_;

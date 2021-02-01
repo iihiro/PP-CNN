@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 #ifndef PPCNN_COMPUTATION_PARAMS_HPP
 #define PPCNN_COMPUTATION_PARAMS_HPP
 
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace ppcnn_share
 {
@@ -38,16 +38,12 @@ struct ComputationParams
     int32_t opt_level;
     int32_t activation;
 
-    std::string to_string() const {
+    std::string to_string() const
+    {
         std::ostringstream oss;
-        oss << img_width            << ", "
-            << img_height           << ", "
-            << img_channels         << ", "
-            << labels               << ", "
-            << std::string(dataset) << ", "
-            << std::string(model)   << ", "
-            << opt_level            << ", "
-            << activation;
+        oss << img_width << ", " << img_height << ", " << img_channels << ", "
+            << labels << ", " << std::string(dataset) << ", "
+            << std::string(model) << ", " << opt_level << ", " << activation;
         return oss.str();
     }
 };

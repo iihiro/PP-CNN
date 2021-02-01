@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,16 +20,16 @@
 
 #include <functional>
 #include <vector>
+
 #include <seal/seal.h>
 
 namespace ppcnn_client
 {
 
-using cbfunc_t = std::function<void(const int32_t query_id, 
-                                    const bool status, 
-                                    const std::vector<seal::Ciphertext>&,
-                                    void*)>;
-    
+using cbfunc_t =
+  std::function<void(const int32_t query_id, const bool status,
+                     const std::vector<seal::Ciphertext>&, void*)>;
+
 } /* namespace ppcnn_client */
 
 #endif /* PPCNN_CLIENT_RESULT_CBFUNC_HPP */

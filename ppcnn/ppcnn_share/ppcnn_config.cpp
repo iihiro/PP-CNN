@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <string>
 #include <cstdio>
-#include <vector>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <unordered_map>
+#include <vector>
+
 #include <stdsc/stdsc_exception.hpp>
-#include <ppcnn_share/ppcnn_utility.hpp>
+
 #include <ppcnn_share/ppcnn_config.hpp>
+#include <ppcnn_share/ppcnn_utility.hpp>
 
 namespace ppcnn_share
 {
@@ -159,21 +161,24 @@ long config_get_value<long>(const Config& config, const std::string& key)
 }
 
 template <>
-long long config_get_value<long long>(const Config& config, const std::string& key)
+long long config_get_value<long long>(const Config& config,
+                                      const std::string& key)
 {
     THROW_IF_KEY_DOESNT_EXIST(key);
     return std::stoll(config.get_value(key));
 }
 
 template <>
-unsigned long config_get_value<unsigned long>(const Config& config, const std::string& key)
+unsigned long config_get_value<unsigned long>(const Config& config,
+                                              const std::string& key)
 {
     THROW_IF_KEY_DOESNT_EXIST(key);
     return std::stoul(config.get_value(key));
 }
 
 template <>
-unsigned long long config_get_value<unsigned long long>(const Config& config, const std::string& key)
+unsigned long long config_get_value<unsigned long long>(const Config& config,
+                                                        const std::string& key)
 {
     THROW_IF_KEY_DOESNT_EXIST(key);
     return std::stoull(config.get_value(key));

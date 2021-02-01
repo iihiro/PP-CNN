@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,14 @@
 #define PPCNN_SERVER_HPP
 
 #include <memory>
+
 #include <ppcnn_share/ppcnn_define.hpp>
+
+namespace stdsc
+{
+    class CallbackFunctionContainer;
+    class StateContext;
+}
 
 namespace ppcnn_server
 {
@@ -39,12 +46,13 @@ public:
      * @param[in] max_results            max result number
      * @param[in] result_lifetime_sec    result linefile (sec)
      */
-    Server(const char* port,
-           stdsc::CallbackFunctionContainer& callback,
+    Server(const char* port, stdsc::CallbackFunctionContainer& callback,
            stdsc::StateContext& state,
-           const uint32_t max_concurrent_queries = PPCNN_DEFAULT_MAX_CONCURRENT_QUERIES,
+           const uint32_t max_concurrent_queries =
+             PPCNN_DEFAULT_MAX_CONCURRENT_QUERIES,
            const uint32_t max_results = PPCNN_DEFAULT_MAX_RESULTS,
-           const uint32_t result_lifetime_sec = PPCNN_DEFAULT_MAX_RESULT_LIFETIME_SEC);
+           const uint32_t result_lifetime_sec =
+             PPCNN_DEFAULT_MAX_RESULT_LIFETIME_SEC);
     ~Server(void) = default;
 
     /**

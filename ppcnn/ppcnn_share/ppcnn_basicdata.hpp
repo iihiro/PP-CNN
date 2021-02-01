@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Yamana Laboratory, Waseda University
+ * Copyright 2020 Yamana Laboratory, Waseda University
  * Supported by JST CREST Grant Number JPMJCR1503, Japan.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,14 @@
 #ifndef PPCNN_BASICDATA_HPP
 #define PPCNN_BASICDATA_HPP
 
-#include <vector>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <vector>
+
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
+
 #include <ppcnn_share/ppcnn_utility.hpp>
 
 namespace ppcnn_share
@@ -53,7 +55,7 @@ struct BasicData
         STDSC_LOG_WARN("%s is not implemented.", __FUNCTION__);
         return -1;
     }
-    
+
     virtual size_t load(std::istream& is)
     {
         STDSC_LOG_WARN("%s is not implemented.", __FUNCTION__);
@@ -66,10 +68,11 @@ struct BasicData
         save(ofs);
         ofs.close();
     }
-    
+
     virtual void load_from_file(const std::string& filepath)
     {
-        if (!ppcnn_share::utility::file_exist(filepath)) {
+        if (!ppcnn_share::utility::file_exist(filepath))
+        {
             std::ostringstream oss;
             oss << "File not found. (" << filepath << ")";
             STDSC_THROW_FILE(oss.str());
@@ -78,25 +81,25 @@ struct BasicData
         load(ifs);
         ifs.close();
     }
-    
+
     virtual const T& data(void) const
     {
         STDSC_THROW_FAILURE_IF_CHECK(vec_.size() > 0, "Data is empty.");
         return vec_[0];
     }
-    
+
     virtual T& data(void)
     {
         STDSC_THROW_FAILURE_IF_CHECK(vec_.size() > 0, "Data is empty.");
         return vec_[0];
     }
-    
+
     virtual const std::vector<T>& vdata(void) const
     {
         STDSC_THROW_FAILURE_IF_CHECK(vec_.size() > 0, "Data is empty.");
         return vec_;
     }
-    
+
     virtual std::vector<T>& vdata(void)
     {
         STDSC_THROW_FAILURE_IF_CHECK(vec_.size() > 0, "Data is empty.");
