@@ -16,7 +16,6 @@
  */
 
 #include <ppcnn_share/cnn_utils/define.h>
-
 #include <ppcnn_share/cnn_utils/opt_option.hpp>
 
 OptOption::OptOption(const EOptLevel opt_level, const EActivation act,

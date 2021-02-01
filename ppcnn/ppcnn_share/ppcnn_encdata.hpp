@@ -18,11 +18,12 @@
 #ifndef PPCNN_ENCDATA_HPP
 #define PPCNN_ENCDATA_HPP
 
-#include <seal/seal.h>
-
 #include <memory>
-#include <ppcnn_share/ppcnn_basicdata.hpp>
 #include <vector>
+
+#include <ppcnn_share/ppcnn_basicdata.hpp>
+
+#include <seal/seal.h>
 
 namespace ppcnn_share
 {

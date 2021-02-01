@@ -14,15 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <ppcnn_share/cnn_utils/define.h>
-#include <seal/seal.h>
-
 #include <fstream>
-#include <ppcnn_client/ppcnn_client_keycontainer.hpp>
-#include <ppcnn_share/ppcnn_utility.hpp>
+#include <unordered_map>
+
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
-#include <unordered_map>
+
+#include <ppcnn_share/cnn_utils/define.h>
+#include <ppcnn_share/ppcnn_utility.hpp>
+#include <ppcnn_client/ppcnn_client_keycontainer.hpp>
+
+#include <seal/seal.h>
 
 #define CHECK_KIND(k)                                                    \
     do                                                                   \

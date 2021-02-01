@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/cnn_utils/define.h>
-
 #include <cmath>
 #include <fstream>
 #include <memory>
+
+#include <ppcnn_share/cnn_utils/define.h>
 #include <ppcnn_share/cnn_utils/helper_functions.hpp>
 
 using namespace seal;
@@ -65,67 +65,6 @@ inline void loadRelinKeys(RelinKeys& relin_keys,
     relin_keys.load(context, rk_ifs);
     rk_ifs.close();
 }
-
-#if 0
-/* Setup Homomorphic Encryption tool using SEAL */
-void setupSealTool() {
-  EncryptionParameters params(scheme_type::CKKS);
-  PublicKey public_key;
-  SecretKey secret_key;
-  RelinKeys* relin_keys = new RelinKeys();
-
-  cout << "Loading secrets from " << SECRETS_DIR << endl;
-
-  loadParams(params);
-  auto context = SEALContext::Create(params);
-  loadPublicKey(public_key, context);
-  loadSecretKey(secret_key, context);
-  loadRelinKeys(*relin_keys, context);
-
-  cout << "Finish loading!\n"
-       << endl;
-
-  // Create encryptor, decryptor, evaluator, encoder
-  Encryptor* encryptor = new Encryptor(context, public_key);
-  Decryptor* decryptor = new Decryptor(context, secret_key);
-  Evaluator* evaluator = new Evaluator(context);
-  CKKSEncoder* encoder = new CKKSEncoder(context);
-  size_t slot_count    = encoder->slot_count();
-  double scale_param   = pow(2.0, INTERMEDIATE_PRIMES_BIT_SIZE);
-
-  gTool.setRelinKeys(relin_keys);
-  gTool.setEncryptor(encryptor);
-  gTool.setDecryptor(decryptor);
-  gTool.setEvaluator(evaluator);
-  gTool.setEncoder(encoder);
-  gTool.setSlotCount(slot_count);
-  gTool.setScaleParam(scale_param);
-}
-#endif
-
-#if 0
-/* Setup optimization settings */
-void setupOptimizationOption(const EOptLevel& optimization_level) {
-  switch (optimization_level) {
-    case NO_OPT:
-      break;
-    case FUSE_LAYERS:
-      gOption.setEnableFuseLayers(true);
-      break;
-    case OPT_ACTIVATION:
-      gOption.setEnableOptimizeActivation(true);
-      break;
-    case OPT_POOLING:
-      gOption.setEnableOptimizePooling(true);
-      break;
-    case ALL_OPT:
-      gOption.setEnableFuseLayers(true);
-      gOption.setEnableOptimizeActivation(true);
-      gOption.setEnableOptimizePooling(true);
-      break;
-  }
-}
-#endif
 
 /* Encrypt single image using SEAL encryptor */
 void encryptImage(const vector<float>& origin_image, Ciphertext3D& target_image,

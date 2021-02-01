@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <memory>
+
 #include "global_average_pooling2d.hpp"
 
 using std::cout;

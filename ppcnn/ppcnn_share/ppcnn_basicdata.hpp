@@ -20,11 +20,13 @@
 
 #include <fstream>
 #include <iostream>
-#include <ppcnn_share/ppcnn_utility.hpp>
 #include <sstream>
+#include <vector>
+
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
-#include <vector>
+
+#include <ppcnn_share/ppcnn_utility.hpp>
 
 namespace ppcnn_share
 {

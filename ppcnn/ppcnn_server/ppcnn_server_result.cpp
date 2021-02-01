@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <seal/seal.h>
-
 #include <ppcnn_server/ppcnn_server_result.hpp>
+
+#include <seal/seal.h>
 
 namespace ppcnn_server
 {

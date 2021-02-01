@@ -16,11 +16,11 @@
  */
 
 #include <omp.h>
-#include <ppcnn_share/cnn_utils/define.h>
-
 #include <exception>
 #include <fstream>
 #include <iostream>
+
+#include <ppcnn_share/cnn_utils/define.h>
 #include <ppcnn_server/cnn/activation.hpp>
 
 using std::cout;

@@ -18,12 +18,13 @@
 #ifndef PPCNN_SERVER_QUERY_HPP
 #define PPCNN_SERVER_QUERY_HPP
 
-#include <seal/seal.h>
-
 #include <cstdint>
+#include <vector>
+
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 #include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
-#include <vector>
+
+#include <seal/seal.h>
 
 namespace ppcnn_server
 {

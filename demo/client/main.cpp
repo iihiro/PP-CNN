@@ -16,14 +16,18 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/cnn_utils/define.h>
 #include <unistd.h>
-
 #include <iostream>
 #include <memory>
-#include <ppcnn_client/ppcnn_client.hpp>
-#include <ppcnn_client/ppcnn_client_keycontainer.hpp>
-#include <ppcnn_client/ppcnn_client_result_thread.hpp>
+#include <string>
+
+#include <stdsc/stdsc_buffer.hpp>
+#include <stdsc/stdsc_exception.hpp>
+#include <stdsc/stdsc_log.hpp>
+#include <stdsc/stdsc_state.hpp>
+#include <stdsc/stdsc_utility.hpp>
+
+#include <ppcnn_share/cnn_utils/define.h>
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 #include <ppcnn_share/ppcnn_config.hpp>
 #include <ppcnn_share/ppcnn_encdata.hpp>
@@ -31,13 +35,11 @@
 #include <ppcnn_share/ppcnn_utility.hpp>
 #include <ppcnn_share/cnn_utils/helper_functions.hpp>
 #include <ppcnn_share/cnn_utils/load_dataset.hpp>
+#include <ppcnn_client/ppcnn_client.hpp>
+#include <ppcnn_client/ppcnn_client_keycontainer.hpp>
+#include <ppcnn_client/ppcnn_client_result_thread.hpp>
+
 #include <share/define.hpp>
-#include <stdsc/stdsc_buffer.hpp>
-#include <stdsc/stdsc_exception.hpp>
-#include <stdsc/stdsc_log.hpp>
-#include <stdsc/stdsc_state.hpp>
-#include <stdsc/stdsc_utility.hpp>
-#include <string>
 
 constexpr size_t MNIST_CHANNELS = 1;
 constexpr size_t MNIST_HEIGHT = 28;

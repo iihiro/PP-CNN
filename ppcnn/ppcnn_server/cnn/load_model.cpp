@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-#include "load_model.hpp"
-
-#include <H5Cpp.h>
-#include <ppcnn_share/cnn_utils/define.h>
-
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <stdexcept>
+#include <H5Cpp.h>
+
+#include <ppcnn_share/cnn_utils/define.h>
 
 #include "activation.hpp"
 #include "average_pooling2d.hpp"
@@ -34,6 +32,7 @@
 #include "dense_fused_bn.hpp"
 #include "flatten.hpp"
 #include "global_average_pooling2d.hpp"
+#include "load_model.hpp"
 
 using namespace H5;
 using std::cout;

@@ -16,11 +16,13 @@
  */
 
 #include <iomanip> // for setw
-#include <ppcnn_share/ppcnn_encdata.hpp>
-#include <ppcnn_share/ppcnn_utility.hpp>
+#include <vector>
+
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
-#include <vector>
+
+#include <ppcnn_share/ppcnn_encdata.hpp>
+#include <ppcnn_share/ppcnn_utility.hpp>
 
 namespace ppcnn_share
 {

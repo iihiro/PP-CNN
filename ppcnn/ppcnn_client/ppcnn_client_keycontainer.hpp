@@ -18,9 +18,8 @@
 #ifndef PPCNN_CLIENT_KEYCONTAINER_HPP
 #define PPCNN_CLIENT_KEYCONTAINER_HPP
 
-#include <seal/seal.h>
-
 #include <memory>
+#include <seal/seal.h>
 
 namespace ppcnn_share
 {

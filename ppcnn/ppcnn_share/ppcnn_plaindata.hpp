@@ -19,6 +19,7 @@
 #define PPCNN_PLAINDATA_HPP
 
 #include <memory>
+
 #include <ppcnn_share/ppcnn_basicdata.hpp>
 
 namespace ppcnn_share

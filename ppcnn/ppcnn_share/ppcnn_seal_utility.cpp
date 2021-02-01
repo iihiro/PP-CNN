@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-#include <seal/seal.h>
 
 #include <fstream>
+#include <sstream>
+
 #include <ppcnn_share/ppcnn_encdata.hpp>
 #include <ppcnn_share/ppcnn_seal_utility.hpp>
-#include <sstream>
+
+#include <seal/seal.h>
 
 namespace ppcnn_share
 {

@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-#include <ppcnn_server/ppcnn_server_state.hpp>
 #include <stdsc/stdsc_log.hpp>
+
+#include <ppcnn_server/ppcnn_server_state.hpp>
 
 namespace ppcnn_server
 {

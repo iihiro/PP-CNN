@@ -18,13 +18,15 @@
 #ifndef PPCNN_SERVER_RESULT_HPP
 #define PPCNN_SERVER_RESULT_HPP
 
-#include <seal/seal.h>
-
 #include <chrono>
 #include <cstdbool>
 #include <cstdint>
-#include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
 #include <vector>
+
+#include <ppcnn_share/ppcnn_concurrent_mapqueue.hpp>
+
+#include <seal/seal.h>
+
 
 namespace ppcnn_server
 {

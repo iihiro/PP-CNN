@@ -16,27 +16,28 @@
  */
 
 #include <omp.h>
-#include <ppcnn_server/cnn/picojson.h>
-#include <ppcnn_share/cnn_utils/define.h>
-#include <ppcnn_share/cnn_utils/types.h>
 #include <seal/seal.h>
 #include <sys/syscall.h> // for thread id
 #include <sys/types.h>   // for thread id
 #include <unistd.h>
-
 #include <algorithm> // for sort
 #include <chrono>
 #include <fstream>
+#include <random>
+
+#include <stdsc/stdsc_log.hpp>
+
+#include <ppcnn_share/cnn_utils/define.h>
+#include <ppcnn_share/cnn_utils/types.h>
+#include <ppcnn_share/ppcnn_seal_utility.hpp>
+#include <ppcnn_share/ppcnn_utility.hpp>
+#include <ppcnn_server/cnn/picojson.h>
 #include <ppcnn_server/ppcnn_server_calcthread.hpp>
 #include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 #include <ppcnn_server/ppcnn_server_query.hpp>
 #include <ppcnn_server/ppcnn_server_result.hpp>
 #include <ppcnn_server/cnn/load_model.hpp>
-#include <ppcnn_server/cnn/network_builder.hpp>
-#include <ppcnn_share/ppcnn_seal_utility.hpp>
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <random>
-#include <stdsc/stdsc_log.hpp>
+#include <ppcnn_server/cnn/network.hpp>
 
 //#define ENABLE_LOCAL_DEBUG
 

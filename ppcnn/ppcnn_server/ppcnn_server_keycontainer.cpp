@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-#include <seal/seal.h>
+
+#include <unordered_map>
+
+#include <stdsc/stdsc_exception.hpp>
 
 #include <ppcnn_server/ppcnn_server_keycontainer.hpp>
-#include <stdsc/stdsc_exception.hpp>
-#include <unordered_map>
+
+#include <seal/seal.h>
 
 namespace ppcnn_server
 {

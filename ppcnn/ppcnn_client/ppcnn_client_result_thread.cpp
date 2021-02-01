@@ -18,16 +18,18 @@
 #include <cstring>
 #include <fstream>
 #include <memory>
-#include <ppcnn_client/ppcnn_client.hpp>
-#include <ppcnn_client/ppcnn_client_result_thread.hpp>
-#include <ppcnn_share/ppcnn_encdata.hpp>
-#include <ppcnn_share/ppcnn_packet.hpp>
+#include <vector>
+
 #include <stdsc/stdsc_buffer.hpp>
 #include <stdsc/stdsc_client.hpp>
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
 #include <stdsc/stdsc_packet.hpp>
-#include <vector>
+
+#include <ppcnn_share/ppcnn_encdata.hpp>
+#include <ppcnn_share/ppcnn_packet.hpp>
+#include <ppcnn_client/ppcnn_client.hpp>
+#include <ppcnn_client/ppcnn_client_result_thread.hpp>
 
 namespace ppcnn_client
 {

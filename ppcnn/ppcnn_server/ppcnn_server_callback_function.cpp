@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-#include <seal/seal.h>
 
 #include <cstring>
 #include <iostream>
+
+#include <stdsc/stdsc_buffer.hpp>
+#include <stdsc/stdsc_exception.hpp>
+#include <stdsc/stdsc_packet.hpp>
+#include <stdsc/stdsc_socket.hpp>
+#include <stdsc/stdsc_state.hpp>
+
+#include <ppcnn_share/ppcnn_cli2srvparam.hpp>
+#include <ppcnn_share/ppcnn_encdata.hpp>
+#include <ppcnn_share/ppcnn_packet.hpp>
+#include <ppcnn_share/ppcnn_plaindata.hpp>
+#include <ppcnn_share/ppcnn_seal_utility.hpp>
+#include <ppcnn_share/ppcnn_srv2cliparam.hpp>
 #include <ppcnn_server/ppcnn_server_calcmanager.hpp>
 #include <ppcnn_server/ppcnn_server_callback_function.hpp>
 #include <ppcnn_server/ppcnn_server_callback_param.hpp>
@@ -26,17 +38,8 @@
 #include <ppcnn_server/ppcnn_server_query.hpp>
 #include <ppcnn_server/ppcnn_server_result.hpp>
 #include <ppcnn_server/ppcnn_server_state.hpp>
-#include <ppcnn_share/ppcnn_cli2srvparam.hpp>
-#include <ppcnn_share/ppcnn_encdata.hpp>
-#include <ppcnn_share/ppcnn_packet.hpp>
-#include <ppcnn_share/ppcnn_plaindata.hpp>
-#include <ppcnn_share/ppcnn_seal_utility.hpp>
-#include <ppcnn_share/ppcnn_srv2cliparam.hpp>
-#include <stdsc/stdsc_buffer.hpp>
-#include <stdsc/stdsc_exception.hpp>
-#include <stdsc/stdsc_packet.hpp>
-#include <stdsc/stdsc_socket.hpp>
-#include <stdsc/stdsc_state.hpp>
+
+#include <seal/seal.h>
 
 #define ENABLE_LOCAL_DEBUG
 

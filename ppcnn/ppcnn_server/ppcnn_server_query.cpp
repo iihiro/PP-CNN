@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-#include <seal/seal.h>
 
-#include <ppcnn_server/ppcnn_server_query.hpp>
 #include <ppcnn_share/ppcnn_utility.hpp>
+#include <ppcnn_server/ppcnn_server_query.hpp>
+
+#include <seal/seal.h>
 
 namespace ppcnn_server
 {

@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-#include "dense.hpp"
-
 #include <omp.h>
-
 #include <fstream>
 #include <iostream>
+
+#include "dense.hpp"
 
 using std::cout;
 using std::endl;

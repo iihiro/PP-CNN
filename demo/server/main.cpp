@@ -16,22 +16,24 @@
  */
 
 #include <unistd.h>
-
 #include <iostream>
 #include <memory>
-#include <ppcnn_server/ppcnn_server.hpp>
-#include <ppcnn_server/ppcnn_server_callback_function.hpp>
-#include <ppcnn_server/ppcnn_server_callback_param.hpp>
-#include <ppcnn_server/ppcnn_server_state.hpp>
-#include <ppcnn_share/ppcnn_packet.hpp>
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <share/define.hpp>
+#include <string>
+
 #include <stdsc/stdsc_callback_function.hpp>
 #include <stdsc/stdsc_callback_function_container.hpp>
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
 #include <stdsc/stdsc_state.hpp>
-#include <string>
+
+#include <ppcnn_share/ppcnn_packet.hpp>
+#include <ppcnn_share/ppcnn_utility.hpp>
+#include <ppcnn_server/ppcnn_server.hpp>
+#include <ppcnn_server/ppcnn_server_callback_function.hpp>
+#include <ppcnn_server/ppcnn_server_callback_param.hpp>
+#include <ppcnn_server/ppcnn_server_state.hpp>
+
+#include <share/define.hpp>
 
 struct Option
 {

@@ -16,17 +16,18 @@
  */
 
 #include <unistd.h>
-
 #include <fstream>
+#include <vector>
+
+#include <stdsc/stdsc_exception.hpp>
+#include <stdsc/stdsc_log.hpp>
+
+#include <ppcnn_share/ppcnn_define.hpp>
+#include <ppcnn_share/ppcnn_utility.hpp>
+#include <ppcnn_server/ppcnn_server_result.hpp>
 #include <ppcnn_server/ppcnn_server_calcmanager.hpp>
 #include <ppcnn_server/ppcnn_server_calcthread.hpp>
 #include <ppcnn_server/ppcnn_server_query.hpp>
-#include <ppcnn_server/ppcnn_server_result.hpp>
-#include <ppcnn_share/ppcnn_define.hpp>
-#include <ppcnn_share/ppcnn_utility.hpp>
-#include <stdsc/stdsc_exception.hpp>
-#include <stdsc/stdsc_log.hpp>
-#include <vector>
 
 namespace ppcnn_server
 {

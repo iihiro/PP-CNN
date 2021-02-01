@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-#include <ppcnn_share/cnn_utils/cifar/cifar10_reader.hpp>
-#include <ppcnn_share/cnn_utils/mnist/mnist_reader.hpp>
-#include <ppcnn_share/cnn_utils/load_dataset.hpp>
+#include <memory>
+#include <vector>
 
 using std::move;
 using std::size_t;
 using std::string;
 using std::vector;
+
+#include <ppcnn_share/cnn_utils/cifar/cifar10_reader.hpp>
+#include <ppcnn_share/cnn_utils/mnist/mnist_reader.hpp>
+#include <ppcnn_share/cnn_utils/load_dataset.hpp>
 
 const string MNIST_DATASET_PATH = "../datasets/mnist";
 const string CIFAR10_DATASET_PATH = "../datasets/cifar-10";

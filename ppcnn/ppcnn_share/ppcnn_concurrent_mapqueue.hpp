@@ -21,6 +21,7 @@
 #include <cstdbool>
 #include <map>
 #include <mutex>
+
 #include <stdsc/stdsc_exception.hpp>
 
 namespace ppcnn_share

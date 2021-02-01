@@ -19,6 +19,7 @@
 #define PPCNN_SERVER_HPP
 
 #include <memory>
+
 #include <ppcnn_share/ppcnn_define.hpp>
 
 namespace stdsc

@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-#include <ppcnn_server/ppcnn_server.hpp>
-#include <ppcnn_server/ppcnn_server_calcmanager.hpp>
-#include <ppcnn_server/ppcnn_server_callback_param.hpp>
-#include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 #include <sstream>
+
 #include <stdsc/stdsc_callback_function_container.hpp>
 #include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
 #include <stdsc/stdsc_server.hpp>
+
+#include <ppcnn_server/ppcnn_server.hpp>
+#include <ppcnn_server/ppcnn_server_calcmanager.hpp>
+#include <ppcnn_server/ppcnn_server_callback_param.hpp>
+#include <ppcnn_server/ppcnn_server_keycontainer.hpp>
 
 namespace ppcnn_server
 {

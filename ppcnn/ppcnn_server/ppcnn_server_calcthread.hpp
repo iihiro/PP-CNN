@@ -20,9 +20,11 @@
 
 #include <cstdbool>
 #include <memory>
-#include <ppcnn_share/ppcnn_define.hpp>
-#include <stdsc/stdsc_thread.hpp>
 #include <vector>
+
+#include <stdsc/stdsc_thread.hpp>
+
+#include <ppcnn_share/ppcnn_define.hpp>
 
 namespace ppcnn_server
 {

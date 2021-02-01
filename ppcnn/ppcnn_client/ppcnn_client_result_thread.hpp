@@ -18,14 +18,17 @@
 #ifndef PPCNN_CLIENT_RESULT_THREAD_HPP
 #define PPCNN_CLIENT_RESULT_THREAD_HPP
 
-#include <seal/seal.h>
 
-#include <functional>
-#include <memory>
-#include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
-#include <stdsc/stdsc_thread.hpp>
 #include <string>
 #include <vector>
+#include <functional>
+#include <memory>
+
+#include <stdsc/stdsc_thread.hpp>
+
+#include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
+
+#include <seal/seal.h>
 
 namespace ppcnn_client
 {

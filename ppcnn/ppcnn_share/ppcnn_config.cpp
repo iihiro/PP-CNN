@@ -18,13 +18,15 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
-#include <ppcnn_share/ppcnn_config.hpp>
-#include <ppcnn_share/ppcnn_utility.hpp>
 #include <sstream>
-#include <stdsc/stdsc_exception.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include <stdsc/stdsc_exception.hpp>
+
+#include <ppcnn_share/ppcnn_config.hpp>
+#include <ppcnn_share/ppcnn_utility.hpp>
 
 namespace ppcnn_share
 {

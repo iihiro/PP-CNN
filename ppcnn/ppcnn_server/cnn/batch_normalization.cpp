@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-#include "batch_normalization.hpp"
-
 #include <omp.h>
-
 #include <fstream>
 #include <iostream>
+
+#include "batch_normalization.hpp"
 
 using std::cout;
 using std::endl;

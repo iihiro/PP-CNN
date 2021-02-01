@@ -17,11 +17,12 @@
 
 #pragma once
 
-#include <ppcnn_share/cnn_utils/types.h>
-#include <seal/seal.h>
 #include <unistd.h>
-
 #include <memory>
+
+#include <ppcnn_share/cnn_utils/types.h>
+
+#include <seal/seal.h>
 
 struct OptOption
 {

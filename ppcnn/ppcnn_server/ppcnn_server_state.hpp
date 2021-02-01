@@ -20,6 +20,7 @@
 
 #include <cstdbool>
 #include <memory>
+
 #include <stdsc/stdsc_state.hpp>
 
 namespace ppcnn_server

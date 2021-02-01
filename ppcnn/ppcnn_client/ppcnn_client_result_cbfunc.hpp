@@ -18,10 +18,10 @@
 #ifndef PPCNN_CLIENT_RESULT_CBFUNC_HPP
 #define PPCNN_CLIENT_RESULT_CBFUNC_HPP
 
-#include <seal/seal.h>
-
 #include <functional>
 #include <vector>
+
+#include <seal/seal.h>
 
 namespace ppcnn_client
 {

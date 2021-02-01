@@ -19,8 +19,8 @@
 #define PPCNN_CLIENT_HPP
 
 #include <memory>
-#include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
 #include <ppcnn_share/ppcnn_define.hpp>
+#include <ppcnn_client/ppcnn_client_result_cbfunc.hpp>
 
 namespace ppcnn_share
 {

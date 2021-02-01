@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-#include "conv2d.hpp"
-
 #include <omp.h>
-
 #include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <iostream>
+
+#include "conv2d.hpp"
 
 using std::ceil;
 using std::cout;

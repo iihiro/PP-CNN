@@ -18,16 +18,17 @@
 #include <dirent.h>   // scandir
 #include <string.h>   // strcmp
 #include <sys/stat.h> // stat
-
 #include <algorithm> // std::all_of
 #include <cctype>    // isdigit
 #include <cstdlib>   // std::env, std::rand
 #include <cstdlib>   // std::env
 #include <ctime>     // std::time
 #include <fstream>
-#include <ppcnn_share/ppcnn_utility.hpp>
 #include <sstream>
+
 #include <stdsc/stdsc_exception.hpp>
+
+#include <ppcnn_share/ppcnn_utility.hpp>
 
 namespace ppcnn_share
 {
