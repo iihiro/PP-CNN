@@ -116,7 +116,7 @@ struct CalcThread::Impl
                 usleep(args.retry_interval_msec * 1000);
             }
 
-            LOGINFO("Get query. (%s)\n", query.params_.to_string().c_str());
+            LOGINFO("Get query. (%s)", query.params_.to_string().c_str());
 
             const auto dataset_name = std::string(query.params_.dataset);
             const auto model_name = std::string(query.params_.model);
@@ -161,7 +161,7 @@ struct CalcThread::Impl
             }
 #endif
 
-            LOGINFO("Set result of query.\n");
+            LOGINFO("Set result of query.");
         }
     }
 
