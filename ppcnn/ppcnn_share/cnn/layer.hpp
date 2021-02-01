@@ -17,36 +17,29 @@
 
 #pragma once
 
-#include <seal/seal.h>
-
 #include <string>
 #include <vector>
+#include <seal/seal.h>
+#include <ppcnn_share/utils/opt_option.hpp>
 
 using seal::Ciphertext;
 using seal::Plaintext;
 using std::string;
 using std::vector;
 
-class Layer
-{
+class Layer {
 public:
-    Layer(const string& name, const ELayerClass& layer_class);
-    virtual ~Layer();
+  Layer(const string& name, const ELayerClass& layer_class);
+  virtual ~Layer();
 
-    const string& name() const
-    {
-        return name_;
-    };
-    const ELayerClass& layer_class() const
-    {
-        return layer_class_;
-    };
+  const string& name() const { return name_; };
+  const ELayerClass& layer_class() const { return layer_class_; };
 
-    virtual void printInfo() const = 0;
-    virtual void forward(Ciphertext3D& input) const;
-    virtual void forward(vector<Ciphertext>& input) const;
+  virtual void printInfo() const = 0;
+  virtual void forward(Ciphertext3D& input) const;
+  virtual void forward(vector<Ciphertext>& input) const;
 
 private:
-    string name_;
-    ELayerClass layer_class_;
+  string name_;
+  ELayerClass layer_class_;
 };

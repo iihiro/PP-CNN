@@ -39,13 +39,12 @@ public:
      * @param[in] max_results            max result number
      * @param[in] result_lifetime_sec    result linefile (sec)
      */
-    Server(const char* port, stdsc::CallbackFunctionContainer& callback,
+    Server(const char* port,
+           stdsc::CallbackFunctionContainer& callback,
            stdsc::StateContext& state,
-           const uint32_t max_concurrent_queries =
-             PPCNN_DEFAULT_MAX_CONCURRENT_QUERIES,
+           const uint32_t max_concurrent_queries = PPCNN_DEFAULT_MAX_CONCURRENT_QUERIES,
            const uint32_t max_results = PPCNN_DEFAULT_MAX_RESULTS,
-           const uint32_t result_lifetime_sec =
-             PPCNN_DEFAULT_MAX_RESULT_LIFETIME_SEC);
+           const uint32_t result_lifetime_sec = PPCNN_DEFAULT_MAX_RESULT_LIFETIME_SEC);
     ~Server(void) = default;
 
     /**

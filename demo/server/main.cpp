@@ -16,26 +16,25 @@
  */
 
 #include <unistd.h>
-
-#include <iostream>
 #include <memory>
-#include <ppcnn_server/ppcnn_server.hpp>
-#include <ppcnn_server/ppcnn_server_callback_function.hpp>
-#include <ppcnn_server/ppcnn_server_callback_param.hpp>
-#include <ppcnn_server/ppcnn_server_state.hpp>
-#include <ppcnn_share/ppcnn_packet.hpp>
-#include <ppcnn_share/ppcnn_utility.hpp>
+#include <string>
+#include <iostream>
 #include <share/define.hpp>
+#include <stdsc/stdsc_state.hpp>
 #include <stdsc/stdsc_callback_function.hpp>
 #include <stdsc/stdsc_callback_function_container.hpp>
-#include <stdsc/stdsc_exception.hpp>
 #include <stdsc/stdsc_log.hpp>
-#include <stdsc/stdsc_state.hpp>
-#include <string>
+#include <stdsc/stdsc_exception.hpp>
+#include <ppcnn_share/ppcnn_utility.hpp>
+#include <ppcnn_share/ppcnn_packet.hpp>
+#include <ppcnn_server/ppcnn_server.hpp>
+#include <ppcnn_server/ppcnn_server_state.hpp>
+#include <ppcnn_server/ppcnn_server_callback_param.hpp>
+#include <ppcnn_server/ppcnn_server_callback_function.hpp>
 
 struct Option
 {
-    std::string port = PORT_SRV;
+    std::string port     = PORT_SRV;
     uint32_t max_queries = PPCNN_DEFAULT_MAX_CONCURRENT_QUERIES;
     uint32_t max_results = PPCNN_DEFAULT_MAX_RESULTS;
     uint32_t max_result_lifetime_sec = PPCNN_DEFAULT_MAX_RESULT_LIFETIME_SEC;
@@ -63,10 +62,7 @@ void init(Option& option, int argc, char* argv[])
                 break;
             case 'h':
             default:
-                printf(
-                  "Usage: %s [-p port] [-q max_queries] [-r max_results] [-l "
-                  "max_lifetime_sec]\n",
-                  argv[0]);
+                printf("Usage: %s [-p port] [-q max_queries] [-r max_results] [-l max_lifetime_sec]\n", argv[0]);
                 exit(1);
         }
     }
@@ -75,27 +71,28 @@ void init(Option& option, int argc, char* argv[])
 void exec(Option& option)
 {
     stdsc::StateContext state(std::make_shared<ppcnn_server::StateReady>());
-
+    
     stdsc::CallbackFunctionContainer callback;
     {
         std::shared_ptr<stdsc::CallbackFunction> cb_enckeys(
-          new ppcnn_server::CallbackFunctionEncryptionKeys());
+            new ppcnn_server::CallbackFunctionEncryptionKeys());
         callback.set(ppcnn_share::kControlCodeDataEncKeys, cb_enckeys);
-
+        
         std::shared_ptr<stdsc::CallbackFunction> cb_query(
-          new ppcnn_server::CallbackFunctionQuery());
+            new ppcnn_server::CallbackFunctionQuery());
         callback.set(ppcnn_share::kControlCodeUpDownloadQuery, cb_query);
 
         std::shared_ptr<stdsc::CallbackFunction> cb_result(
-          new ppcnn_server::CallbackFunctionResultRequest());
+            new ppcnn_server::CallbackFunctionResultRequest());
         callback.set(ppcnn_share::kControlCodeUpDownloadResult, cb_result);
     }
 
     const char* host = "localhost";
 
-    std::shared_ptr<ppcnn_server::Server> server(new ppcnn_server::Server(
-      option.port.c_str(), callback, state, option.max_queries,
-      option.max_results, option.max_result_lifetime_sec));
+    std::shared_ptr<ppcnn_server::Server> server
+        (new ppcnn_server::Server(option.port.c_str(), callback, state,
+                                  option.max_queries, option.max_results, 
+                                  option.max_result_lifetime_sec));
 
     server->start();
     server->wait();

@@ -27,10 +27,8 @@
 #include <ppcnn_share/ppcnn_cli2srvparam.hpp>
 #include <ppcnn_share/ppcnn_config.hpp>
 #include <ppcnn_share/ppcnn_encdata.hpp>
-#include <ppcnn_share/ppcnn_seal_types.hpp>
 #include <ppcnn_share/ppcnn_seal_utility.hpp>
 #include <ppcnn_share/ppcnn_utility.hpp>
-#include <ppcnn_share/utils/globals.hpp>
 #include <ppcnn_share/utils/helper_functions.hpp>
 #include <ppcnn_share/utils/load_dataset.hpp>
 #include <share/define.hpp>
