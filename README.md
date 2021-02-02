@@ -25,7 +25,7 @@ You can build by executing the following commands:
 
 [using Docker]
 ```
-$ ./build_docker.sh
+$ bash build_docker.sh
 ```
 
 [manualy]
@@ -54,7 +54,7 @@ following files generated.
 
 1. Start docker container
 ```
-$ ./run_container.sh start
+$ bash run_container.sh start
 ```
 2. Allow to make connections to the X server from docker
 ```
@@ -63,12 +63,17 @@ $ xhost local:
 3. Run demo app on docker
 ```
 $ docker exec -it pp-cnn bash
-[root@xxxxxxxx PP-CNN]# ./demo.sh
+[root@xxxxxxxx PP-CNN]# bash demo.sh
 ```
+4. Stop docker container
+```
+$ bash run_container.sh stop
+```
+
 
 [manually]
 ```
-$ ./demo.sh
+$ bash demo.sh
 ```
 
 ## Demo App
